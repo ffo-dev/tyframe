@@ -13,18 +13,20 @@ from tests.test_validators.utils import (
     test_successful_validation,
     test_validation_with_raise,
 )
-from tests.utils.readers import read_polars, read_lazy_polars
+from tests.utils.readers import read_lazy_polars, read_polars
 from tyframe.base_df_model import BaseDfModel
 from tyframe.validation.config import TyframeValidationConfig
 from tyframe.validation.exceptions import (
     BaseTyframeValidationException,
 )
-from tyframe.validation.polars import PolarsValidator, LazyPolarsValidator
+from tyframe.validation.polars import LazyPolarsValidator, PolarsValidator
 
 EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"
 
 
-def polars_comparator(left: pl.DataFrame | pl.LazyFrame, right: pl.DataFrame | pl.LazyFrame) -> None:
+def polars_comparator(
+    left: pl.DataFrame | pl.LazyFrame, right: pl.DataFrame | pl.LazyFrame
+) -> None:
     assert_frame_equal(left, right)
 
 
@@ -70,6 +72,7 @@ def test_polars_unsucessfull_validation(
         read_polars,
         expected_error,
     )
+
 
 @pytest.mark.parametrize(
     (

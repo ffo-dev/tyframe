@@ -26,16 +26,16 @@ SUCCESSFULL_VALIDATION = [
 ]
 
 RAISE_ERROR_VALIDATION = [
-        pytest.param(
-            EXAMPLE_MODEL_PATH / "input_extra_col.csv",
-            ExampleModel,
-            TyframeValidationConfig(drop_extra_columns=False),
-            ExtraColumnsError,
-        ),
-        pytest.param(
-            EXAMPLE_MODEL_PATH / "input_missing_col.csv",
-            ExampleModel,
-            TyframeValidationConfig(drop_extra_columns=False),
-            MissingColumnsError,
-        ),
-    ]
+    pytest.param(
+        EXAMPLE_MODEL_PATH / "input_extra_col.csv",
+        ExampleModel,
+        TyframeValidationConfig(drop_extra_columns=False),
+        ExtraColumnsError,
+    ),
+    pytest.param(
+        EXAMPLE_MODEL_PATH / "input_missing_col.csv",
+        ExampleModel,
+        TyframeValidationConfig(drop_extra_columns=False),
+        MissingColumnsError,
+    ),
+]

@@ -9,7 +9,10 @@ from tests.test_validators.shared_params import (
     RAISE_ERROR_VALIDATION,
     SUCCESSFULL_VALIDATION,
 )
-from tests.test_validators.utils import test_successful_validation, test_validation_with_raise
+from tests.test_validators.utils import (
+    test_successful_validation,
+    test_validation_with_raise,
+)
 from tests.utils.readers import read_pandas
 from tyframe.base_df_model import BaseDfModel
 from tyframe.validation.config import TyframeValidationConfig

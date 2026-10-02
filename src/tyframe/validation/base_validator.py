@@ -8,7 +8,6 @@ DataFrameType = TypeVar("DataFrameType")
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):
-
     _config: TyframeValidationConfig
 
     def __init__(
