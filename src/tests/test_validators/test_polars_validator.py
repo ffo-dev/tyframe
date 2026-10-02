@@ -1,0 +1,115 @@
+from pathlib import Path
+
+import polars as pl
+import pytest
+from polars.testing import assert_frame_equal
+
+from tests.test_validators.constants import TEST_FILE_PATH
+from tests.test_validators.shared_params import (
+    RAISE_ERROR_VALIDATION,
+    SUCCESSFULL_VALIDATION,
+)
+from tests.test_validators.utils import (
+    test_successful_validation,
+    test_validation_with_raise,
+)
+from tests.utils.readers import read_polars, read_lazy_polars
+from tyframe.base_df_model import BaseDfModel
+from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.exceptions import (
+    BaseTyframeValidationException,
+)
+from tyframe.validation.polars import PolarsValidator, LazyPolarsValidator
+
+EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"
+
+
+def polars_comparator(left: pl.DataFrame | pl.LazyFrame, right: pl.DataFrame | pl.LazyFrame) -> None:
+    assert_frame_equal(left, right)
+
+
+@pytest.mark.parametrize(
+    (
+        "input_data_path",
+        "model_type",
+        "expected_data_path",
+        "validation_config",
+    ),
+    SUCCESSFULL_VALIDATION,
+)
+def test_polars_successful_validation(
+    input_data_path: Path,
+    model_type: type[BaseDfModel],
+    expected_data_path: Path,
+    validation_config: TyframeValidationConfig,
+) -> None:
+    test_successful_validation(
+        input_data_path,
+        model_type,
+        expected_data_path,
+        PolarsValidator(validation_config),
+        read_polars,
+        polars_comparator,
+    )
+
+
+@pytest.mark.parametrize(
+    ("input_data_path", "model_type", "validation_config", "expected_error"),
+    RAISE_ERROR_VALIDATION,
+)
+def test_polars_unsucessfull_validation(
+    input_data_path: Path,
+    model_type: type[BaseDfModel],
+    validation_config: TyframeValidationConfig,
+    expected_error: type[BaseTyframeValidationException],
+):
+    test_validation_with_raise(
+        input_data_path,
+        model_type,
+        PolarsValidator(validation_config),
+        read_polars,
+        expected_error,
+    )
+
+@pytest.mark.parametrize(
+    (
+        "input_data_path",
+        "model_type",
+        "expected_data_path",
+        "validation_config",
+    ),
+    SUCCESSFULL_VALIDATION,
+)
+def test_lazy_polars_successful_validation(
+    input_data_path: Path,
+    model_type: type[BaseDfModel],
+    expected_data_path: Path,
+    validation_config: TyframeValidationConfig,
+) -> None:
+    test_successful_validation(
+        input_data_path,
+        model_type,
+        expected_data_path,
+        LazyPolarsValidator(validation_config),
+        read_lazy_polars,
+        polars_comparator,
+    )
+
+
+@pytest.mark.parametrize(
+    ("input_data_path", "model_type", "validation_config", "expected_error"),
+    RAISE_ERROR_VALIDATION,
+)
+def test_lazy_polars_unsucessfull_validation(
+    input_data_path: Path,
+    model_type: type[BaseDfModel],
+    validation_config: TyframeValidationConfig,
+    expected_error: type[BaseTyframeValidationException],
+):
+    test_validation_with_raise(
+        input_data_path,
+        model_type,
+        LazyPolarsValidator(validation_config),
+        read_lazy_polars,
+        expected_error,
+    )
