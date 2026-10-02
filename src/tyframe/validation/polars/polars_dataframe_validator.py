@@ -10,8 +10,20 @@ from tyframe.validation.exceptions import ExtraColumnsError, MissingColumnsError
 # TODO: create a base POlars validator that accept both options
 PolarsDataframeType = DataFrame | LazyFrame
 
+class BasePolarsValidator[PolarsDataframeType](BaseValidator[PolarsDataframeType]):
 
-class PolarsValidator(BaseValidator[DataFrame]):
+    @override
+    def validate_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: PolarsDataframeType,
+        *,
+        drop_extra_columns: bool,
+    ) -> PolarsDataframeType:
+        # TODO: actually reuse code more, but basedpyright complains about the union
+        raise NotImplementedError  # pragma: no cover
+
+class PolarsValidator(BasePolarsValidator[DataFrame]):
     @override
     def validate_column_names(
         self,
@@ -44,7 +56,8 @@ class PolarsValidator(BaseValidator[DataFrame]):
         return df
 
 
-class LazyPolarsValidator(BaseValidator[LazyFrame]):
+
+class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
     @override
     def validate_column_names(
         self,
@@ -54,7 +67,8 @@ class LazyPolarsValidator(BaseValidator[LazyFrame]):
         drop_extra_columns: bool,
     ) -> LazyFrame:
         expected_columns = df_model.columns
-        df_columns = df.columns
+        df_columns = df.collect_schema().names()
+
         missing_columns = get_missing_columns(
             expected=expected_columns, df_columns=df_columns
         )

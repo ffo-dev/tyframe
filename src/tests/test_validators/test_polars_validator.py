@@ -10,8 +10,8 @@ from tests.test_validators.shared_params import (
     SUCCESSFULL_VALIDATION,
 )
 from tests.test_validators.utils import (
-    test_successful_validation,
-    test_validation_with_raise,
+    successful_validation,
+    validation_with_raise,
 )
 from tests.utils.readers import read_lazy_polars, read_polars
 from tyframe.base_df_model import BaseDfModel
@@ -45,7 +45,7 @@ def test_polars_successful_validation(
     expected_data_path: Path,
     validation_config: TyframeValidationConfig,
 ) -> None:
-    test_successful_validation(
+    successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
@@ -65,7 +65,7 @@ def test_polars_unsucessfull_validation(
     validation_config: TyframeValidationConfig,
     expected_error: type[BaseTyframeValidationException],
 ):
-    test_validation_with_raise(
+    validation_with_raise(
         input_data_path,
         model_type,
         PolarsValidator(validation_config),
@@ -89,7 +89,7 @@ def test_lazy_polars_successful_validation(
     expected_data_path: Path,
     validation_config: TyframeValidationConfig,
 ) -> None:
-    test_successful_validation(
+    successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
@@ -109,7 +109,7 @@ def test_lazy_polars_unsucessfull_validation(
     validation_config: TyframeValidationConfig,
     expected_error: type[BaseTyframeValidationException],
 ):
-    test_validation_with_raise(
+    validation_with_raise(
         input_data_path,
         model_type,
         LazyPolarsValidator(validation_config),

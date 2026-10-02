@@ -8,8 +8,7 @@ from tyframe.validation.base_validator import BaseValidator, DataFrameType
 from tyframe.validation.exceptions import BaseTyframeValidationException
 
 
-@pytest.mark.skip(reason="Base test to use for each validator")
-def test_successful_validation(
+def successful_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     expected_data_path: Path,
@@ -26,8 +25,7 @@ def test_successful_validation(
     comparator(validated_df, expected_df)
 
 
-@pytest.mark.skip(reason="Base test to use for each validator")
-def test_validation_with_raise(
+def validation_with_raise(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     validator: BaseValidator[DataFrameType],
