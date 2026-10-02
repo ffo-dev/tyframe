@@ -18,4 +18,4 @@ def test_collect_defaults():
         b: int = 2
 
     assert ExampleWithDefault.columns == ["a", "b"]
-    assert ExampleWithDefault.column_defaults == {"b": 2}
+    assert ExampleWithDefault.defaults == {"b": 2}
