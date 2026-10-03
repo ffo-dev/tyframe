@@ -8,32 +8,65 @@ DataFrameType = TypeVar("DataFrameType")
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):
-    _config: TyframeValidationConfig
 
     def __init__(
         self,
-        config: TyframeValidationConfig,
     ):
-        self._config = config
+        # Currently the init is empty, configurations are explictly passed
+        # to the validate method.
+        pass
 
     def validate(
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
+        config: TyframeValidationConfig
     ) -> DataFrameType:
         res = self.validate_column_names(
             df_model,
             df,
-            drop_extra_columns=self._config.drop_extra_columns,
+            fill_with_default=config.fill_with_default,
+            drop_extra=config.drop_extra_columns
         )
         return res
 
-    @abstractmethod
     def validate_column_names(
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
         *,
-        drop_extra_columns: bool,
+        fill_with_default: bool,
+        drop_extra: bool
     ) -> DataFrameType:
-        raise NotImplementedError  # pragma: no cover
+        df = self.validate_missing_column_names(
+            df_model,
+            df,
+            fill_with_default=fill_with_default
+        )
+        df = self.validate_extra_column_names(
+            df_model,
+            df,
+            drop_extra=drop_extra
+        )
+        return df
+
+    @abstractmethod
+    def validate_missing_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+        *,
+        fill_with_default: bool
+    ) -> DataFrameType:
+        raise NotImplementedError
+
+    @abstractmethod
+    def validate_extra_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+        *,
+        drop_extra: bool
+    ) -> DataFrameType:
+        raise NotImplementedError
+    

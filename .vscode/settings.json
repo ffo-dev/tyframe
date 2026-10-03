@@ -4,5 +4,10 @@
     "python.languageServer": "Pylance",
 
     // disable basedpyright's language server and only use its type checking
-    "basedpyright.disableLanguageServices": true
+    "basedpyright.disableLanguageServices": true,
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

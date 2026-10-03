@@ -13,24 +13,36 @@ PolarsDataframeType = DataFrame | LazyFrame
 class BasePolarsValidator[PolarsDataframeType](BaseValidator[PolarsDataframeType]):
 
     @override
-    def validate_column_names(
+    def validate_missing_column_names(
         self,
         df_model: type[BaseDfModel],
         df: PolarsDataframeType,
         *,
-        drop_extra_columns: bool,
+        fill_with_default: bool
     ) -> PolarsDataframeType:
         # TODO: actually reuse code more, but basedpyright complains about the union
         raise NotImplementedError  # pragma: no cover
 
-class PolarsValidator(BasePolarsValidator[DataFrame]):
     @override
-    def validate_column_names(
+    def validate_extra_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: PolarsDataframeType,
+        *,
+        drop_extra: bool
+    ) -> PolarsDataframeType:
+        # TODO: actually reuse code more, but basedpyright complains about the union
+        raise NotImplementedError  # pragma: no cover
+    
+class PolarsValidator(BasePolarsValidator[DataFrame]):
+
+    @override
+    def validate_missing_column_names(
         self,
         df_model: type[BaseDfModel],
         df: DataFrame,
         *,
-        drop_extra_columns: bool,
+        fill_with_default: bool
     ) -> DataFrame:
         expected_columns = df_model.columns
         df_columns = df.columns
@@ -41,34 +53,43 @@ class PolarsValidator(BasePolarsValidator[DataFrame]):
             raise MissingColumnsError(
                 expected_columns=expected_columns, missing_columns=missing_columns
             )
+        return df
 
+    @override
+    def validate_extra_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: PolarsDataframeType,
+        *,
+        drop_extra: bool
+    ) -> PolarsDataframeType:
+        expected_columns = df_model.columns
+        df_columns = list(df.columns)
         extra_columns = get_extra_columns(
             expected=expected_columns, df_columns=df_columns
         )
 
         if extra_columns:
-            if not drop_extra_columns:
+            if not drop_extra:
                 raise ExtraColumnsError(
                     expected_columns=expected_columns, extra=extra_columns
                 )
-            df = df.drop(extra_columns)
+            df = df.drop(list(extra_columns))
 
         return df
 
 
-
 class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
     @override
-    def validate_column_names(
+    def validate_missing_column_names(
         self,
         df_model: type[BaseDfModel],
-        df: LazyFrame,
+        df: DataFrame,
         *,
-        drop_extra_columns: bool,
-    ) -> LazyFrame:
+        fill_with_default: bool
+    ) -> DataFrame:
         expected_columns = df_model.columns
-        df_columns = df.collect_schema().names()
-
+        df_columns = df.columns
         missing_columns = get_missing_columns(
             expected=expected_columns, df_columns=df_columns
         )
@@ -76,16 +97,27 @@ class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
             raise MissingColumnsError(
                 expected_columns=expected_columns, missing_columns=missing_columns
             )
+        return df
 
+    @override
+    def validate_extra_column_names(
+        self,
+        df_model: type[BaseDfModel],
+        df: PolarsDataframeType,
+        *,
+        drop_extra: bool
+    ) -> PolarsDataframeType:
+        expected_columns = df_model.columns
+        df_columns = list(df.columns)
         extra_columns = get_extra_columns(
             expected=expected_columns, df_columns=df_columns
         )
 
         if extra_columns:
-            if not drop_extra_columns:
+            if not drop_extra:
                 raise ExtraColumnsError(
                     expected_columns=expected_columns, extra=extra_columns
                 )
-            df = df.drop(extra_columns)
+            df = df.drop(list(extra_columns))
 
         return df

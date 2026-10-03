@@ -4,10 +4,12 @@ from tyframe.validation.exceptions.base_validation_exception import (
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
     MissingColumnsError,
+    MissingColumnsWithoutDefaultError,
 )
 
 __all__ = [
     "BaseTyframeValidationException",
     "ExtraColumnsError",
     "MissingColumnsError",
+    "MissingColumnsWithoutDefaultError"
 ]
