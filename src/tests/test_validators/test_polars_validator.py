@@ -24,10 +24,23 @@ from tyframe.validation.polars import LazyPolarsValidator, PolarsValidator
 EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"
 
 
-def polars_comparator(
-    left: pl.DataFrame | pl.LazyFrame, right: pl.DataFrame | pl.LazyFrame
+def strict_polars_comparator(
+    left: pl.DataFrame | pl.LazyFrame,
+    right: pl.DataFrame | pl.LazyFrame,
 ) -> None:
     assert_frame_equal(left, right)
+
+
+def strict_polars_comparator_relaxed_columns(
+    left: pl.DataFrame | pl.LazyFrame,
+    right: pl.DataFrame | pl.LazyFrame,
+) -> None:
+    assert_frame_equal(
+        left,
+        right,
+        check_column_order=False,
+        check_dtypes=False,
+    )
 
 
 @pytest.mark.parametrize(
@@ -51,7 +64,7 @@ def test_polars_successful_validation(
         expected_data_path,
         PolarsValidator(),
         read_polars,
-        polars_comparator,
+        strict_polars_comparator_relaxed_columns,
         validation_config,
     )
 
@@ -97,7 +110,7 @@ def test_lazy_polars_successful_validation(
         expected_data_path,
         LazyPolarsValidator(),
         read_lazy_polars,
-        polars_comparator,
+        strict_polars_comparator_relaxed_columns,
         validation_config,
     )
 

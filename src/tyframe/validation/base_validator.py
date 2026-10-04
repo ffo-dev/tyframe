@@ -48,20 +48,20 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         drop_extra: bool,
     ) -> DataFrameType:
         df = self.validate_missing_column_names(
-            df_model, df, fill_with_default=fill_with_default
+            df_model, df, fill_with_default=fill_with_default,
         )
-        df = self.validate_extra_column_names(df_model, df, drop_extra=drop_extra)
+        df = self.validate_extra_column_names(df_model, df, drop_extra=drop_extra,)
         return df
 
     @abstractmethod
     def get_df_columns(self, df: DataFrameType) -> set[str]:
-        raise NotImplementedError # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def drop_df_columns(
         self, df: DataFrameType, columns: Iterable[str]
     ) -> DataFrameType:
-        raise NotImplementedError # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def fill_defaults(
@@ -70,7 +70,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         defaults: Mapping[str, Any],
         missing_columns: set[str],
     ) -> DataFrameType:
-        raise NotImplementedError # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
     def validate_missing_column_names(
         self, df_model: type[BaseDfModel], df: DataFrameType, *, fill_with_default: bool
@@ -88,7 +88,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
                     missing_columns=missing_columns,
                 )
             if missing_defaults := (missing_columns - df_model.defaults.keys()):
-                MissingColumnsWithoutDefaultError(
+                raise MissingColumnsWithoutDefaultError(
                     missing_columns=missing_columns,
                     missing_without_default=missing_defaults,
                 )

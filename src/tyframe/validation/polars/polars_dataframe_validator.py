@@ -7,7 +7,7 @@ from polars import DataFrame, LazyFrame
 
 from tyframe.validation.base_validator import BaseValidator
 
-PolarsDataFrameType = TypeVar('PolarsDataFrameType', DataFrame, LazyFrame)
+PolarsDataFrameType = TypeVar("PolarsDataFrameType", DataFrame, LazyFrame)
 
 
 class BasePolarsValidator[PolarsDataFrameType](
@@ -34,10 +34,7 @@ class PolarsValidator(BasePolarsValidator[DataFrame]):
         defaults: Mapping[str, Any],
         missing_columns: set[str],
     ) -> DataFrame:
-        cols = [
-            pl.lit(defaults[key]).alias(key)
-            for key in missing_columns
-        ]
+        cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
         return df.with_columns(cols)
 
 
@@ -53,8 +50,5 @@ class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
         defaults: Mapping[str, Any],
         missing_columns: set[str],
     ) -> LazyFrame:
-        cols = [
-            pl.lit(defaults[key]).alias(key)
-            for key in missing_columns
-        ]
+        cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
         return df.with_columns(cols)
