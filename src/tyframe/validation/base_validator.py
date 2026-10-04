@@ -48,9 +48,15 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         drop_extra: bool,
     ) -> DataFrameType:
         df = self.validate_missing_column_names(
-            df_model, df, fill_with_default=fill_with_default,
+            df_model,
+            df,
+            fill_with_default=fill_with_default,
         )
-        df = self.validate_extra_column_names(df_model, df, drop_extra=drop_extra,)
+        df = self.validate_extra_column_names(
+            df_model,
+            df,
+            drop_extra=drop_extra,
+        )
         return df
 
     @abstractmethod
@@ -67,7 +73,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     def fill_defaults(
         self,
         df: DataFrameType,
-        defaults: Mapping[str, Any],
+        defaults: Mapping[str, Any],  # pyright:ignore[reportExplicitAny]
         missing_columns: set[str],
     ) -> DataFrameType:
         raise NotImplementedError  # pragma: no cover

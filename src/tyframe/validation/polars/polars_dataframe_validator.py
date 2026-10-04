@@ -1,6 +1,6 @@
 from abc import ABCMeta
 from collections.abc import Iterable, Mapping
-from typing import Any, TypeVar, cast, override
+from typing import Any, TypeVar, override
 
 import polars as pl
 from polars import DataFrame, LazyFrame
@@ -19,7 +19,7 @@ class BasePolarsValidator[PolarsDataFrameType](
         df: PolarsDataFrameType,
         columns: Iterable[str],
     ) -> PolarsDataFrameType:
-        return df.drop(columns)
+        return df.drop(columns)  # pyright:ignore[reportUnknownVariableType,reportUnknownVariableType,reportAttributeAccessIssue,reportUnknownMemberType]
 
 
 class PolarsValidator(BasePolarsValidator[DataFrame]):
@@ -31,7 +31,7 @@ class PolarsValidator(BasePolarsValidator[DataFrame]):
     def fill_defaults(
         self,
         df: DataFrame,
-        defaults: Mapping[str, Any],
+        defaults: Mapping[str, Any],  # pyright:ignore[reportExplicitAny]
         missing_columns: set[str],
     ) -> DataFrame:
         cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
@@ -47,7 +47,7 @@ class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
     def fill_defaults(
         self,
         df: LazyFrame,
-        defaults: Mapping[str, Any],
+        defaults: Mapping[str, Any],  # pyright:ignore[reportExplicitAny]
         missing_columns: set[str],
     ) -> LazyFrame:
         cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]

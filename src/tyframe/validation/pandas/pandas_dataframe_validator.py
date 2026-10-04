@@ -26,7 +26,7 @@ class PandasValidator(BaseValidator[DataFrame]):
     def fill_defaults(
         self,
         df: DataFrame,
-        defaults: Mapping[str, Any],
+        defaults: Mapping[str, Any],  # pyright:ignore[reportExplicitAny]
         missing_columns: set[str],
     ) -> DataFrame:
         for col in missing_columns:
