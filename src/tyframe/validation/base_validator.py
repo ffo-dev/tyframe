@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
-from collections.abc import Iterable
-from typing import TypeVar
+from collections.abc import Iterable, Mapping
+from typing import Any, TypeVar
 
 from tyframe.base_df_model import BaseDfModel
 from tyframe.validation.column_validation.column_validation import (
@@ -18,7 +18,6 @@ DataFrameType = TypeVar("DataFrameType")
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):
-
     def __init__(
         self,
     ):
@@ -30,13 +29,13 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        config: TyframeValidationConfig
+        config: TyframeValidationConfig,
     ) -> DataFrameType:
         res = self.validate_column_names(
             df_model,
             df,
             fill_with_default=config.fill_with_default,
-            drop_extra=config.drop_extra_columns
+            drop_extra=config.drop_extra_columns,
         )
         return res
 
@@ -46,80 +45,76 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         df: DataFrameType,
         *,
         fill_with_default: bool,
-        drop_extra: bool
+        drop_extra: bool,
     ) -> DataFrameType:
         df = self.validate_missing_column_names(
-            df_model,
-            df,
-            fill_with_default=fill_with_default
+            df_model, df, fill_with_default=fill_with_default
         )
-        df = self.validate_extra_column_names(
-            df_model,
-            df,
-            drop_extra=drop_extra
-        )
+        df = self.validate_extra_column_names(df_model, df, drop_extra=drop_extra)
         return df
 
     @abstractmethod
-    def get_df_columns(
-        self,
-        df: DataFrameType
-    ) -> set[str]:
+    def get_df_columns(self, df: DataFrameType) -> set[str]:
         raise NotImplementedError
 
     @abstractmethod
     def drop_df_columns(
+        self, df: DataFrameType, columns: Iterable[str]
+    ) -> DataFrameType:
+        raise NotImplementedError
+
+    @abstractmethod
+    def fill_defaults(
         self,
         df: DataFrameType,
-        columns: Iterable[str]
+        defaults: Mapping[str, Any],
+        missing_columns: set[str],
     ) -> DataFrameType:
         raise NotImplementedError
 
     def validate_missing_column_names(
-        self,
-        df_model: type[BaseDfModel],
-        df: DataFrameType,
-        *,
-        fill_with_default: bool
+        self, df_model: type[BaseDfModel], df: DataFrameType, *, fill_with_default: bool
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
         missing_columns = get_missing_columns(
-            expected=expected_columns, df_columns=df_columns,
+            expected=expected_columns,
+            df_columns=df_columns,
         )
         if missing_columns:
             if not fill_with_default:
                 raise MissingColumnsError(
-                expected_columns=expected_columns, missing_columns=missing_columns
-            )
+                    expected_columns=expected_columns,
+                    missing_columns=missing_columns,
+                )
             if missing_defaults := (missing_columns - df_model.defaults.keys()):
                 MissingColumnsWithoutDefaultError(
                     missing_columns=missing_columns,
-                    missing_defaults=missing_defaults
+                    missing_without_default=missing_defaults,
                 )
-            for col in missing_columns:
-                df[col] = df_model.defaults[col]
-            
-                 
+            df = self.fill_defaults(
+                df,
+                df_model.defaults.keys(),
+                missing_columns,
+            )
+
         return df
 
     def validate_extra_column_names(
-        self,
-        df_model: type[BaseDfModel],
-        df: DataFrameType,
-        *,
-        drop_extra: bool
+        self, df_model: type[BaseDfModel], df: DataFrameType, *, drop_extra: bool
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
         extra_columns = get_extra_columns(
-            expected=expected_columns, df_columns=df_columns
+            expected=expected_columns,
+            df_columns=df_columns,
         )
 
         if extra_columns:
             if not drop_extra:
                 raise ExtraColumnsError(
-                    expected_columns=expected_columns, extra=extra_columns
+                    expected_columns=expected_columns,
+                    extra=extra_columns,
                 )
             df = self.drop_df_columns(df, extra_columns)
 

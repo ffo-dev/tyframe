@@ -50,7 +50,7 @@ def test_pandas_successful_validation(
         PandasValidator(),
         read_pandas,
         pandas_comparator,
-        validation_config
+        validation_config,
     )
 
 
@@ -70,5 +70,5 @@ def test_pandas_unsucessfull_validation(
         PandasValidator(),
         read_pandas,
         expected_error,
-        validation_config
+        validation_config,
     )

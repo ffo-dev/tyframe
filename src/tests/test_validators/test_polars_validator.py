@@ -52,7 +52,7 @@ def test_polars_successful_validation(
         PolarsValidator(),
         read_polars,
         polars_comparator,
-        validation_config
+        validation_config,
     )
 
 
@@ -72,7 +72,7 @@ def test_polars_unsucessfull_validation(
         PolarsValidator(),
         read_polars,
         expected_error,
-        validation_config
+        validation_config,
     )
 
 
@@ -98,7 +98,7 @@ def test_lazy_polars_successful_validation(
         LazyPolarsValidator(),
         read_lazy_polars,
         polars_comparator,
-        validation_config
+        validation_config,
     )
 
 
@@ -118,5 +118,5 @@ def test_lazy_polars_unsucessfull_validation(
         LazyPolarsValidator(),
         read_lazy_polars,
         expected_error,
-        validation_config
+        validation_config,
     )

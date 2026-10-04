@@ -11,5 +11,5 @@ __all__ = [
     "BaseTyframeValidationException",
     "ExtraColumnsError",
     "MissingColumnsError",
-    "MissingColumnsWithoutDefaultError"
+    "MissingColumnsWithoutDefaultError",
 ]

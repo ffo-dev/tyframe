@@ -3,5 +3,5 @@ from dataclasses import dataclass, field
 
 @dataclass
 class TyframeValidationConfig:
-    drop_extra_columns: bool = field(default=False)   
-    fill_with_default: bool = field(default=False)   
+    drop_extra_columns: bool = field(default=False)
+    fill_with_default: bool = field(default=False)
