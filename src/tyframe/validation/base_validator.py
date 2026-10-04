@@ -94,7 +94,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
                 )
             df = self.fill_defaults(
                 df,
-                df_model.defaults.keys(),
+                df_model.defaults,
                 missing_columns,
             )
 
