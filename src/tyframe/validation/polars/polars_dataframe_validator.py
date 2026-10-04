@@ -11,7 +11,8 @@ PolarsDataFrameType = TypeVar("PolarsDataFrameType", DataFrame, LazyFrame)
 
 
 class BasePolarsValidator[PolarsDataFrameType](
-    BaseValidator[PolarsDataFrameType], metaclass=ABCMeta
+    BaseValidator[PolarsDataFrameType],
+    metaclass=ABCMeta,
 ):
     @override
     def drop_df_columns(
