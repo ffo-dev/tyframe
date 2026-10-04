@@ -29,8 +29,10 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        config: TyframeValidationConfig,
+        config: TyframeValidationConfig | None = None,
     ) -> DataFrameType:
+        if config is None:
+            config = TyframeValidationConfig()
         res = self.validate_column_names(
             df_model,
             df,
