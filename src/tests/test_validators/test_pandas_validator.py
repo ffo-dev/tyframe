@@ -24,8 +24,17 @@ from tyframe.validation.pandas import PandasValidator
 EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"
 
 
+def _sort_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Sort the columns of a DataFrame in alphabetical order."""
+    return df.reindex(sorted(df.columns), axis=1)
+
+
 def pandas_comparator(left: pd.DataFrame, right: pd.DataFrame) -> None:
-    assert_frame_equal(left, right)
+
+    assert_frame_equal(
+        _sort_columns(left),
+        _sort_columns(right),
+    )
 
 
 @pytest.mark.parametrize(

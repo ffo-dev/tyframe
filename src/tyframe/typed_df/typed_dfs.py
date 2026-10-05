@@ -1,64 +1,112 @@
 from abc import ABCMeta
-from typing import Self, TypeVar
+from typing import Any, cast, override
 
+import pandas as pd
 import polars as pl
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
-from tyframe.validation.config import TyframeValidationConfig
-from tyframe.validation.polars.polars_dataframe_validator import (
-    PolarsValidator,
-)
+from tyframe.typed_df.base_typed_df import BaseTypedDf
 
-_T = TypeVar("_T", bound="TypedPolarsDataFrame")
+type TypedPlDataframeInputData = pl.DataFrame | list[BaseDfModel]
+type TypedPandasDataframeInputData = pd.DataFrame | list[BaseDfModel]
 
 
 class TypedPolarsDataFrame[
     ModelType: BaseDfModel,
-](metaclass=ABCMeta):
-    df: pl.DataFrame
-    validator: PolarsValidator
+](BaseTypedDf[ModelType, pl.DataFrame], metaclass=ABCMeta):
+    _df: pl.DataFrame
     model: type[ModelType]
 
-    def __init__(
-        self,
-        input_data: pl.DataFrame,
-        validator: PolarsValidator,
-        validation_config: TyframeValidationConfig | None = None,
-    ):
-        self.df = validator.validate(
-            self.model,
-            input_data,
-            validation_config,
+    @override
+    def _select(self, columns: list[str]) -> pl.DataFrame:
+        return self._df.select(columns)
+
+    @override
+    def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
+        return self._df.head(n=1).to_dicts()[0]
+
+    @override
+    def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
+        return self._df.to_dicts()
+
+    @override
+    def _count(self) -> int:
+        return self._df.height
+
+    @override
+    def _distinct_df(self) -> pl.DataFrame:
+        return self._df.unique(keep="first")
+
+    @override
+    def _union_df(self, other: pl.DataFrame) -> pl.DataFrame:
+        return pl.concat(
+            [self._df, other],
+            rechunk=False,
+            how="vertical",
         )
-        self.validator = validator
 
-    @classmethod
-    def columns(cls) -> list[str]:
-        return list(cls.df.columns)
 
-    def select(
-        self,
-        columns: list[str],
-    ) -> pl.DataFrame:
-        return self.df.select(columns)
+class TypedLazyPolarsDataFrame[
+    ModelType: BaseDfModel,
+](BaseTypedDf[ModelType, pl.LazyFrame], metaclass=ABCMeta):
+    _df: pl.LazyFrame
+    model: type[ModelType]
 
-    def select_to(
-        self,
-        to_type: type[_T],
-    ) -> _T:
-        return to_type(self.select(to_type.columns()), self.validator)
+    @override
+    def _select(self, columns: list[str]) -> pl.LazyFrame:
+        return self._df.select(columns)
 
-    def first(self) -> ModelType:
-        return self.model(**self.df.head(n=1).to_dicts()[0])
+    @override
+    def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
+        return self._df.head(n=1).collect().to_dicts()[0]
 
-    def collect(self) -> list[ModelType]:
-        return [self.model(**row) for row in self.df.to_dicts()]
+    @override
+    def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
+        return self._df.collect().to_dicts()
 
-    def count(self) -> int:
-        return self.df.height
+    @override
+    def _count(self) -> int:
+        return self._df.collect().height
 
-    def distinct(self) -> Self:
-        return type(self)(self.df.unique(), self.validator)
+    @override
+    def _distinct_df(self) -> pl.LazyFrame:
+        return self._df.unique(keep="first")
 
-    def union(self, other: Self) -> Self:
-        return type(self)(self.df.vstack(other.df), self.validator)
+    @override
+    def _union_df(self, other: pl.LazyFrame) -> pl.LazyFrame:
+        return pl.concat(
+            [self._df, other],
+            rechunk=False,
+            how="vertical",
+        ).lazy()
+
+
+class TypedPandasDataFrame[
+    ModelType: BaseDfModel,
+](BaseTypedDf[ModelType, pd.DataFrame], metaclass=ABCMeta):
+    _df: pd.DataFrame
+    model: type[ModelType]
+
+    @override
+    def _select(self, columns: list[str]) -> pd.DataFrame:
+        return self._df.loc[:, columns]
+
+    @override
+    def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
+        return cast(dict[str, Any], self._df.head(1).to_dict(orient="records")[0])  # pyright:ignore[reportExplicitAny]
+
+    @override
+    def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
+        return cast(list[dict[str, Any]], self._df.to_dict(orient="records"))  # pyright:ignore[reportExplicitAny]
+
+    @override
+    def _count(self) -> int:
+        return len(self._df.index)
+
+    @override
+    def _distinct_df(self) -> pd.DataFrame:
+        return self._df.drop_duplicates(keep="first")
+
+    @override
+    def _union_df(self, other: pd.DataFrame) -> pd.DataFrame:
+        return pd.concat([self._df, other], ignore_index=True)

@@ -1,29 +1,27 @@
-from abc import ABCMeta
 from collections.abc import Iterable, Mapping
-from typing import Any, TypeVar, override
+from typing import Any, override
 
 import polars as pl
 from polars import DataFrame, LazyFrame
 
+from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
 
-PolarsDataFrameType = TypeVar("PolarsDataFrameType", DataFrame, LazyFrame)
 
+class PolarsValidator(BaseValidator[DataFrame]):
+    df_type: type[DataFrame] = DataFrame
 
-class BasePolarsValidator[PolarsDataFrameType](
-    BaseValidator[PolarsDataFrameType],
-    metaclass=ABCMeta,
-):
     @override
     def drop_df_columns(
         self,
-        df: PolarsDataFrameType,
+        df: DataFrame,
         columns: Iterable[str],
-    ) -> PolarsDataFrameType:
-        return df.drop(columns)  # pyright:ignore[reportUnknownVariableType,reportUnknownVariableType,reportAttributeAccessIssue,reportUnknownMemberType]
+    ) -> DataFrame:
+        return df.drop(
+            columns,
+            strict=False,
+        )
 
-
-class PolarsValidator(BasePolarsValidator[DataFrame]):
     @override
     def get_df_columns(self, df: DataFrame) -> set[str]:
         return set(df.columns)
@@ -38,8 +36,29 @@ class PolarsValidator(BasePolarsValidator[DataFrame]):
         cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
         return df.with_columns(cols)
 
+    @override
+    def _create_dataframe_from_records(
+        self,
+        records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
+        model_type: type[BaseDfModel],
+    ) -> DataFrame:
+        return pl.DataFrame(records)
 
-class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
+
+class LazyPolarsValidator(BaseValidator[LazyFrame]):
+    df_type: type[LazyFrame] = LazyFrame
+
+    @override
+    def drop_df_columns(
+        self,
+        df: LazyFrame,
+        columns: Iterable[str],
+    ) -> LazyFrame:
+        return df.drop(
+            columns,
+            strict=False,
+        )
+
     @override
     def get_df_columns(self, df: LazyFrame) -> set[str]:
         return set(df.collect_schema().names())
@@ -53,3 +72,11 @@ class LazyPolarsValidator(BasePolarsValidator[LazyFrame]):
     ) -> LazyFrame:
         cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
         return df.with_columns(cols)
+
+    @override
+    def _create_dataframe_from_records(
+        self,
+        records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
+        model_type: type[BaseDfModel],
+    ) -> LazyFrame:
+        return pl.LazyFrame(records)

@@ -23,7 +23,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     ):
         # Currently the init is empty, configurations are explictly passed
         # to the validate method.
+        # Left here in case some specialized validator needs
+        # to have some configuration in the future.
         pass
+
+    df_type: type[DataFrameType]
 
     def validate(
         self,
@@ -61,6 +65,24 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         )
         return df
 
+    def create_dataframe(
+        self,
+        models: Iterable[BaseDfModel],
+        model_type: type[BaseDfModel],
+    ) -> DataFrameType:
+        return self._create_dataframe_from_records(
+            (el.to_record() for el in models),
+            model_type,
+        )
+
+    @abstractmethod
+    def _create_dataframe_from_records(
+        self,
+        records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
+        model_type: type[BaseDfModel],
+    ) -> DataFrameType:
+        raise NotImplementedError  # pragma: no cover
+
     @abstractmethod
     def get_df_columns(self, df: DataFrameType) -> set[str]:
         raise NotImplementedError  # pragma: no cover
@@ -81,7 +103,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         raise NotImplementedError  # pragma: no cover
 
     def validate_missing_column_names(
-        self, df_model: type[BaseDfModel], df: DataFrameType, *, fill_with_default: bool
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+        *,
+        fill_with_default: bool,
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
@@ -109,7 +135,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         return df
 
     def validate_extra_column_names(
-        self, df_model: type[BaseDfModel], df: DataFrameType, *, drop_extra: bool
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+        *,
+        drop_extra: bool,
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
