@@ -70,9 +70,19 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return [
             self._df_library_import(),
+            *self._additional_imports(),
             self._model_import(model),
             self._typed_df_base_class_import(),
         ]
+
+    def _additional_imports(self) -> list[str]:
+        """
+        Generate any additional import statements required for the typed DataFrame class.
+
+        Returns:
+            list[str]: A list of strings representing the additional import statements.
+        """
+        return []
 
     @abstractmethod
     def _df_library_import(self) -> str:
@@ -137,7 +147,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         self,
         model: type[BaseDfModel],
     ) -> str:
-        return f"class {model.__name__}{self._generated_class_suffix}({self._typed_df_name()}[{model.__name__}])"
+        return f"class {model.__name__}{self._generated_class_suffix}({self._typed_df_name()}[{model.__name__}]):"
 
     def _generate_model_type_variable(self, model: type[BaseDfModel]) -> str:
         """

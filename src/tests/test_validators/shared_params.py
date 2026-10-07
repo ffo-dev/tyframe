@@ -6,7 +6,7 @@ from tyframe.validation.config import TyframeValidationConfig
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
     MissingColumnsError,
-    MissingColumnsWithoutDefaultError
+    MissingColumnsWithoutDefaultError,
 )
 
 EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"

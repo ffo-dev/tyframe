@@ -1,8 +1,8 @@
-import polars as pl
 import pandas as pd
+import polars as pl
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
-from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame, TypedPandasDataFrame
+from tyframe.typed_df.typed_dfs import TypedPandasDataFrame, TypedPolarsDataFrame
 
 
 class OneColModel(BaseDfModel):
