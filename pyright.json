@@ -1,1 +1,1 @@
-{"include": ["src", "tests"], "typeCheckingMode": "basic"}
+{"include": ["src", "tests"], "typeCheckingMode": "strict"}

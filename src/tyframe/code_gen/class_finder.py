@@ -1,5 +1,5 @@
 import ast
-import importlib.util
+import importlib
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -32,19 +32,46 @@ def find_child_classes[T](
 def _load_module(file_path: Path) -> ModuleType:
     for module in tuple(sys.modules.values()):
         module_path = getattr(module, "__file__", None)
+        if (
+            isinstance(module_path, str)
+            and Path(module_path).resolve() == file_path
+            and not module.__name__.startswith("_tyframe_class_finder_")
+        ):
+            return module
+
+    for module_name in _module_names(file_path):
+        try:
+            module = importlib.import_module(module_name)
+        except ModuleNotFoundError as error:
+            if error.name is not None and (
+                error.name == module_name or module_name.startswith(f"{error.name}.")
+            ):
+                continue
+            raise
+        module_path = getattr(module, "__file__", None)
         if isinstance(module_path, str) and Path(module_path).resolve() == file_path:
             return module
 
-    module_name = f"_tyframe_class_finder_{abs(hash(file_path))}"
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Cannot load Python module from {file_path}")
+    raise ImportError(
+        f"Cannot import {file_path} from any Python module path on sys.path"
+    )
 
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    try:
-        spec.loader.exec_module(module)
-    except BaseException:
-        del sys.modules[module_name]
-        raise
-    return module
+
+def _module_names(file_path: Path) -> list[str]:
+    candidates: list[tuple[int, str]] = []
+    for entry in sys.path:
+        root = Path(entry or Path.cwd()).resolve()
+        try:
+            relative_path = file_path.relative_to(root)
+        except ValueError:
+            continue
+        if relative_path.suffix != ".py":
+            continue
+        parts = list(relative_path.parts)
+        parts[-1] = Path(parts[-1]).stem
+        if parts[-1] == "__init__":
+            parts = parts[:-1]
+        if parts and all(part.isidentifier() for part in parts):
+            candidates.append((len(root.parts), ".".join(parts)))
+
+    return [name for _, name in sorted(candidates, reverse=True)]

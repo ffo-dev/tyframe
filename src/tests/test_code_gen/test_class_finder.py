@@ -17,3 +17,11 @@ def test_find_child_classes_includes_indirect_descendants() -> None:
         ],
         key=lambda x: x.__name__,
     )
+
+
+def test_find_child_classes_uses_importable_module_name() -> None:
+    file_path = Path(__file__).parents[2] / "tyframe" / "dummy" / "other_model.py"
+
+    found = find_child_classes(file_path, BaseDfModel)
+
+    assert found[0].__module__.startswith("tyframe.")
