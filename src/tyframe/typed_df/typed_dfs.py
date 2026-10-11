@@ -35,14 +35,14 @@ class TypedPolarsDataFrame[
 
     @override
     def _distinct_df(self) -> pl.DataFrame:
-        return self._df.unique(keep="first")
+        return self._df.unique(keep='first')
 
     @override
     def _union_df(self, other: pl.DataFrame) -> pl.DataFrame:
         return pl.concat(
             [self._df, other],
             rechunk=False,
-            how="vertical",
+            how='vertical',
         )
 
 
@@ -70,14 +70,14 @@ class TypedLazyPolarsDataFrame[
 
     @override
     def _distinct_df(self) -> pl.LazyFrame:
-        return self._df.unique(keep="first")
+        return self._df.unique(keep='first')
 
     @override
     def _union_df(self, other: pl.LazyFrame) -> pl.LazyFrame:
         return pl.concat(
             [self._df, other],
             rechunk=False,
-            how="vertical",
+            how='vertical',
         ).lazy()
 
 
@@ -93,11 +93,11 @@ class TypedPandasDataFrame[
 
     @override
     def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
-        return cast(dict[str, Any], self._df.head(1).to_dict(orient="records")[0])  # pyright:ignore[reportExplicitAny]
+        return cast(dict[str, Any], self._df.head(1).to_dict(orient='records')[0])  # pyright:ignore[reportExplicitAny]
 
     @override
     def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
-        return cast(list[dict[str, Any]], self._df.to_dict(orient="records"))  # pyright:ignore[reportExplicitAny]
+        return cast(list[dict[str, Any]], self._df.to_dict(orient='records'))  # pyright:ignore[reportExplicitAny]
 
     @override
     def _count(self) -> int:
@@ -105,7 +105,7 @@ class TypedPandasDataFrame[
 
     @override
     def _distinct_df(self) -> pd.DataFrame:
-        return self._df.drop_duplicates(keep="first")
+        return self._df.drop_duplicates(keep='first')
 
     @override
     def _union_df(self, other: pd.DataFrame) -> pd.DataFrame:

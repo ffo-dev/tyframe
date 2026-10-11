@@ -7,8 +7,8 @@ from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
 class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
 
-    a: str = "a"
-    b: str = "b"
+    a: str = 'a'
+    b: str = 'b'
 
     @property
     def a_col(self) -> pl.Series:

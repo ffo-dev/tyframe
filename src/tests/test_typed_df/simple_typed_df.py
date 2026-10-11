@@ -20,7 +20,7 @@ class OtherExample(BaseDfModel):
 class OneColModelPl(TypedPolarsDataFrame[OneColModel]):
     model: type[OneColModel] = OneColModel
 
-    a: str = "a"
+    a: str = 'a'
 
     @property
     def a_col(self) -> pl.Series:
@@ -30,8 +30,8 @@ class OneColModelPl(TypedPolarsDataFrame[OneColModel]):
 class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
 
-    a: str = "a"
-    b: str = "b"
+    a: str = 'a'
+    b: str = 'b'
 
     @property
     def a_col(self) -> pl.Series:
@@ -45,7 +45,7 @@ class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
 class OneColModelPd(TypedPandasDataFrame[OneColModel]):
     model: type[OneColModel] = OneColModel
 
-    a: str = "a"
+    a: str = 'a'
 
     @property
     def a_col(self) -> pd.Series:
@@ -55,8 +55,8 @@ class OneColModelPd(TypedPandasDataFrame[OneColModel]):
 class TwoColModelPd(TypedPandasDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
 
-    a: str = "a"
-    b: str = "b"
+    a: str = 'a'
+    b: str = 'b'
 
     @property
     def a_col(self) -> pd.Series:

@@ -6,7 +6,7 @@ from tyframe.typed_df.typed_dfs import TypedPandasDataFrame
 
 class OtherExampleModelPd(TypedPandasDataFrame[OtherExampleModel]):
     model: type[OtherExampleModel] = OtherExampleModel
-    name: str = "name"
+    name: str = 'name'
 
     @property
     def name_col(self) -> pd.Series:

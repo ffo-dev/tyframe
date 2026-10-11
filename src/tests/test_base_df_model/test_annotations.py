@@ -7,8 +7,8 @@ def test_collect_col_names():
         col1: str
         col2: int
 
-    assert Example.columns == ["col1", "col2"]
-    assert "col3" not in Example.columns
+    assert Example.columns == ['col1', 'col2']
+    assert 'col3' not in Example.columns
 
 
 def test_collect_defaults():
@@ -17,5 +17,5 @@ def test_collect_defaults():
         a: str
         b: int = 2
 
-    assert ExampleWithDefault.columns == ["a", "b"]
-    assert ExampleWithDefault.defaults == {"b": 2}
+    assert ExampleWithDefault.columns == ['a', 'b']
+    assert ExampleWithDefault.defaults == {'b': 2}

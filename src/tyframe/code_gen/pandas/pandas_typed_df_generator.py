@@ -15,17 +15,17 @@ class PandasTypedDfGenerator(BasedTypedDfGenerator):
     def __init__(
         self,
         config: TypedDfGeneratorConfig,
-        generated_class_suffix: str = "Pd",
+        generated_class_suffix: str = 'Pd',
     ):
         super().__init__(config, generated_class_suffix)
 
     @override
     def _df_library_import(self):
-        return "import pandas as pd"
+        return 'import pandas as pd'
 
     @override
     def _typed_df_base_class_import(self):
-        return f"from {TypedPandasDataFrame.__module__} import {TypedPandasDataFrame.__name__}"
+        return f'from {TypedPandasDataFrame.__module__} import {TypedPandasDataFrame.__name__}'
 
     @override
     def _typed_df_name(self):
@@ -33,4 +33,4 @@ class PandasTypedDfGenerator(BasedTypedDfGenerator):
 
     @override
     def _col_return_type(self):
-        return "pd.Series"
+        return 'pd.Series'

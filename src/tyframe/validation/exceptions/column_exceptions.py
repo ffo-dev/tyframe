@@ -14,11 +14,11 @@ class MissingColumnsError(BaseTyframeValidationException):
     ):
 
         rows = [
-            f"Expected: {sorted(expected_columns)}",
-            f"Missing : {sorted(missing_columns)}",
+            f'Expected: {sorted(expected_columns)}',
+            f'Missing : {sorted(missing_columns)}',
         ]
 
-        super().__init__("\n".join(rows))
+        super().__init__('\n'.join(rows))
 
 
 class MissingColumnsWithoutDefaultError(BaseTyframeValidationException):
@@ -27,11 +27,11 @@ class MissingColumnsWithoutDefaultError(BaseTyframeValidationException):
     ):
 
         rows = [
-            f"Missing   : {sorted(missing_columns)}",
-            f"No Default: {sorted(missing_without_default)}",
+            f'Missing   : {sorted(missing_columns)}',
+            f'No Default: {sorted(missing_without_default)}',
         ]
 
-        super().__init__("\n".join(rows))
+        super().__init__('\n'.join(rows))
 
 
 class ExtraColumnsError(BaseTyframeValidationException):
@@ -43,7 +43,7 @@ class ExtraColumnsError(BaseTyframeValidationException):
     ):
 
         rows = [
-            f"Expected: {sorted(expected_columns)}",
-            f"Extra   : {sorted(extra)}",
+            f'Expected: {sorted(expected_columns)}',
+            f'Extra   : {sorted(extra)}',
         ]
-        super().__init__("\n".join(rows))
+        super().__init__('\n'.join(rows))

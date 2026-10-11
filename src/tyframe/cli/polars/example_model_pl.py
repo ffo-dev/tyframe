@@ -5,9 +5,9 @@ from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
 
 class ExampleModelPl(TypedPolarsDataFrame[ExampleModel]):
     model: type[ExampleModel] = ExampleModel
-    name: str = "name"
-    last_name: str = "last_name"
-    result: str = "result"
+    name: str = 'name'
+    last_name: str = 'last_name'
+    result: str = 'result'
 
     @property
     def name_col(self) -> pl.Series:

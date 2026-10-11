@@ -14,7 +14,7 @@ from tyframe.validation.exceptions.column_exceptions import (
     MissingColumnsWithoutDefaultError,
 )
 
-DataFrameType = TypeVar("DataFrameType")
+DataFrameType = TypeVar('DataFrameType')
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):

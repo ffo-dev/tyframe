@@ -4,6 +4,6 @@ from tyframe.validation.polars.polars_dataframe_validator import (
 )
 
 __all__ = [
-    "LazyPolarsValidator",
-    "PolarsValidator",
+    'LazyPolarsValidator',
+    'PolarsValidator',
 ]

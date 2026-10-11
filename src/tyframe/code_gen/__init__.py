@@ -4,6 +4,6 @@ from tyframe.code_gen.based_typed_df_generator import (
 )
 
 __all__ = [
-    "BasedTypedDfGenerator",
-    "TypedDfGeneratorConfig",
+    'BasedTypedDfGenerator',
+    'TypedDfGeneratorConfig',
 ]

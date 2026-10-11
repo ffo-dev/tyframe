@@ -6,7 +6,7 @@ from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
 
 class OtherExampleModelPl(TypedPolarsDataFrame[OtherExampleModel]):
     model: type[OtherExampleModel] = OtherExampleModel
-    name: str = "name"
+    name: str = 'name'
 
     @property
     def name_col(self) -> pl.Series:

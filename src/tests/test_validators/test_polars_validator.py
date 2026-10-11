@@ -21,7 +21,7 @@ from tyframe.validation.exceptions import (
 )
 from tyframe.validation.polars import LazyPolarsValidator, PolarsValidator
 
-EXAMPLE_MODEL_PATH = TEST_FILE_PATH / "example_model"
+EXAMPLE_MODEL_PATH = TEST_FILE_PATH / 'example_model'
 
 
 def strict_polars_comparator(
@@ -45,10 +45,10 @@ def strict_polars_comparator_relaxed_columns(
 
 @pytest.mark.parametrize(
     (
-        "input_data_path",
-        "model_type",
-        "expected_data_path",
-        "validation_config",
+        'input_data_path',
+        'model_type',
+        'expected_data_path',
+        'validation_config',
     ),
     SUCCESSFULL_VALIDATION,
 )
@@ -70,7 +70,7 @@ def test_polars_successful_validation(
 
 
 @pytest.mark.parametrize(
-    ("input_data_path", "model_type", "validation_config", "expected_error"),
+    ('input_data_path', 'model_type', 'validation_config', 'expected_error'),
     RAISE_ERROR_VALIDATION,
 )
 def test_polars_unsucessfull_validation(
@@ -91,10 +91,10 @@ def test_polars_unsucessfull_validation(
 
 @pytest.mark.parametrize(
     (
-        "input_data_path",
-        "model_type",
-        "expected_data_path",
-        "validation_config",
+        'input_data_path',
+        'model_type',
+        'expected_data_path',
+        'validation_config',
     ),
     SUCCESSFULL_VALIDATION,
 )
@@ -116,7 +116,7 @@ def test_lazy_polars_successful_validation(
 
 
 @pytest.mark.parametrize(
-    ("input_data_path", "model_type", "validation_config", "expected_error"),
+    ('input_data_path', 'model_type', 'validation_config', 'expected_error'),
     RAISE_ERROR_VALIDATION,
 )
 def test_lazy_polars_unsucessfull_validation(

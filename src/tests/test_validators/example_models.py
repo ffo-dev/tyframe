@@ -9,4 +9,4 @@ class ExampleModel(BaseDfModel):
 class ModelWithDefault(BaseDfModel):
     a: int
     b: int = 3
-    c: str = "z"
+    c: str = 'z'
