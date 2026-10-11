@@ -1,8 +1,1 @@
-{
-  "include": [
-    "src",
-    "tests"
-  ],
-
-  "typeCheckingMode": "strict"
-}
+{"include": ["src", "tests"], "typeCheckingMode": "strict"}

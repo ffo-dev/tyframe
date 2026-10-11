@@ -1,0 +1,12 @@
+[lint.flake8-quotes]
+inline-quotes = "single"
+
+[format]
+quote-style = "single"
+
+[lint]
+# select = [...]  # See the Default Rules page for the full listing.
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]

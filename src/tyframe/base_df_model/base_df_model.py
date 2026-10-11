@@ -21,3 +21,11 @@ class BaseDfModel(BaseModel, metaclass=ABCMeta):
             if not isinstance(v.default, PydanticUndefinedType)  # pyright:ignore[reportAny]
         }
         super().__pydantic_init_subclass__(**kwargs)
+
+    def to_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
+        """Convert the model instance to a record.
+
+        Currently just a wrapper around model_dump, but can be extended/override
+        in the future to add more functionality.
+        """
+        return self.model_dump()

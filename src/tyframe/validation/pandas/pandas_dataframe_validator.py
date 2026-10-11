@@ -3,10 +3,13 @@ from typing import Any, override
 
 from pandas import DataFrame
 
+from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
 
 
 class PandasValidator(BaseValidator[DataFrame]):
+    df_type: type[DataFrame] = DataFrame
+
     @override
     def get_df_columns(
         self,
@@ -32,3 +35,11 @@ class PandasValidator(BaseValidator[DataFrame]):
         for col in missing_columns:
             df[col] = defaults[col]
         return df
+
+    @override
+    def _create_dataframe_from_records(
+        self,
+        records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
+        model_type: type[BaseDfModel],
+    ) -> DataFrame:
+        return DataFrame.from_records(records)
