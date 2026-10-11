@@ -1,4 +1,5 @@
 import polars as pl
+
 from tyframe.dummy.test_model import ExampleModel
 from tyframe.typed_df.typed_dfs import TypedLazyPolarsDataFrame
 

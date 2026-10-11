@@ -1,4 +1,5 @@
 import pandas as pd
+
 from tyframe.dummy.test_model import ExampleModel
 from tyframe.typed_df.typed_dfs import TypedPandasDataFrame
 

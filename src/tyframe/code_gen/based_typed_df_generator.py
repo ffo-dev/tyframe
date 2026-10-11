@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
+from pathlib import Path
 
 from pydantic import BaseModel
+from pydantic.alias_generators import to_snake
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 
@@ -20,7 +22,9 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
     _generated_class_suffix: str
 
     def __init__(
-        self, config: TypedDfGeneratorConfig, generated_class_suffix: str = "TypedDf"
+        self,
+        config: TypedDfGeneratorConfig,
+        generated_class_suffix: str = "TypedDf",
     ):
         self.config = config
         self._indentation = " " * self.config.indentation_size
@@ -40,6 +44,16 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             str: A string representing the python code for the generated typed DataFrame class.
         """
         return "\n".join(self._raw_generate_typed_df_class(model))
+
+    def generate_typed_df_file(
+        self,
+        model: type[BaseDfModel],
+        output_path: Path,
+    ) -> Path:
+        file = output_path / f"{to_snake(self._class_name(model))}.py"
+        with file.open("w") as f:
+            _ = f.write(self.generate_typed_df_class(model))
+        return file
 
     def _raw_generate_typed_df_class(
         self,
@@ -147,7 +161,10 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         self,
         model: type[BaseDfModel],
     ) -> str:
-        return f"class {model.__name__}{self._generated_class_suffix}({self._typed_df_name()}[{model.__name__}]):"
+        return f"class {self._class_name(model)}({self._typed_df_name()}[{model.__name__}]):"
+
+    def _class_name(self, model: type[BaseDfModel]) -> str:
+        return f"{model.__name__}{self._generated_class_suffix}"
 
     def _generate_model_type_variable(self, model: type[BaseDfModel]) -> str:
         """

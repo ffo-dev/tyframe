@@ -13,6 +13,10 @@ class TwoColModel(OneColModel):
     b: str
 
 
+class OtherExample(BaseDfModel):
+    yaba: str
+
+
 class OneColModelPl(TypedPolarsDataFrame[OneColModel]):
     model: type[OneColModel] = OneColModel
 
