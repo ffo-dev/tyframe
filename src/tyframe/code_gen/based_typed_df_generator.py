@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from pydantic.alias_generators import to_snake
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
+from tyframe.code_gen.class_finder import find_child_classes
 
 
 class TypedDfGeneratorConfig(BaseModel):
@@ -51,9 +52,32 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> Path:
         file = output_path / f"{to_snake(self._class_name(model))}.py"
+        file.parent.mkdir(exist_ok=True)
         with file.open("w") as f:
             _ = f.write(self.generate_typed_df_class(model))
         return file
+
+    def generate_for_input_file(
+        self,
+        input_file: Path,
+        output_path: Path,
+    ) -> list[Path]:
+        models = find_child_classes(input_file, BaseDfModel)
+        return [self.generate_typed_df_file(model, output_path) for model in models]
+
+    def generate_for_input_path(
+        self,
+        input_path: Path,
+        output_path: Path,
+    ) -> list[Path]:
+        if input_path.is_file():
+            return self.generate_for_input_file(input_path, output_path)
+        res: list[Path] = []
+        for file in input_path.glob("*.py"):
+            if file.name == "__init__.py":
+                continue
+            res.extend(self.generate_for_input_file(file, output_path))
+        return res
 
     def _raw_generate_typed_df_class(
         self,
