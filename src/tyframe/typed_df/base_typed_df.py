@@ -107,6 +107,10 @@ class BaseTypedDf[
         )
 
     @abstractmethod
+    def filter(self, *args: Any, **kwargs: Any) -> Self:  # pyright:ignore[reportExplicitAny]
+        raise NotImplementedError  # pragma: no cover
+
+    @abstractmethod
     def _select(self, columns: list[str]) -> DataFrameType:
         raise NotImplementedError  # pragma: no cover
 
@@ -141,16 +145,16 @@ class BaseTypedDf[
 
     ## SafeOps, which return a new instance of the same type,
     # with the same validator, and skip validation since the schema is guaranteed to be the same.
-    def distinct(self) -> Self:
+
+    def _pass_through(self, df: DataFrameType) -> Self:
         return type(self)(
-            self._distinct_df(),
+            df,
             self.validator,
             skip_validation=True,
         )
 
+    def distinct(self) -> Self:
+        return self._pass_through(self._distinct_df())
+
     def union(self, other: Self) -> Self:
-        return type(self)(
-            self._union_df(other._df),
-            self.validator,
-            skip_validation=True,
-        )
+        return self._pass_through(self._union_df(other._df))
