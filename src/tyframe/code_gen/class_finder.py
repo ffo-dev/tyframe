@@ -52,8 +52,9 @@ def _load_module(file_path: Path) -> ModuleType:
         if isinstance(module_path, str) and Path(module_path).resolve() == file_path:
             return module
 
+    msg = f'Cannot import {file_path} from any Python module path on sys.path'
     raise ImportError(
-        f'Cannot import {file_path} from any Python module path on sys.path',
+        msg,
     )
 
 

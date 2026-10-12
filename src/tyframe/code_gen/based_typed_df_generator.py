@@ -25,7 +25,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         self,
         config: TypedDfGeneratorConfig,
         generated_class_suffix: str = 'TypedDf',
-    ):
+    ) -> None:
         self.config = config
         self._indentation = ' ' * self.config.indentation_size
         self._generated_class_suffix = generated_class_suffix

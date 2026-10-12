@@ -78,7 +78,7 @@ def test_polars_unsucessfull_validation(
     model_type: type[BaseDfModel],
     validation_config: TyframeValidationConfig,
     expected_error: type[BaseTyframeValidationError],
-):
+) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
@@ -124,7 +124,7 @@ def test_lazy_polars_unsucessfull_validation(
     model_type: type[BaseDfModel],
     validation_config: TyframeValidationConfig,
     expected_error: type[BaseTyframeValidationError],
-):
+) -> None:
     validation_with_raise(
         input_data_path,
         model_type,

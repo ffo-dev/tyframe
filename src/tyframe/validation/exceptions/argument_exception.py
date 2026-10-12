@@ -18,6 +18,6 @@ class InvalidSkipValidationError(TyframeArgumentError):
 
 
 class InvalidInputTypesError(TyframeArgumentError):
-    def __init__(self, input_type: type, valid_types: Sequence[type]) -> None:
-        msg = f'Invalid input_type: {input_type.__name__}\nExpected {",".join(el.__name__ for el in valid_types)}'
+    def __init__(self, input_type: type, valid_types: Sequence[str]) -> None:
+        msg = f'Invalid input_type: {input_type.__name__}\nExpected {",".join(valid_types)}'
         super().__init__(msg)

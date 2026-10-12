@@ -10,7 +10,7 @@ from tyframe.validation.pandas import PandasValidator
 from tyframe.validation.polars import PolarsValidator
 
 
-def test_typed_pl_df():
+def test_typed_pl_df() -> None:
 
     df = TwoColModelPl(
         input_data=[
@@ -67,7 +67,7 @@ def test_typed_pl_df():
     assert distinct.count() == 3
 
 
-def test_typed_pd_df():
+def test_typed_pd_df() -> None:
 
     df = TwoColModelPd(
         input_data=[

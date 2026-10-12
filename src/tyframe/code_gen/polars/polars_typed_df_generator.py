@@ -14,23 +14,23 @@ class PolarsTypedDfGenerator(BasedTypedDfGenerator):
         self,
         config: TypedDfGeneratorConfig,
         generated_class_suffix: str = 'Pl',
-    ):
+    ) -> None:
         super().__init__(config, generated_class_suffix)
 
     @override
-    def _df_library_import(self):
+    def _df_library_import(self) -> str:
         return 'import polars as pl'
 
     @override
-    def _typed_df_base_class_import(self):
+    def _typed_df_base_class_import(self) -> str:
         return f'from {TypedPolarsDataFrame.__module__} import {TypedPolarsDataFrame.__name__}'
 
     @override
-    def _typed_df_name(self):
+    def _typed_df_name(self) -> str:
         return TypedPolarsDataFrame.__name__
 
     @override
-    def _col_return_type(self):
+    def _col_return_type(self) -> str:
         return 'pl.Series'
 
 

@@ -5,7 +5,10 @@ from typing import Any, Protocol, Self, TypeGuard, TypeVar
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
 from tyframe.validation.config import TyframeValidationConfig
-from tyframe.validation.exceptions.argument_exception import InvalidSkipValidationError, TyframeArgumentError
+from tyframe.validation.exceptions.argument_exception import (
+    InvalidInputTypesError,
+    InvalidSkipValidationError,
+)
 
 
 class TypedDfProtocol(Protocol):
@@ -63,9 +66,13 @@ class BaseTypedDf[
                 self.model,
             )
         else:
-            msg = f'input_data must be either a {self.model.__name__} iterable or a {self.validator.df_type.__name__} instance.'  # noqa: E501
-            raise TyframeArgumentError(
-                msg,
+            raise InvalidInputTypesError(
+                type(input_data),
+                [
+                    self.model.__name__,
+                    f'[{self.validator.df_type.__name__}]',
+
+                ],
             )
         self.validated = True
 
@@ -77,7 +84,7 @@ class BaseTypedDf[
 
     def _is_dataframe_type(
         self,
-        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]
+        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
     ) -> TypeGuard[DataFrameType]:
         return isinstance(input_data, self.validator.df_type)
 

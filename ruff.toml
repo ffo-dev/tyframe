@@ -20,5 +20,6 @@ allow-star-arg-any = true
 
 [lint.extend-per-file-ignores]
 "/*/tests/**.py" = [
-    "S101"
+    "S101",
+    "PLR2004"
 ]
