@@ -64,5 +64,5 @@ class TypedPolarsDataFrame[
             self._df.sort(
                 by,
                 descending=descending,
-            )
+            ),
         )

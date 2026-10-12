@@ -49,7 +49,7 @@ class BaseTypedDf[
                 self.validated = False
                 return
             raise ValueError(
-                'skip_validation can only be used when input_data is a DataFrameType instance.'
+                'skip_validation can only be used when input_data is a DataFrameType instance.',
             )
         if self._is_dataframe_type(input_data):
             self._df = self.validator.validate(
@@ -64,7 +64,7 @@ class BaseTypedDf[
             )
         else:
             raise TypeError(
-                f'input_data must be either a {self.model.__name__} iterable or a {self.validator.df_type.__name__} instance.'
+                f'input_data must be either a {self.model.__name__} iterable or a {self.validator.df_type.__name__} instance.',
             )
         self.validated = True
 

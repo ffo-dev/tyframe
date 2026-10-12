@@ -23,7 +23,7 @@ class MissingColumnsError(BaseTyframeValidationException):
 
 class MissingColumnsWithoutDefaultError(BaseTyframeValidationException):
     def __init__(
-        self, *, missing_columns: Iterable[str], missing_without_default: Iterable[str]
+        self, *, missing_columns: Iterable[str], missing_without_default: Iterable[str],
     ):
 
         rows = [

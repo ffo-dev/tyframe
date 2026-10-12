@@ -7,5 +7,5 @@ __all__ = [
 
 def main() -> None:
     print(
-        'This is the tyframe package. It contains the core functionality for working with typed dataframes.'
+        'This is the tyframe package. It contains the core functionality for working with typed dataframes.',
     )

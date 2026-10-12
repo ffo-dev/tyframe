@@ -8,8 +8,7 @@ from tyframe.typed_df.polars import TypedLazyPolarsDataFrame, TypedPolarsDataFra
 
 
 class PolarsTypedDfGenerator(BasedTypedDfGenerator):
-    """
-    Configuration for the PolarsTypedDfGenerator.
+    """Configuration for the PolarsTypedDfGenerator.
     """
 
     def __init__(
@@ -37,8 +36,7 @@ class PolarsTypedDfGenerator(BasedTypedDfGenerator):
 
 
 class LazyPolarsTypedDfGenerator(BasedTypedDfGenerator):
-    """
-    Configuration for the PolarsTypedDfGenerator.
+    """Configuration for the PolarsTypedDfGenerator.
     """
 
     def __init__(

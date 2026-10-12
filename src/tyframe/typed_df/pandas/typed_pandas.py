@@ -22,11 +22,11 @@ class TypedPandasDataFrame[
 
     @override
     def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
-        return cast(dict[str, Any], self._df.head(1).to_dict(orient='records')[0])  # pyright:ignore[reportExplicitAny]
+        return cast('dict[str, Any]', self._df.head(1).to_dict(orient='records')[0])  # pyright:ignore[reportExplicitAny]
 
     @override
     def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
-        return cast(list[dict[str, Any]], self._df.to_dict(orient='records'))  # pyright:ignore[reportExplicitAny]
+        return cast('list[dict[str, Any]]', self._df.to_dict(orient='records'))  # pyright:ignore[reportExplicitAny]
 
     @override
     def _count(self) -> int:
@@ -57,5 +57,5 @@ class TypedPandasDataFrame[
             self._df.sort_values(
                 by,
                 ascending=ascending,
-            )
+            ),
         )

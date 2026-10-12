@@ -89,7 +89,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
 
     @abstractmethod
     def drop_df_columns(
-        self, df: DataFrameType, columns: Iterable[str]
+        self, df: DataFrameType, columns: Iterable[str],
     ) -> DataFrameType:
         raise NotImplementedError  # pragma: no cover
 

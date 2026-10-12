@@ -1,7 +1,7 @@
 import polars as pl
+from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
 
 from tyframe.dummy.other_model import OtherExampleModel
-from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
 
 
 class OtherExampleModelPl(TypedPolarsDataFrame[OtherExampleModel]):
