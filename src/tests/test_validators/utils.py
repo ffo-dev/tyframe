@@ -6,7 +6,7 @@ import pytest
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator, DataFrameType
 from tyframe.validation.config import TyframeValidationConfig
-from tyframe.validation.exceptions import BaseTyframeValidationException
+from tyframe.validation.exceptions import BaseTyframeValidationError
 
 
 def successful_validation(
@@ -32,7 +32,7 @@ def validation_with_raise(
     model_type: type[BaseDfModel],
     validator: BaseValidator[DataFrameType],
     reader: Callable[[Path], DataFrameType],
-    expected_exception: type[BaseTyframeValidationException],
+    expected_exception: type[BaseTyframeValidationError],
     validation_config: TyframeValidationConfig,
 ) -> None:
     input_df = reader(input_data_path)

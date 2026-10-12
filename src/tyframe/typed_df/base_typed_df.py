@@ -5,6 +5,7 @@ from typing import Any, Protocol, Self, TypeGuard, TypeVar
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
 from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.exceptions.argument_exception import InvalidSkipValidationError, TyframeArgumentError
 
 
 class TypedDfProtocol(Protocol):
@@ -13,7 +14,7 @@ class TypedDfProtocol(Protocol):
 
     def __init__(
         self,
-        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]
+        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
         validator: BaseValidator[Any],  # pyright:ignore[reportExplicitAny]
         validation_config: TyframeValidationConfig | None = None,
         *,
@@ -41,16 +42,15 @@ class BaseTypedDf[
         validation_config: TyframeValidationConfig | None = None,
         *,
         skip_validation: bool = False,
-    ):
+    ) -> None:
         self.validator = validator
         if skip_validation:
             if self._is_dataframe_type(input_data):
                 self._df = input_data
                 self.validated = False
                 return
-            raise ValueError(
-                'skip_validation can only be used when input_data is a DataFrameType instance.',
-            )
+            raise InvalidSkipValidationError(self.model)
+
         if self._is_dataframe_type(input_data):
             self._df = self.validator.validate(
                 self.model,
@@ -63,18 +63,17 @@ class BaseTypedDf[
                 self.model,
             )
         else:
-            raise TypeError(
-                f'input_data must be either a {self.model.__name__} iterable or a {self.validator.df_type.__name__} instance.',
+            msg = f'input_data must be either a {self.model.__name__} iterable or a {self.validator.df_type.__name__} instance.'  # noqa: E501
+            raise TyframeArgumentError(
+                msg,
             )
         self.validated = True
 
     def _is_model_iterable(
         self,
-        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]
+        input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
     ) -> TypeGuard[Iterable[ModelType]]:
-        return isinstance(input_data, Iterable) and all(
-            isinstance(el, self.model) for el in input_data
-        )
+        return isinstance(input_data, Iterable) and all(isinstance(el, self.model) for el in input_data)
 
     def _is_dataframe_type(
         self,
@@ -144,7 +143,8 @@ class BaseTypedDf[
         return self._count()
 
     ## SafeOps, which return a new instance of the same type,
-    # with the same validator, and skip validation since the schema is guaranteed to be the same.
+    # with the same validator, and skip validation since the schema is guaranteed to be
+    # the same.
 
     def _pass_through(self, df: DataFrameType) -> Self:
         return type(self)(

@@ -1,5 +1,5 @@
 from tyframe.exceptions.base_exception import TyframeError
 
 
-class BaseTyframeValidationException(TyframeError):
+class BaseTyframeValidationError(TyframeError):
     pass

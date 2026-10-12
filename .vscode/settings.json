@@ -14,7 +14,7 @@
         "commands": [
             {
                 "match": ".py",
-                "cmd": "uv run ruff format ${file} --config ruff.toml"
+                "cmd": "uv run ruff check ${file} --fix --config ruff.toml"
             }
         ]
     }

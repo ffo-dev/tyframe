@@ -1,17 +1,17 @@
 from collections.abc import Iterable
 
 from tyframe.validation.exceptions.base_validation_exception import (
-    BaseTyframeValidationException,
+    BaseTyframeValidationError,
 )
 
 
-class MissingColumnsError(BaseTyframeValidationException):
+class MissingColumnsError(BaseTyframeValidationError):
     def __init__(
         self,
         *,
         expected_columns: Iterable[str],
         missing_columns: Iterable[str],
-    ):
+    ) -> None:
 
         rows = [
             f'Expected: {sorted(expected_columns)}',
@@ -21,10 +21,13 @@ class MissingColumnsError(BaseTyframeValidationException):
         super().__init__('\n'.join(rows))
 
 
-class MissingColumnsWithoutDefaultError(BaseTyframeValidationException):
+class MissingColumnsWithoutDefaultError(BaseTyframeValidationError):
     def __init__(
-        self, *, missing_columns: Iterable[str], missing_without_default: Iterable[str],
-    ):
+        self,
+        *,
+        missing_columns: Iterable[str],
+        missing_without_default: Iterable[str],
+    ) -> None:
 
         rows = [
             f'Missing   : {sorted(missing_columns)}',
@@ -34,13 +37,13 @@ class MissingColumnsWithoutDefaultError(BaseTyframeValidationException):
         super().__init__('\n'.join(rows))
 
 
-class ExtraColumnsError(BaseTyframeValidationException):
+class ExtraColumnsError(BaseTyframeValidationError):
     def __init__(
         self,
         *,
         expected_columns: Iterable[str],
         extra: Iterable[str],
-    ):
+    ) -> None:
 
         rows = [
             f'Expected: {sorted(expected_columns)}',

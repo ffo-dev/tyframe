@@ -8,8 +8,7 @@ from tyframe.typed_df.polars import TypedLazyPolarsDataFrame, TypedPolarsDataFra
 
 
 class PolarsTypedDfGenerator(BasedTypedDfGenerator):
-    """Configuration for the PolarsTypedDfGenerator.
-    """
+    """Configuration for the PolarsTypedDfGenerator."""
 
     def __init__(
         self,
@@ -36,30 +35,29 @@ class PolarsTypedDfGenerator(BasedTypedDfGenerator):
 
 
 class LazyPolarsTypedDfGenerator(BasedTypedDfGenerator):
-    """Configuration for the PolarsTypedDfGenerator.
-    """
+    """Configuration for the PolarsTypedDfGenerator."""
 
     def __init__(
         self,
         config: TypedDfGeneratorConfig,
         generated_class_suffix: str = 'Lpl',
-    ):
+    ) -> None:
         super().__init__(config, generated_class_suffix)
 
     @override
-    def _df_library_import(self):
+    def _df_library_import(self) -> str:
         return 'import polars as pl'
 
     @override
-    def _typed_df_base_class_import(self):
+    def _typed_df_base_class_import(self) -> str:
         return f'from {TypedLazyPolarsDataFrame.__module__} import {TypedLazyPolarsDataFrame.__name__}'
 
     @override
-    def _typed_df_name(self):
+    def _typed_df_name(self) -> str:
         return TypedLazyPolarsDataFrame.__name__
 
     @override
-    def _col_return_type(self):
+    def _col_return_type(self) -> str:
         return 'pl.Series'
 
     @override
