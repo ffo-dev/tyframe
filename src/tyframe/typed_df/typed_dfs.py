@@ -158,7 +158,7 @@ class TypedPandasDataFrame[
     @override
     def filter(
         self,
-        predicate_col: pd.Series[bool],
+        predicate_col: pd.Series,
     ) -> Self:
         return self._pass_through(self._df[predicate_col])
 

@@ -16,7 +16,7 @@ def successful_validation(
     validator: BaseValidator[DataFrameType],
     reader: Callable[[Path], DataFrameType],
     comparator: Callable[[DataFrameType, DataFrameType], None],
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeValidationConfig | None,
 ) -> None:
     input_df = reader(input_data_path)
 

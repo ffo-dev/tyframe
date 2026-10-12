@@ -17,7 +17,7 @@ SUCCESSFULL_VALIDATION = [
         EXAMPLE_MODEL_PATH / 'input.csv',
         ExampleModel,
         EXAMPLE_MODEL_PATH / 'expected.csv',
-        TyframeValidationConfig(),
+        None,
     ),
     pytest.param(
         EXAMPLE_MODEL_PATH / 'input_extra_col.csv',
