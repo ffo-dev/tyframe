@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
+from typing import Self
 
+import yaml
 from pydantic import BaseModel
 from pydantic.alias_generators import to_snake
 
@@ -14,6 +16,16 @@ class TypedDfGeneratorConfig(BaseModel):
 
     col_property_suffix: str = '_col'
     indentation_size: int = 4
+
+    @classmethod
+    def from_file(cls, path: Path) -> Self:
+        match path.suffix:
+            case '.yaml' | '.yml' | '.json':
+                raw_dict = yaml.safe_load(path.read_text()) # pyright:ignore[reportAny]
+                return cls(**raw_dict)  # pyright:ignore[reportAny]
+            case _:
+                raise ValueError
+
 
 
 class BasedTypedDfGenerator(metaclass=ABCMeta):
