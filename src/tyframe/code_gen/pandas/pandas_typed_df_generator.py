@@ -4,7 +4,7 @@ from tyframe.code_gen.based_typed_df_generator import (
     BasedTypedDfGenerator,
     TypedDfGeneratorConfig,
 )
-from tyframe.typed_df.typed_dfs import TypedPandasDataFrame
+from tyframe.typed_df.pandas import TypedPandasDataFrame
 
 
 class PandasTypedDfGenerator(BasedTypedDfGenerator):

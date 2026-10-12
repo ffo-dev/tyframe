@@ -1,7 +1,7 @@
 import pandas as pd
 
 from tyframe.dummy.other_model import OtherExampleModel
-from tyframe.typed_df.typed_dfs import TypedPandasDataFrame
+from tyframe.typed_df.pandas import TypedPandasDataFrame
 
 
 class OtherExampleModelPd(TypedPandasDataFrame[OtherExampleModel]):

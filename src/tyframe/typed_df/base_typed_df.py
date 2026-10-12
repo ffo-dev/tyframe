@@ -107,7 +107,7 @@ class BaseTypedDf[
         )
 
     @abstractmethod
-    def filter(self, *args: Any, **kwargs: Any) -> Self:  # pyright:ignore[reportExplicitAny]
+    def filter(self, *args: Any, **kwargs: Any) -> Self:  # pyright:ignore[reportExplicitAny, reportAny]
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod

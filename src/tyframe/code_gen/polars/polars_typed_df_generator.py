@@ -4,7 +4,7 @@ from tyframe.code_gen.based_typed_df_generator import (
     BasedTypedDfGenerator,
     TypedDfGeneratorConfig,
 )
-from tyframe.typed_df.typed_dfs import TypedLazyPolarsDataFrame, TypedPolarsDataFrame
+from tyframe.typed_df.polars import TypedLazyPolarsDataFrame, TypedPolarsDataFrame
 
 
 class PolarsTypedDfGenerator(BasedTypedDfGenerator):

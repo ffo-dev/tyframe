@@ -1,7 +1,7 @@
 import polars as pl
 
 from tests.test_typed_df.simple_typed_df import TwoColModel
-from tyframe.typed_df.typed_dfs import TypedPolarsDataFrame
+from tyframe.typed_df.polars import TypedPolarsDataFrame
 
 
 class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
