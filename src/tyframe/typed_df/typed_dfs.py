@@ -1,14 +1,22 @@
 from abc import ABCMeta
-from typing import Any, cast, override
+from collections.abc import Iterable, Sequence
+from typing import Any, Self, cast, override
 
 import pandas as pd
 import polars as pl
+from polars._typing import IntoExpr, IntoExprColumn
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.typed_df.base_typed_df import BaseTypedDf
 
 type TypedPlDataframeInputData = pl.DataFrame | list[BaseDfModel]
 type TypedPandasDataframeInputData = pd.DataFrame | list[BaseDfModel]
+
+
+def _flip_bool(v: bool | Sequence[bool]) -> bool | Sequence[bool]:
+    if isinstance(v, bool):
+        return not v
+    return tuple(not el for el in v)
 
 
 class TypedPolarsDataFrame[
@@ -43,6 +51,27 @@ class TypedPolarsDataFrame[
             [self._df, other],
             rechunk=False,
             how='vertical',
+        )
+
+    @override
+    def filter(
+        self,
+        predicate_col: IntoExprColumn | Iterable[IntoExprColumn],
+    ) -> Self:
+        return self._pass_through(self._df.filter(predicate_col))
+
+    def sort(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        *,
+        ascending: bool | list[bool] = True,
+    ) -> Self:
+        descending = _flip_bool(ascending)
+        return self._pass_through(
+            self._df.sort(
+                by,
+                descending=descending,
+            )
         )
 
 
@@ -80,6 +109,21 @@ class TypedLazyPolarsDataFrame[
             how='vertical',
         ).lazy()
 
+    @override
+    def filter(
+        self,
+        predicate_col: IntoExprColumn | Iterable[IntoExprColumn],
+    ) -> Self:
+        return self._pass_through(self._df.filter(predicate_col))
+
+    def sort(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        *,
+        ascending: bool | list[bool] = False,
+    ) -> Self:
+        return self._pass_through(self._df.sort(by, descending=_flip_bool(ascending)))
+
 
 class TypedPandasDataFrame[
     ModelType: BaseDfModel,
@@ -110,3 +154,23 @@ class TypedPandasDataFrame[
     @override
     def _union_df(self, other: pd.DataFrame) -> pd.DataFrame:
         return pd.concat([self._df, other], ignore_index=True)
+
+    @override
+    def filter(
+        self,
+        predicate_col: pd.Series[bool],
+    ) -> Self:
+        return self._pass_through(self._df[predicate_col])
+
+    def sort(
+        self,
+        by: str | Sequence[str],
+        *,
+        ascending: bool | Sequence[bool],
+    ) -> Self:
+        return self._pass_through(
+            self._df.sort_values(
+                by,
+                ascending=ascending,
+            )
+        )
