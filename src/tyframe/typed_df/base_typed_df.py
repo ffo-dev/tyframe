@@ -163,5 +163,8 @@ class BaseTypedDf[
     def distinct(self) -> Self:
         return self._pass_through(self._distinct_df())
 
+    def distinct(self) -> Self:
+        return self._pass_through(self._distinct_df())
+
     def union(self, other: Self) -> Self:
         return self._pass_through(self._union_df(other._df))
