@@ -1,4 +1,4 @@
-from tyframe import BaseDfModel
+from tyframe.base_df_model import BaseDfModel
 
 
 def test_collect_col_names() -> None:
