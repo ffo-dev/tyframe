@@ -3,11 +3,6 @@ from pathlib import Path
 from tyframe.cli.cli_app import app
 from tyframe.code_gen.based_typed_df_generator import TypedDfGeneratorConfig
 from tyframe.code_gen.implemented_generators import IMPLEMENTED_GENERATORS
-from tyframe.code_gen.pandas import PandasTypedDfGenerator
-from tyframe.code_gen.polars import (
-    LazyPolarsTypedDfGenerator,
-    PolarsTypedDfGenerator,
-)
 from tyframe.constants import IMPLEMENTED_DF_TYPES
 
 

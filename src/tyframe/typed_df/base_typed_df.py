@@ -80,7 +80,8 @@ class BaseTypedDf[
         self,
         input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
     ) -> TypeGuard[Iterable[ModelType]]:
-        return isinstance(input_data, Iterable) and all(isinstance(el, self.model) for el in input_data)
+        return isinstance(input_data, Iterable) and all(isinstance(el, self.model) for el in input_data)  #pyright:ignore[reportUnknownVariableType]
+
 
     def _is_dataframe_type(
         self,
@@ -159,9 +160,6 @@ class BaseTypedDf[
             self.validator,
             skip_validation=True,
         )
-
-    def distinct(self) -> Self:
-        return self._pass_through(self._distinct_df())
 
     def distinct(self) -> Self:
         return self._pass_through(self._distinct_df())

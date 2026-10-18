@@ -110,7 +110,7 @@ class TypedLazyPolarsDataFrame[
         ).lazy()
 
     @override
-    def filter(
+    def filter( 
         self,
         predicate_col: IntoExprColumn | Iterable[IntoExprColumn],
     ) -> Self:
