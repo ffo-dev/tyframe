@@ -13,7 +13,7 @@ type TypedPlDataframeInputData = pl.DataFrame | list[BaseDfModel]
 type TypedPandasDataframeInputData = pd.DataFrame | list[BaseDfModel]
 
 
-def _flip_bool(v: bool | Sequence[bool]) -> bool | Sequence[bool]:
+def _flip_bool(*, v: bool | Sequence[bool]) -> bool | Sequence[bool]:
     if isinstance(v, bool):
         return not v
     return tuple(not el for el in v)
@@ -66,12 +66,12 @@ class TypedPolarsDataFrame[
         *,
         ascending: bool | list[bool] = True,
     ) -> Self:
-        descending = _flip_bool(ascending)
+        descending = _flip_bool(v=ascending)
         return self._pass_through(
             self._df.sort(
                 by,
                 descending=descending,
-            )
+            ),
         )
 
 
@@ -110,7 +110,7 @@ class TypedLazyPolarsDataFrame[
         ).lazy()
 
     @override
-    def filter( 
+    def filter(
         self,
         predicate_col: IntoExprColumn | Iterable[IntoExprColumn],
     ) -> Self:
@@ -122,7 +122,7 @@ class TypedLazyPolarsDataFrame[
         *,
         ascending: bool | list[bool] = False,
     ) -> Self:
-        return self._pass_through(self._df.sort(by, descending=_flip_bool(ascending)))
+        return self._pass_through(self._df.sort(by, descending=_flip_bool(v=ascending)))
 
 
 class TypedPandasDataFrame[
@@ -137,11 +137,11 @@ class TypedPandasDataFrame[
 
     @override
     def _head_record(self) -> dict[str, Any]:  # pyright:ignore[reportExplicitAny]
-        return cast(dict[str, Any], self._df.head(1).to_dict(orient='records')[0])  # pyright:ignore[reportExplicitAny]
+        return cast('dict[str, Any]', self._df.head(1).to_dict(orient='records')[0])  # pyright:ignore[reportExplicitAny]
 
     @override
     def _records(self) -> list[dict[str, Any]]:  # pyright:ignore[reportExplicitAny]
-        return cast(list[dict[str, Any]], self._df.to_dict(orient='records'))  # pyright:ignore[reportExplicitAny]
+        return cast('list[dict[str, Any]]', self._df.to_dict(orient='records'))  # pyright:ignore[reportExplicitAny]
 
     @override
     def _count(self) -> int:
@@ -172,5 +172,5 @@ class TypedPandasDataFrame[
             self._df.sort_values(
                 by,
                 ascending=ascending,
-            )
+            ),
         )

@@ -63,7 +63,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> Path:
         file = output_path / f'{to_snake(self._class_name(model))}.py'
-        file.parent.mkdir(exist_ok=True)
+        file.parent.mkdir(exist_ok=True, parents=True)
         with file.open('w') as f:
             _ = f.write(self.generate_typed_df_class(model))
         return file
