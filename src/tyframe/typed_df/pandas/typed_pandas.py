@@ -51,7 +51,7 @@ class TypedPandasDataFrame[
         self,
         by: str | Sequence[str],
         *,
-        ascending: bool | Sequence[bool],
+        ascending: bool | Sequence[bool] = True,
     ) -> Self:
         return self._pass_through(
             self._df.sort_values(

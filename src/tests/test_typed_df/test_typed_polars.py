@@ -1,3 +1,5 @@
+import polars as pl
+
 from tests.generated_models.polars.one_col_model_pl import OneColModelPl
 from tests.generated_models.polars.two_col_model_pl import TwoColModelPl
 from tests.test_classes.models import OneColModel, TwoColModel
@@ -16,8 +18,8 @@ def test_typed_pl_df() -> None:
     )
     other_df = TwoColModelPl(
         input_data=[
-            TwoColModel(a=4, b='w'),
-            TwoColModel(a=5, b='v'),
+            TwoColModel(a=4, b='a'),
+            TwoColModel(a=5, b='b'),
         ],
         validator=PolarsValidator(),
     )
@@ -41,10 +43,21 @@ def test_typed_pl_df() -> None:
         TwoColModel(a=1, b='x'),
         TwoColModel(a=2, b='y'),
         TwoColModel(a=3, b='z'),
-        TwoColModel(a=4, b='w'),
-        TwoColModel(a=5, b='v'),
+        TwoColModel(a=4, b='a'),
+        TwoColModel(a=5, b='b'),
     ]
     assert unioned.count() == 5
+
+    condition = pl.col(TwoColModelPl.a).is_between(lower_bound=2, upper_bound=4, closed='both')
+
+    filtered_df = unioned.filter(condition)
+
+    assert filtered_df.sort([TwoColModelPl.b]).collect() == [
+        TwoColModel(a=4, b='a'),
+        TwoColModel(a=2, b='y'),
+        TwoColModel(a=3, b='z'),
+
+    ]
 
     with_dups = TwoColModelPl(
         input_data=[
@@ -59,4 +72,5 @@ def test_typed_pl_df() -> None:
     )
     distinct = with_dups.distinct()
     assert distinct.count() == 3
+
 

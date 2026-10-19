@@ -57,6 +57,12 @@ class TypedLazyPolarsDataFrame[
         self,
         by: IntoExpr | Iterable[IntoExpr],
         *,
-        ascending: bool | list[bool] = False,
+        ascending: bool | list[bool] = True,
     ) -> Self:
-        return self._pass_through(self._df.sort(by, descending=flip_bool(ascending)))
+        descending = flip_bool(ascending)
+        return self._pass_through(
+            self._df.sort(
+                by,
+                descending=descending,
+            ),
+        )
