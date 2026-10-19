@@ -1,2 +1,10 @@
 [tool.poe.tasks.test]
-cmd = "pytest --cov=src/tyframe src/tests/ --cov-report=term-missing"    
+cmd = "pytest --cov=src/tyframe src/tests/ --cov-report=term-missing"
+
+[tool.poe.tasks.generate-test-wrappers]
+sequence = [
+    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/pandas tyframe_config.yml pandas Pd"},
+    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/polars tyframe_config.yml polars Pl" },
+    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/lazy_polars tyframe_config.yml polars Lpl" },
+    { cmd = "uv run ruff check --fix --config ruff.toml "},
+]
