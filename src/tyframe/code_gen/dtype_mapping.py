@@ -3,11 +3,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, TypeVar
-
-if TYPE_CHECKING:
-    import numpy as np
-    from polars.datatypes.classes import DataType
+from typing import TypeVar, Any
 
 # Type variable for the dataframe dtype
 DataFrameDtype = TypeVar('DataFrameDtype')
@@ -34,7 +30,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class PandasDtypeMapping(DtypeMapping["np.dtype"]):
+class PandasDtypeMapping(DtypeMapping[Any]):
     """Dtype mapping for pandas DataFrames.
     
     Uses actual numpy dtype objects as keys in the mapping.
@@ -44,7 +40,7 @@ class PandasDtypeMapping(DtypeMapping["np.dtype"]):
         """Initialize the pandas dtype mapping with actual numpy dtype objects as keys."""
         import numpy as np
 
-        self._mapping: dict["np.dtype", str] = {
+        self._mapping: dict[Any, str] = {
             np.dtype('int8'): 'int',
             np.dtype('int16'): 'int',
             np.dtype('int32'): 'int',
@@ -62,7 +58,7 @@ class PandasDtypeMapping(DtypeMapping["np.dtype"]):
             np.dtype('timedelta64[ns]'): 'timedelta',
         }
 
-    def get_pydantic_type(self, dtype: "np.dtype") -> str:
+    def get_pydantic_type(self, dtype: Any) -> str:
         """Get the Pydantic type for a pandas dtype.
 
         Args:
@@ -75,7 +71,7 @@ class PandasDtypeMapping(DtypeMapping["np.dtype"]):
         return self._mapping[dtype]
 
 
-class PolarsDtypeMapping(DtypeMapping["DataType"]):
+class PolarsDtypeMapping(DtypeMapping[Any]):
     """Dtype mapping for polars DataFrames.
     
     Uses actual polars DataType objects as keys in the mapping.
@@ -85,7 +81,7 @@ class PolarsDtypeMapping(DtypeMapping["DataType"]):
         """Initialize the polars dtype mapping with DataType objects as keys."""
         import polars as pl
 
-        self._mapping: dict[type["DataType"], str] = {
+        self._mapping: dict[Any, str] = {
             pl.Int8: 'int',
             pl.Int16: 'int',
             pl.Int32: 'int',
@@ -107,7 +103,7 @@ class PolarsDtypeMapping(DtypeMapping["DataType"]):
             pl.Categorical: 'str',
         }
 
-    def get_pydantic_type(self, dtype: type["DataType"]) -> str:
+    def get_pydantic_type(self, dtype: Any) -> str:
         """Get the Pydantic type for a polars dtype.
 
         Args:

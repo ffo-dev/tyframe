@@ -4,7 +4,7 @@ from typing import override
 
 import polars as pl
 
-from tyframe.code_gen.dtype_mapping import DtypeMapping, PolarsDtypeMapping
+from tyframe.code_gen.dtype_mapping import PolarsDtypeMapping
 from tyframe.code_gen.pydantic_model_generator import (
     PydanticModelGenerator,
     PydanticModelGeneratorConfig,
