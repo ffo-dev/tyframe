@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from abc import ABCMeta
-from collections.abc import Mapping
+from abc import ABCMeta, abstractmethod
+from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta
 from typing import TypeVar
 
@@ -21,7 +21,14 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
     for the dataframe library (e.g., pandas dtype or polars DataType).
     """
 
-    _mapping: Mapping[DataFrameDtype, type]
+    _df_type_to_py_type: Mapping[DataFrameDtype, type]
+    _py_types_to_df_types: Mapping[type, Sequence[DataFrameDtype]]
+
+    def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None):
+        if mapping is None:
+            self._df_type_to_py_type = self.default()
+        else:
+            self._df_type_to_py_type = mapping
 
     def get_pydantic_type(self, dtype: DataFrameDtype) -> str:
         """Get the Pydantic type for a given dataframe dtype.
@@ -33,7 +40,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             str: The corresponding Pydantic type as a string.
 
         """
-        return self._mapping[dtype].__name__
+        return self._df_type_to_py_type[dtype].__name__
 
     def get_dtypes(self, type_: type) -> list[DataFrameDtype]:
         """Get all dtype keys that map to the given Python type.
@@ -45,7 +52,11 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             list[DataFrameDtype]: List of dtype keys that map to the given type.
 
         """
-        return [k for k, v in self._mapping.items() if v is type_]
+        return [k for k, v in self._df_type_to_py_type.items() if v is type_]
+
+    @abstractmethod
+    def default(self) -> Mapping[DataFrameDtype, type]:
+        raise NotImplementedError
 
 
 class PandasDtypeMapping(DtypeMapping['np.dtype']):
@@ -54,10 +65,8 @@ class PandasDtypeMapping(DtypeMapping['np.dtype']):
     Uses actual numpy dtype objects as keys in the mapping.
     """
 
-    def __init__(self) -> None:
-        """Initialize the pandas dtype mapping with actual numpy dtype objects as keys."""
-
-        self._mapping = {
+    def default(self) -> Mapping[np.dtype, type]:
+        return {
             np.dtype('int8'): int,
             np.dtype('int16'): int,
             np.dtype('int32'): int,
@@ -75,18 +84,14 @@ class PandasDtypeMapping(DtypeMapping['np.dtype']):
             np.dtype('timedelta64[ns]'): timedelta,
         }
 
-
 class PolarsDtypeMapping(DtypeMapping['type[pl.DataType]']):
     """Dtype mapping for polars DataFrames.
     
     Uses actual polars DataType classes as keys in the mapping.
     """
 
-    def __init__(self) -> None:
-        """Initialize the polars dtype mapping with DataType objects as keys."""
-        import polars as pl
-
-        self._mapping = {
+    def default(self) -> Mapping[type[pl.DataType], type]:
+        return {
             pl.Int8: int,
             pl.Int16: int,
             pl.Int32: int,
@@ -106,7 +111,3 @@ class PolarsDtypeMapping(DtypeMapping['type[pl.DataType]']):
             pl.Duration: timedelta,
             pl.Categorical: str,
         }
-
-    def get_dtypes(self, type_: type) -> list[type[pl.DataType]]:
-        """Get all dtype keys that map to the given Python type."""
-        return [k for k, v in self._mapping.items() if v is type_]
