@@ -1,7 +1,8 @@
 """Generator for creating BaseDfModel from pandas DataFrames."""
 
-from typing import override
+from typing import cast, override
 
+import numpy as np
 import pandas as pd
 
 from tyframe.code_gen.dtype_mapping import PandasDtypeMapping
@@ -50,7 +51,7 @@ class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMappi
 
         for col_name in df.columns:
             dtype = df[col_name].dtype
-            py_type = self._dtype_mapping.get_pydantic_type(dtype)
+            py_type = self._dtype_mapping.get_pydantic_type(cast(np.dtype, dtype))
             columns_and_types[col_name] = py_type
 
         return columns_and_types
