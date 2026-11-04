@@ -1,22 +1,38 @@
+"""Generator for creating BaseDfModel from pandas DataFrames."""
+
 from typing import override
 
 import pandas as pd
 
+from tyframe.code_gen.dtype_mapping import PandasDtypeMapping
 from tyframe.code_gen.pydantic_model_generator import (
     PydanticModelGenerator,
     PydanticModelGeneratorConfig,
 )
 
 
-class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame]):
+class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMapping]):
     """Generator for creating BaseDfModel from pandas DataFrames."""
 
     def __init__(
         self,
         config: PydanticModelGeneratorConfig,
+        dtype_mapping: PandasDtypeMapping | None = None,
         generated_class_suffix: str = 'PdModel',
     ) -> None:
-        super().__init__(config, generated_class_suffix)
+        """Initialize the generator.
+
+        Args:
+            config: The generator configuration.
+            dtype_mapping: Optional dtype mapping. If None, uses PandasDtypeMapping.
+            generated_class_suffix: Suffix to append to generated class names.
+
+        """
+        super().__init__(
+            config,
+            dtype_mapping=dtype_mapping or PandasDtypeMapping(),
+            generated_class_suffix=generated_class_suffix,
+        )
 
     @override
     def _extract_columns_and_types(self, df: pd.DataFrame) -> dict[str, str]:
@@ -30,42 +46,14 @@ class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame]):
 
         """
 
-        type_mapping = self._get_pandas_type_mapping()
         columns_and_types: dict[str, str] = {}
 
         for col_name in df.columns:
             dtype = df[col_name].dtype
-            py_type = type_mapping.get(str(dtype), 'Any')
+            py_type = self._dtype_mapping.get_pydantic_type(dtype)
             columns_and_types[col_name] = py_type
 
         return columns_and_types
-
-    def _get_pandas_type_mapping(self) -> dict[str, str]:
-        """Get the mapping from pandas dtypes to Pydantic types.
-
-        Returns:
-            dict[str, str]: A dictionary mapping pandas dtype strings to Pydantic type strings.
-
-        """
-        return {
-            'int8': 'int',
-            'int16': 'int',
-            'int32': 'int',
-            'int64': 'int',
-            'uint8': 'int',
-            'uint16': 'int',
-            'uint32': 'int',
-            'uint64': 'int',
-            'float16': 'float',
-            'float32': 'float',
-            'float64': 'float',
-            'bool': 'bool',
-            'object': 'str',
-            'string': 'str',
-            'datetime64[ns]': 'datetime',
-            'timedelta64[ns]': 'timedelta',
-            'category': 'str',
-        }
 
     @override
     def _get_df_name(self, df: pd.DataFrame) -> str | None:

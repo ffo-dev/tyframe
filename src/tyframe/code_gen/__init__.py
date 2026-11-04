@@ -3,6 +3,12 @@ from tyframe.code_gen.based_typed_df_generator import (
     TypedDfGeneratorConfig,
 )
 from tyframe.code_gen.config import BaseCodeGeneratorConfig
+from tyframe.code_gen.dtype_mapping import (
+    DataFrameDtype,
+    DtypeMapping,
+    PandasDtypeMapping,
+    PolarsDtypeMapping,
+)
 from tyframe.code_gen.pydantic_model_generator import (
     DataFrameType,
     PydanticModelGenerator,
@@ -12,7 +18,11 @@ from tyframe.code_gen.pydantic_model_generator import (
 __all__ = [
     'BaseCodeGeneratorConfig',
     'BasedTypedDfGenerator',
+    'DataFrameDtype',
     'DataFrameType',
+    'DtypeMapping',
+    'PandasDtypeMapping',
+    'PolarsDtypeMapping',
     'PydanticModelGenerator',
     'PydanticModelGeneratorConfig',
     'TypedDfGeneratorConfig',

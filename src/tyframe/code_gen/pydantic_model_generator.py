@@ -1,3 +1,5 @@
+"""Abstract base class for generating BaseDfModel from dataframes."""
+
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from typing import TypeVar
@@ -6,28 +8,41 @@ from pydantic.alias_generators import to_snake
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.code_gen.config import BaseCodeGeneratorConfig
+from tyframe.code_gen.dtype_mapping import DtypeMapping
 
 DataFrameType = TypeVar('DataFrameType')
+DtypeMappingType = TypeVar('DtypeMappingType', bound=DtypeMapping)
 
 
 class PydanticModelGeneratorConfig(BaseCodeGeneratorConfig):
-    """Configuration for the PydanticModelGenerator.
-    """
+    """Configuration for the PydanticModelGenerator."""
+
+    pass
 
 
-
-class PydanticModelGenerator[DataFrameType](metaclass=ABCMeta):
+class PydanticModelGenerator[DataFrameType, DtypeMappingType](metaclass=ABCMeta):
     """Abstract base class for generating BaseDfModel from dataframes."""
 
     config: PydanticModelGeneratorConfig
+    _dtype_mapping: DtypeMappingType
     _generated_class_suffix: str
 
     def __init__(
         self,
         config: PydanticModelGeneratorConfig,
+        dtype_mapping: DtypeMappingType,
         generated_class_suffix: str = 'Model',
     ) -> None:
+        """Initialize the generator.
+
+        Args:
+            config: The generator configuration.
+            dtype_mapping: The dtype mapping instance for converting dataframe types to Pydantic types.
+            generated_class_suffix: Suffix to append to generated class names.
+
+        """
         self.config = config
+        self._dtype_mapping = dtype_mapping
         self._generated_class_suffix = generated_class_suffix
 
     def generate_model_class(
@@ -89,7 +104,7 @@ class PydanticModelGenerator[DataFrameType](metaclass=ABCMeta):
         """
         actual_class_name = class_name or self._get_df_name(df) or 'DataFrame'
         model_name = f'{actual_class_name}{self._generated_class_suffix}'
-
+        
         return [
             self._generate_imports(),
             '',

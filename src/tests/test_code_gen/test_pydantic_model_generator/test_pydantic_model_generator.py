@@ -25,16 +25,16 @@ def _compare_with_expected(
         AssertionError: If the generated and expected content don't match.
     """
     expected = expected_path.read_text()
-    
+
     # Strip and split by lines, filtering out empty lines
     generated_lines = [line for line in generated.strip().split('\n') if line.strip()]
     expected_lines = [line for line in expected.strip().split('\n') if line.strip()]
-    
+
     # Compare line by line
     assert generated_lines == expected_lines, (
-        f"Generated code does not match expected.\n"
-        f"Generated:\n{generated}\n"
-        f"Expected:\n{expected}"
+        f'Generated code does not match expected.\n'
+        f'Generated:\n{generated}\n'
+        f'Expected:\n{expected}'
     )
 
 
@@ -85,8 +85,8 @@ def test_generate_simple_model(
     # Create generator and generate model
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, 'SimpleModel')
-    
+    generated = generator.generate_model_class(df, 'SimpleModel') # pyright: ignore[reportArgumentType]
+
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
     _compare_with_expected(generated, expected_path)
@@ -109,8 +109,8 @@ def test_generate_complex_model(
     # Create generator and generate model
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, 'ComplexModel')
-    
+    generated = generator.generate_model_class(df, 'ComplexModel') # pyright: ignore[reportArgumentType]
+
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
     _compare_with_expected(generated, expected_path)
@@ -132,8 +132,8 @@ def test_generate_with_custom_indentation(
     # Create generator with custom indentation
     config = PydanticModelGeneratorConfig(indentation_size=2)
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, 'SimpleModel')
-    
+    generated = generator.generate_model_class(df, 'SimpleModel')  # pyright: ignore[reportArgumentType]
+
     # Check that indentation is 2 spaces
     assert '  id: int' in generated
     assert '  name: str' in generated
@@ -158,13 +158,13 @@ def test_generate_model_file(
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
     output_path = tmp_path / 'output'
-    
-    file_path = generator.generate_model_file(df, output_path, 'SimpleModel')
-    
+
+    file_path = generator.generate_model_file(df, output_path, 'SimpleModel')  # pyright: ignore[reportArgumentType]
+
     # Check that file was created
     assert file_path.exists()
     assert file_path.parent == output_path
-    
+
     # Check file content
     expected_path = Path(__file__).parent / 'expected' / expected_file
     _compare_with_expected(file_path.read_text(), expected_path)
@@ -187,7 +187,7 @@ def test_generate_without_class_name(
     # Create generator and generate model without class name
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, None)
-    
+    generated = generator.generate_model_class(df, None)  # pyright: ignore[reportArgumentType]
+
     # Check that default class name is used
     assert f'DataFrame{expected_suffix}' in generated
