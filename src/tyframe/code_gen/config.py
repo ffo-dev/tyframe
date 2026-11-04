@@ -10,7 +10,7 @@ class BaseCodeGeneratorConfig(BaseModel):
 
     indentation_size: int = 4
 
-    @computed_field  # type: ignore[misc]
+    @computed_field
     @property
     def indentation(self) -> str:
         """Get the indentation string based on indentation_size."""
