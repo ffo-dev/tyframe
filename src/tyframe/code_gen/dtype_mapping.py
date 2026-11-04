@@ -24,12 +24,31 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
     _mapping: Mapping[DataFrameDtype, type]
 
     def get_pydantic_type(self, dtype: DataFrameDtype) -> str:
-        return str(self._mapping[dtype])
+        """Get the Pydantic type for a given dataframe dtype.
+
+        Args:
+            dtype: The dataframe dtype to map.
+
+        Returns:
+            str: The corresponding Pydantic type as a string.
+
+        """
+        return self._mapping[dtype].__name__
 
     def get_dtypes(self, type_: type) -> list[DataFrameDtype]:
-        return [k for k,v in self._mapping.items() if v == type_]
+        """Get all dtype keys that map to the given Python type.
 
-class PandasDtypeMapping(DtypeMapping[np.dtype]):
+        Args:
+            type_: The Python type to filter by.
+
+        Returns:
+            list[DataFrameDtype]: List of dtype keys that map to the given type.
+
+        """
+        return [k for k, v in self._mapping.items() if v is type_]
+
+
+class PandasDtypeMapping(DtypeMapping['np.dtype']):
     """Dtype mapping for pandas DataFrames.
     
     Uses actual numpy dtype objects as keys in the mapping.
@@ -37,7 +56,6 @@ class PandasDtypeMapping(DtypeMapping[np.dtype]):
 
     def __init__(self) -> None:
         """Initialize the pandas dtype mapping with actual numpy dtype objects as keys."""
-
 
         self._mapping = {
             np.dtype('int8'): int,
@@ -58,17 +76,15 @@ class PandasDtypeMapping(DtypeMapping[np.dtype]):
         }
 
 
-
-
-class PolarsDtypeMapping(DtypeMapping[type[pl.DataType]]):
+class PolarsDtypeMapping(DtypeMapping['type[pl.DataType]']):
     """Dtype mapping for polars DataFrames.
     
-    Uses actual polars DataType objects as keys in the mapping.
+    Uses actual polars DataType classes as keys in the mapping.
     """
 
     def __init__(self) -> None:
         """Initialize the polars dtype mapping with DataType objects as keys."""
-
+        import polars as pl
 
         self._mapping = {
             pl.Int8: int,
@@ -86,6 +102,11 @@ class PolarsDtypeMapping(DtypeMapping[type[pl.DataType]]):
             pl.Utf8: str,
             pl.Date: date,
             pl.Datetime: datetime,
+            pl.Time: timedelta,
             pl.Duration: timedelta,
             pl.Categorical: str,
         }
+
+    def get_dtypes(self, type_: type) -> list[type[pl.DataType]]:
+        """Get all dtype keys that map to the given Python type."""
+        return [k for k, v in self._mapping.items() if v is type_]
