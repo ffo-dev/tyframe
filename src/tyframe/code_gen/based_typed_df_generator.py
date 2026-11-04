@@ -1,36 +1,22 @@
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
-from typing import Self
 
-import yaml
-from pydantic import BaseModel
 from pydantic.alias_generators import to_snake
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.code_gen.class_finder import find_child_classes
+from tyframe.code_gen.config import BaseCodeGeneratorConfig
 
 
-class TypedDfGeneratorConfig(BaseModel):
+class TypedDfGeneratorConfig(BaseCodeGeneratorConfig):
     """Configuration for the TypedDfGenerator.
     """
 
     col_property_suffix: str = '_col'
-    indentation_size: int = 4
-
-    @classmethod
-    def from_file(cls, path: Path) -> Self:
-        match path.suffix:
-            case '.yaml' | '.yml' | '.json':
-                raw_dict = yaml.safe_load(path.read_text()) # pyright:ignore[reportAny]
-                return cls(**raw_dict)  # pyright:ignore[reportAny]
-            case _:
-                raise ValueError
-
 
 
 class BasedTypedDfGenerator(metaclass=ABCMeta):
     config: TypedDfGeneratorConfig
-    _indentation: str
     _generated_class_suffix: str
 
     def __init__(
@@ -39,7 +25,6 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         generated_class_suffix: str = 'TypedDf',
     ) -> None:
         self.config = config
-        self._indentation = ' ' * self.config.indentation_size
         self._generated_class_suffix = generated_class_suffix
 
     def generate_typed_df_class(
@@ -212,7 +197,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             str: A string representing the model type variable.
 
         """
-        return f'{self._indentation}model: type[{model.__name__}] = {model.__name__}'
+        return f'{self.config.indentation}model: type[{model.__name__}] = {model.__name__}'
 
     def _generate_class_variable(
         self,
@@ -227,7 +212,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             str: A string representing the class variable.
 
         """
-        return f'{self._indentation}{col_name}: str = "{col_name}"'
+        return f'{self.config.indentation}{col_name}: str = "{col_name}"'
 
     def _generate_class_variables(
         self,
@@ -283,9 +268,9 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         """
         return [
-            f'{self._indentation}@property',
-            f'{self._indentation}def {col_name}{self.config.col_property_suffix}(self) -> {self._col_return_type()}:',
-            f'{self._indentation * 2}{self._get_df_column(col_name)}',
+            f'{self.config.indentation}@property',
+            f'{self.config.indentation}def {col_name}{self.config.col_property_suffix}(self) -> {self._col_return_type()}:',
+            f'{self.config.indentation * 2}{self._get_df_column(col_name)}',
         ]
 
     def _generate_columns_properties(
