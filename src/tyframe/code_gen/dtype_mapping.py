@@ -29,6 +29,18 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             self._df_type_to_py_type = self.default()
         else:
             self._df_type_to_py_type = mapping
+        # Build reverse mapping: Python type -> list of dataframe dtypes
+        self._py_types_to_df_types = self._build_reverse_mapping(self._df_type_to_py_type)
+
+    @staticmethod
+    def _build_reverse_mapping(mapping: Mapping[DataFrameDtype, type]) -> Mapping[type, Sequence[DataFrameDtype]]:
+        """Build a reverse mapping from Python types to dataframe dtypes."""
+        reverse: dict[type, list[DataFrameDtype]] = {}
+        for df_dtype, py_type in mapping.items():
+            if py_type not in reverse:
+                reverse[py_type] = []
+            reverse[py_type].append(df_dtype)
+        return reverse
 
     def get_pydantic_type(self, dtype: DataFrameDtype) -> str:
         """Get the Pydantic type for a given dataframe dtype.
@@ -42,7 +54,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
         """
         return self._df_type_to_py_type[dtype].__name__
 
-    def get_dtypes(self, type_: type) -> list[DataFrameDtype]:
+    def get_dtypes(self, type_: type) -> Sequence[DataFrameDtype]:
         """Get all dtype keys that map to the given Python type.
 
         Args:
@@ -52,7 +64,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             list[DataFrameDtype]: List of dtype keys that map to the given type.
 
         """
-        return [k for k, v in self._df_type_to_py_type.items() if v is type_]
+        return self._py_types_to_df_types[type_]
 
     @abstractmethod
     def default(self) -> Mapping[DataFrameDtype, type]:
