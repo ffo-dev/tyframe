@@ -1,5 +1,10 @@
+from tyframe.validation.exceptions.argument_exception import (
+    InvalidInputTypesError,
+    InvalidSkipValidationError,
+    TyframeArgumentError,
+)
 from tyframe.validation.exceptions.base_validation_exception import (
-    BaseTyframeValidationException,
+    BaseTyframeValidationError,
 )
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
@@ -8,8 +13,11 @@ from tyframe.validation.exceptions.column_exceptions import (
 )
 
 __all__ = [
-    'BaseTyframeValidationException',
+    'BaseTyframeValidationError',
     'ExtraColumnsError',
+    'InvalidInputTypesError',
+    'InvalidSkipValidationError',
     'MissingColumnsError',
     'MissingColumnsWithoutDefaultError',
+    'TyframeArgumentError',
 ]

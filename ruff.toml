@@ -1,3 +1,5 @@
+line-length = 120
+
 [lint.flake8-quotes]
 inline-quotes = "single"
 
@@ -5,8 +7,19 @@ inline-quotes = "single"
 quote-style = "single"
 
 [lint]
-# select = [...]  # See the Default Rules page for the full listing.
-ignore = []
-
+select = ["ALL"]  # See the Default Rules page for the full listing.
+ignore = [
+    "CPY",
+    "D"
+]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
+
+[lint.flake8-annotations]
+allow-star-arg-any = true
+
+[lint.extend-per-file-ignores]
+"/*/tests/**.py" = [
+    "S101",
+    "PLR2004"
+]

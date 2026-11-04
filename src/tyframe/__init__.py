@@ -1,11 +1,6 @@
-from tyframe.base_df_model import BaseDfModel
-
-__all__ = [
-    'BaseDfModel',
-]
+from tyframe.cli.cli_app import app
 
 
 def main() -> None:
-    print(
-        'This is the tyframe package. It contains the core functionality for working with typed dataframes.'
-    )
+    app()
+

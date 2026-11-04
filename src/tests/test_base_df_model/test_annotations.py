@@ -1,7 +1,7 @@
-from tyframe import BaseDfModel
+from tyframe.base_df_model import BaseDfModel
 
 
-def test_collect_col_names():
+def test_collect_col_names() -> None:
 
     class Example(BaseDfModel):
         col1: str
@@ -11,7 +11,7 @@ def test_collect_col_names():
     assert 'col3' not in Example.columns
 
 
-def test_collect_defaults():
+def test_collect_defaults() -> None:
 
     class ExampleWithDefault(BaseDfModel):
         a: str

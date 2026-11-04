@@ -18,9 +18,9 @@ DataFrameType = TypeVar('DataFrameType')
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):
-    def __init__(
+    def __init__(  # noqa: B027
         self,
-    ):
+    ) -> None:
         # Currently the init is empty, configurations are explictly passed
         # to the validate method.
         # Left here in case some specialized validator needs
@@ -43,7 +43,8 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             fill_with_default=config.fill_with_default,
             drop_extra=config.drop_extra_columns,
         )
-        return res
+        # Add here more validation in the future.
+        return res  # noqa: RET504
 
     def validate_column_names(
         self,
@@ -58,12 +59,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df,
             fill_with_default=fill_with_default,
         )
-        df = self.validate_extra_column_names(
+        return self.validate_extra_column_names(
             df_model,
             df,
             drop_extra=drop_extra,
         )
-        return df
 
     def create_dataframe(
         self,
@@ -89,7 +89,9 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
 
     @abstractmethod
     def drop_df_columns(
-        self, df: DataFrameType, columns: Iterable[str]
+        self,
+        df: DataFrameType,
+        columns: Iterable[str],
     ) -> DataFrameType:
         raise NotImplementedError  # pragma: no cover
 

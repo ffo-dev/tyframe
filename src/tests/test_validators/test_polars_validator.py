@@ -17,7 +17,7 @@ from tests.utils.readers import read_lazy_polars, read_polars
 from tyframe.base_df_model import BaseDfModel
 from tyframe.validation.config import TyframeValidationConfig
 from tyframe.validation.exceptions import (
-    BaseTyframeValidationException,
+    BaseTyframeValidationError,
 )
 from tyframe.validation.polars import LazyPolarsValidator, PolarsValidator
 
@@ -77,8 +77,8 @@ def test_polars_unsucessfull_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     validation_config: TyframeValidationConfig,
-    expected_error: type[BaseTyframeValidationException],
-):
+    expected_error: type[BaseTyframeValidationError],
+) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
@@ -123,8 +123,8 @@ def test_lazy_polars_unsucessfull_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     validation_config: TyframeValidationConfig,
-    expected_error: type[BaseTyframeValidationException],
-):
+    expected_error: type[BaseTyframeValidationError],
+) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
