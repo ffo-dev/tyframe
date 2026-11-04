@@ -4,8 +4,12 @@ import numpy as np
 import polars as pl
 import pytest
 
-from tyframe.code_gen.dtype_mapping import PandasDtypeMapping, PolarsDtypeMapping
-from tyframe.exceptions.base_exception import TyframeError
+from tyframe.code_gen.dtype_mapping import (
+    DtypeNotFoundError,
+    PandasDtypeMapping,
+    PolarsDtypeMapping,
+    PyTypeNotFoundError,
+)
 
 
 class TestPandasDtypeMapping:
@@ -55,14 +59,15 @@ class TestPandasDtypeMapping:
         assert result == 'str'
 
     def test_get_pydantic_type_missing_key(self) -> None:
-        """Test that accessing a missing dtype raises TyframeError."""
+        """Test that accessing a missing dtype raises DtypeNotFoundError."""
 
         mapping = PandasDtypeMapping()
 
-        with pytest.raises(TyframeError) as exc_info:
+        with pytest.raises(DtypeNotFoundError) as exc_info:
             mapping.get_pydantic_type(np.dtype('complex128'))
 
         assert 'not found in mapping' in str(exc_info.value)
+        assert 'Available dtypes' in str(exc_info.value)
 
     def test_get_dtypes(self) -> None:
         """Test getting dtypes for a Python type."""
@@ -78,18 +83,18 @@ class TestPandasDtypeMapping:
         assert np.dtype('uint8') in result
 
     def test_get_dtypes_missing_key(self) -> None:
-        """Test that accessing a missing Python type raises TyframeError."""
+        """Test that accessing a missing Python type raises PyTypeNotFoundError."""
         mapping = PandasDtypeMapping()
 
-        with pytest.raises(TyframeError) as exc_info:
+        with pytest.raises(PyTypeNotFoundError) as exc_info:
             mapping.get_dtypes(complex)
 
         assert 'not found in mapping' in str(exc_info.value)
+        assert 'Available Python types' in str(exc_info.value)
 
     def test_custom_mapping(self) -> None:
         """Test that custom mapping can be provided."""
         from collections.abc import Mapping
-
 
         custom_mapping: Mapping[np.dtype, type] = {
             np.dtype('int64'): int,
@@ -102,7 +107,7 @@ class TestPandasDtypeMapping:
         assert mapping.get_pydantic_type(np.dtype('float64')) == 'float'
 
         # The custom mapping only has these two entries
-        with pytest.raises(TyframeError):
+        with pytest.raises(DtypeNotFoundError):
             mapping.get_pydantic_type(np.dtype('bool'))
 
 
@@ -153,7 +158,7 @@ class TestPolarsDtypeMapping:
         assert result == 'str'
 
     def test_get_pydantic_type_missing_key(self) -> None:
-        """Test that accessing a missing dtype raises TyframeError."""
+        """Test that accessing a missing dtype raises DtypeNotFoundError."""
         from collections.abc import Mapping
 
 
@@ -161,10 +166,11 @@ class TestPolarsDtypeMapping:
         custom_mapping: Mapping[type[pl.DataType], type] = {pl.Int64: int}
         limited_mapping = PolarsDtypeMapping(custom_mapping)
 
-        with pytest.raises(TyframeError) as exc_info:
+        with pytest.raises(DtypeNotFoundError) as exc_info:
             limited_mapping.get_pydantic_type(pl.Float64)
 
         assert 'not found in mapping' in str(exc_info.value)
+        assert 'Available dtypes' in str(exc_info.value)
 
     def test_get_dtypes(self) -> None:
         """Test getting dtypes for a Python type."""
@@ -180,13 +186,14 @@ class TestPolarsDtypeMapping:
         assert pl.UInt8 in result
 
     def test_get_dtypes_missing_key(self) -> None:
-        """Test that accessing a missing Python type raises TyframeError."""
+        """Test that accessing a missing Python type raises PyTypeNotFoundError."""
         mapping = PolarsDtypeMapping()
 
-        with pytest.raises(TyframeError) as exc_info:
+        with pytest.raises(PyTypeNotFoundError) as exc_info:
             mapping.get_dtypes(complex)
 
         assert 'not found in mapping' in str(exc_info.value)
+        assert 'Available Python types' in str(exc_info.value)
 
     def test_custom_mapping(self) -> None:
         """Test that custom mapping can be provided."""
@@ -204,5 +211,5 @@ class TestPolarsDtypeMapping:
         assert mapping.get_pydantic_type(pl.Float64) == 'float'
 
         # The custom mapping only has these two entries
-        with pytest.raises(TyframeError):
+        with pytest.raises(DtypeNotFoundError):
             mapping.get_pydantic_type(pl.Boolean)

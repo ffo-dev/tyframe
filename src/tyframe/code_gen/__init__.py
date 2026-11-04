@@ -6,8 +6,10 @@ from tyframe.code_gen.config import BaseCodeGeneratorConfig
 from tyframe.code_gen.dtype_mapping import (
     DataFrameDtype,
     DtypeMapping,
+    DtypeNotFoundError,
     PandasDtypeMapping,
     PolarsDtypeMapping,
+    PyTypeNotFoundError,
 )
 from tyframe.code_gen.pydantic_model_generator import (
     DataFrameType,
@@ -21,9 +23,11 @@ __all__ = [
     'DataFrameDtype',
     'DataFrameType',
     'DtypeMapping',
+    'DtypeNotFoundError',
     'PandasDtypeMapping',
     'PolarsDtypeMapping',
     'PydanticModelGenerator',
     'PydanticModelGeneratorConfig',
+    'PyTypeNotFoundError',
     'TypedDfGeneratorConfig',
 ]

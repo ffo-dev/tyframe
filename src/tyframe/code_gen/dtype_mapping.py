@@ -5,12 +5,48 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import polars as pl
 
 from tyframe.exceptions.base_exception import TyframeError
+
+
+class DtypeNotFoundError(TyframeError):
+    """Error raised when a dataframe dtype is not found in the mapping."""
+    
+    def __init__(self, dtype: Any, available_dtypes: set[Any]) -> None:
+        """Initialize the error with details about the missing dtype and available options.
+        
+        Args:
+            dtype: The missing dtype that was looked up.
+            available_dtypes: Set of available dtypes in the mapping.
+        """
+        available_str = ', '.join(str(d) for d in sorted(available_dtypes, key=str))
+        message = (
+            f"Dtype '{dtype}' not found in mapping. "
+            f"Available dtypes: {available_str}"
+        )
+        super().__init__(message)
+
+
+class PyTypeNotFoundError(TyframeError):
+    """Error raised when a Python type is not found in the mapping."""
+    
+    def __init__(self, py_type: type, available_py_types: set[type]) -> None:
+        """Initialize the error with details about the missing Python type and available options.
+        
+        Args:
+            py_type: The missing Python type that was looked up.
+            available_py_types: Set of available Python types in the mapping.
+        """
+        available_str = ', '.join(str(t) for t in sorted(available_py_types, key=str))
+        message = (
+            f"Python type '{py_type}' not found in mapping. "
+            f"Available Python types: {available_str}"
+        )
+        super().__init__(message)
 
 # Type variable for the dataframe dtype
 DataFrameDtype = TypeVar('DataFrameDtype')
@@ -58,11 +94,11 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             str: The corresponding Pydantic type as a string.
 
         Raises:
-            TyframeError: If the dtype is not found in the mapping.
+            DtypeNotFoundError: If the dtype is not found in the mapping.
 
         """
         if dtype not in self._df_type_to_py_type:
-            raise TyframeError(f'Dtype {dtype} not found in mapping')
+            raise DtypeNotFoundError(dtype, self._available_df_types)
         return self._df_type_to_py_type[dtype].__name__
 
     def get_dtypes(self, type_: type) -> Sequence[DataFrameDtype]:
@@ -75,11 +111,11 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             Sequence[DataFrameDtype]: Sequence of dtype keys that map to the given type.
 
         Raises:
-            TyframeError: If the Python type is not found in the mapping.
+            PyTypeNotFoundError: If the Python type is not found in the mapping.
 
         """
         if type_ not in self._py_types_to_df_types:
-            raise TyframeError(f'Python type {type_} not found in mapping')
+            raise PyTypeNotFoundError(type_, self._available_py_types)
         return self._py_types_to_df_types[type_]
 
     @abstractmethod
