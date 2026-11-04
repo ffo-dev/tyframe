@@ -2,7 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from pydantic.alias_generators import to_snake
 
@@ -11,7 +11,7 @@ from tyframe.code_gen.config import BaseCodeGeneratorConfig
 from tyframe.code_gen.dtype_mapping import DtypeMapping
 
 DataFrameType = TypeVar('DataFrameType')
-DtypeMappingType = TypeVar('DtypeMappingType', bound=DtypeMapping[Any])
+DtypeMappingType = TypeVar('DtypeMappingType', bound=DtypeMapping)
 
 
 class PydanticModelGeneratorConfig(BaseCodeGeneratorConfig):

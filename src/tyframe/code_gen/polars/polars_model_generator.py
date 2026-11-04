@@ -49,7 +49,7 @@ class PolarsModelGenerator(PydanticModelGenerator[pl.DataFrame, PolarsDtypeMappi
         columns_and_types: dict[str, str] = {}
 
         for col_name, dtype in df.schema.items():
-            py_type = self._dtype_mapping.get_pydantic_type(dtype)
+            py_type = self._dtype_mapping.get_pydantic_type(type(dtype))
             columns_and_types[col_name] = py_type
 
         return columns_and_types
