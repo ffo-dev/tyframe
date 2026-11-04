@@ -10,6 +10,8 @@ from typing import TypeVar
 import numpy as np
 import polars as pl
 
+from tyframe.exceptions.base_exception import TyframeError
+
 # Type variable for the dataframe dtype
 DataFrameDtype = TypeVar('DataFrameDtype')
 
@@ -23,6 +25,8 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
 
     _df_type_to_py_type: Mapping[DataFrameDtype, type]
     _py_types_to_df_types: Mapping[type, Sequence[DataFrameDtype]]
+    _available_py_types: set[type]
+    _available_df_types: set[DataFrameDtype]
 
     def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None):
         if mapping is None:
@@ -31,6 +35,8 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             self._df_type_to_py_type = mapping
         # Build reverse mapping: Python type -> list of dataframe dtypes
         self._py_types_to_df_types = self._build_reverse_mapping(self._df_type_to_py_type)
+        self._available_py_types = set(self._py_types_to_df_types.keys())
+        self._available_df_types = set(self._df_type_to_py_type.keys())
 
     @staticmethod
     def _build_reverse_mapping(mapping: Mapping[DataFrameDtype, type]) -> Mapping[type, Sequence[DataFrameDtype]]:
@@ -51,7 +57,12 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
         Returns:
             str: The corresponding Pydantic type as a string.
 
+        Raises:
+            TyframeError: If the dtype is not found in the mapping.
+
         """
+        if dtype not in self._df_type_to_py_type:
+            raise TyframeError(f'Dtype {dtype} not found in mapping')
         return self._df_type_to_py_type[dtype].__name__
 
     def get_dtypes(self, type_: type) -> Sequence[DataFrameDtype]:
@@ -61,9 +72,14 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
             type_: The Python type to filter by.
 
         Returns:
-            list[DataFrameDtype]: List of dtype keys that map to the given type.
+            Sequence[DataFrameDtype]: Sequence of dtype keys that map to the given type.
+
+        Raises:
+            TyframeError: If the Python type is not found in the mapping.
 
         """
+        if type_ not in self._py_types_to_df_types:
+            raise TyframeError(f'Python type {type_} not found in mapping')
         return self._py_types_to_df_types[type_]
 
     @abstractmethod
