@@ -4,7 +4,7 @@ import numpy as np
 import polars as pl
 import pytest
 
-from tyframe.code_gen.dtype_mapping import (
+from tyframe.validation.dtype_mapping import (
     DtypeNotFoundError,
     PandasDtypeMapping,
     PolarsDtypeMapping,

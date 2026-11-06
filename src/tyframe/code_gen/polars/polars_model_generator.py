@@ -4,11 +4,11 @@ from typing import override
 
 import polars as pl
 
-from tyframe.code_gen.dtype_mapping import PolarsDtypeMapping
 from tyframe.code_gen.pydantic_model_generator import (
     PydanticModelGenerator,
     PydanticModelGeneratorConfig,
 )
+from tyframe.validation.dtype_mapping import PolarsDtypeMapping
 
 
 class PolarsModelGenerator(PydanticModelGenerator[pl.DataFrame, PolarsDtypeMapping]):
