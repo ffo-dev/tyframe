@@ -42,7 +42,6 @@ class BaseTypedDf[
         self,
         input_data: DataFrameType | Iterable[ModelType],
         validator: BaseValidator[DataFrameType],
-        validation_config: TyframeValidationConfig | None = None,
         *,
         skip_validation: bool = False,
     ) -> None:
@@ -58,7 +57,6 @@ class BaseTypedDf[
             self._df = self.validator.validate(
                 self.model,
                 input_data,
-                validation_config,
             )
         elif self._is_model_iterable(input_data):
             self._df = self.validator.create_dataframe(

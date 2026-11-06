@@ -22,6 +22,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     def __init__(
         self,
         dtype_mapping: DtypeMapping[Any],
+        config: TyframeValidationConfig | None = None,
     ) -> None:
         """Initialize the validator with an optional dtype mapping.
 
@@ -30,24 +31,21 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
                           If None, uses the default from the class.
         """
         self.dtype_mapping: DtypeMapping[Any] = dtype_mapping
+        self.config = config or TyframeValidationConfig()
 
     df_type: type[DataFrameType]
+    config: TyframeValidationConfig
 
     def validate(
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        config: TyframeValidationConfig | None = None,
     ) -> DataFrameType:
-        if config is None:
-            config = TyframeValidationConfig()
         res = self.validate_column_names(
             df_model,
             df,
-            fill_with_default=config.fill_with_default,
-            drop_extra=config.drop_extra_columns,
         )
-        if config.validate_dtypes:
+        if self.config.validate_dtypes:
             res = self.validate_dtypes(df_model, res)
         return res
 
@@ -55,19 +53,14 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        *,
-        fill_with_default: bool,
-        drop_extra: bool,
     ) -> DataFrameType:
         df = self.validate_missing_column_names(
             df_model,
             df,
-            fill_with_default=fill_with_default,
         )
         return self.validate_extra_column_names(
             df_model,
             df,
-            drop_extra=drop_extra,
         )
 
     def create_dataframe(
@@ -113,8 +106,6 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        *,
-        fill_with_default: bool,
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
@@ -123,7 +114,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df_columns=df_columns,
         )
         if missing_columns:
-            if not fill_with_default:
+            if not self.config.fill_with_default:
                 raise MissingColumnsError(
                     expected_columns=expected_columns,
                     missing_columns=missing_columns,
@@ -145,8 +136,6 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         self,
         df_model: type[BaseDfModel],
         df: DataFrameType,
-        *,
-        drop_extra: bool,
     ) -> DataFrameType:
         expected_columns = df_model.columns
         df_columns = self.get_df_columns(df)
@@ -156,7 +145,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         )
 
         if extra_columns:
-            if not drop_extra:
+            if not self.config.drop_extra_columns:
                 raise ExtraColumnsError(
                     expected_columns=expected_columns,
                     extra=extra_columns,

@@ -54,23 +54,24 @@ class TestDtypeValidation:
     def test_pandas_validate_dtypes_success(self) -> None:
         """Test that dtype validation passes for matching types in pandas."""
 
-        validator = PandasValidator()
+        config = TyframeValidationConfig(validate_dtypes=True)
+        validator = PandasValidator(config=config)
         df = pd.DataFrame(
             {
                 'int_col': [1, 2, 3],
                 'str_col': ['a', 'b', 'c'],
             }
         )
-        config = TyframeValidationConfig(validate_dtypes=True)
 
-        result = validator.validate(IntStrModel, df, config)
+        result = validator.validate(IntStrModel, df)
         assert result is not None
         assert isinstance(result, pd.DataFrame)
 
     def test_pandas_validate_dtypes_mismatch(self) -> None:
         """Test that DtypeMismatchError is raised for mismatched types in pandas."""
 
-        validator = PandasValidator()
+        config = TyframeValidationConfig(validate_dtypes=True)
+        validator = PandasValidator(config=config)
         # Create DataFrame with wrong dtype (str instead of int)
         df = pd.DataFrame(
             {
@@ -78,10 +79,9 @@ class TestDtypeValidation:
                 'str_col': ['x', 'y', 'z'],
             }
         )
-        config = TyframeValidationConfig(validate_dtypes=True)
 
         with pytest.raises(DtypeMismatchError) as exc_info:
-            validator.validate(IntStrModel, df, config)
+            validator.validate(IntStrModel, df)
 
         error_msg = str(exc_info.value)
         assert 'int_col' in error_msg
@@ -104,23 +104,24 @@ class TestDtypeValidation:
     def test_polars_validate_dtypes_success(self) -> None:
         """Test that dtype validation passes for matching types in polars."""
 
-        validator = PolarsValidator()
+        config = TyframeValidationConfig(validate_dtypes=True)
+        validator = PolarsValidator(config=config)
         df = pl.DataFrame(
             {
                 'int_col': [1, 2, 3],
                 'str_col': ['a', 'b', 'c'],
             }
         )
-        config = TyframeValidationConfig(validate_dtypes=True)
 
-        result = validator.validate(IntStrModel, df, config)
+        result = validator.validate(IntStrModel, df)
         assert result is not None
         assert isinstance(result, pl.DataFrame)
 
     def test_polars_validate_dtypes_mismatch(self) -> None:
         """Test that DtypeMismatchError is raised for mismatched types in polars."""
 
-        validator = PolarsValidator()
+        config = TyframeValidationConfig(validate_dtypes=True)
+        validator = PolarsValidator(config=config)
         # Create DataFrame with wrong dtype (str instead of int)
         df = pl.DataFrame(
             {
@@ -128,10 +129,9 @@ class TestDtypeValidation:
                 'str_col': ['x', 'y', 'z'],
             }
         )
-        config = TyframeValidationConfig(validate_dtypes=True)
 
         with pytest.raises(DtypeMismatchError) as exc_info:
-            validator.validate(IntStrModel, df, config)
+            validator.validate(IntStrModel, df)
 
         error_msg = str(exc_info.value)
         assert 'int_col' in error_msg
@@ -140,14 +140,14 @@ class TestDtypeValidation:
     def test_polars_validate_dtypes_with_lazy_frame(self) -> None:
         """Test that dtype validation works with LazyFrame."""
 
-        validator = LazyPolarsValidator()
+        config = TyframeValidationConfig(validate_dtypes=True)
+        validator = LazyPolarsValidator(config=config)
         df = pl.LazyFrame(
             {
                 'int_col': [1, 2, 3],
                 'str_col': ['a', 'b', 'c'],
             }
         )
-        config = TyframeValidationConfig(validate_dtypes=True)
 
-        result = validator.validate(IntStrModel, df, config)
+        result = validator.validate(IntStrModel, df)
         assert result is not None
