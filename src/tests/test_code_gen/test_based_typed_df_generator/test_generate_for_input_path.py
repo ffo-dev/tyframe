@@ -136,17 +136,16 @@ def test_generate_for_input_path_creates_output_directory(
 
 
 @pytest.mark.parametrize(
-    ('generator_type', 'expected_suffix'),
+    'generator_type',
     [
-        (PandasTypedDfGenerator, 'pd'),
-        (PolarsTypedDfGenerator, 'pl'),
-        (LazyPolarsTypedDfGenerator, 'lpl'),
+        PandasTypedDfGenerator,
+        PolarsTypedDfGenerator,
+        LazyPolarsTypedDfGenerator,
     ],
 )
 def test_generate_for_input_path_with_config_from_file(
     tmp_path: Path,
     generator_type: type[BasedTypedDfGenerator],
-    expected_suffix: str,
 ) -> None:
     """Test generate_for_input_path with configuration loaded from file for all generators."""
     # Create a config file

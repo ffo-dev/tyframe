@@ -51,7 +51,16 @@ class TestPandasDtypeMapping:
 
         # All integer dtypes should be returned
         assert sorted(result) == sorted(
-            [np.dtype('int8'), np.dtype('int16'), np.dtype('int32'), np.dtype('int64'), np.dtype('uint8')],
+            [
+                np.dtype('int8'),
+                np.dtype('int16'),
+                np.dtype('int32'),
+                np.dtype('int64'),
+                np.dtype('uint8'),
+                np.dtype('uint16'),
+                np.dtype('uint32'),
+                np.dtype('uint64'),
+            ]
         )
 
     def test_get_dtypes_missing_key(self) -> None:
