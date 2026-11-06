@@ -18,7 +18,7 @@ class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMappi
         self,
         config: PydanticModelGeneratorConfig,
         dtype_mapping: PandasDtypeMapping | None = None,
-        generated_class_suffix: str = 'PdModel',
+        generated_class_suffix: str = 'Model',
     ) -> None:
         """Initialize the generator.
 

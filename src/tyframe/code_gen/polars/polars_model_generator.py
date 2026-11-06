@@ -18,7 +18,7 @@ class PolarsModelGenerator(PydanticModelGenerator[pl.DataFrame, PolarsDtypeMappi
         self,
         config: PydanticModelGeneratorConfig,
         dtype_mapping: PolarsDtypeMapping | None = None,
-        generated_class_suffix: str = 'PlModel',
+        generated_class_suffix: str = 'Model',
     ) -> None:
         """Initialize the generator.
 
