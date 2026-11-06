@@ -1,5 +1,8 @@
 """Tests for DtypeMapping classes."""
 
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 import polars as pl
 import pytest
@@ -10,6 +13,9 @@ from tyframe.validation.dtype_mapping import (
     PolarsDtypeMapping,
     PyTypeNotFoundError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 class TestPandasDtypeMapping:
@@ -25,38 +31,6 @@ class TestPandasDtypeMapping:
         assert mapping.get_pydantic_type(np.dtype('float64')) == 'float'
         assert mapping.get_pydantic_type(np.dtype('bool')) == 'bool'
         assert mapping.get_pydantic_type(np.dtype('object')) == 'str'
-
-    def test_get_pydantic_type_int(self) -> None:
-        """Test getting Pydantic type for integer dtype."""
-
-        mapping = PandasDtypeMapping()
-        result = mapping.get_pydantic_type(np.dtype('int64'))
-
-        assert result == 'int'
-
-    def test_get_pydantic_type_float(self) -> None:
-        """Test getting Pydantic type for float dtype."""
-
-        mapping = PandasDtypeMapping()
-        result = mapping.get_pydantic_type(np.dtype('float64'))
-
-        assert result == 'float'
-
-    def test_get_pydantic_type_bool(self) -> None:
-        """Test getting Pydantic type for bool dtype."""
-
-        mapping = PandasDtypeMapping()
-        result = mapping.get_pydantic_type(np.dtype('bool'))
-
-        assert result == 'bool'
-
-    def test_get_pydantic_type_object(self) -> None:
-        """Test getting Pydantic type for object dtype."""
-
-        mapping = PandasDtypeMapping()
-        result = mapping.get_pydantic_type(np.dtype('object'))
-
-        assert result == 'str'
 
     def test_get_pydantic_type_missing_key(self) -> None:
         """Test that accessing a missing dtype raises DtypeNotFoundError."""
@@ -76,11 +50,18 @@ class TestPandasDtypeMapping:
         result = mapping.get_dtypes(int)
 
         # All integer dtypes should be returned
-        assert np.dtype('int8') in result
-        assert np.dtype('int16') in result
-        assert np.dtype('int32') in result
-        assert np.dtype('int64') in result
-        assert np.dtype('uint8') in result
+        assert sorted(result) == sorted(
+            [
+                np.dtype('int8'),
+                np.dtype('int16'),
+                np.dtype('int32'),
+                np.dtype('int64'),
+                np.dtype('uint8'),
+                np.dtype('uint16'),
+                np.dtype('uint32'),
+                np.dtype('uint64'),
+            ]
+        )
 
     def test_get_dtypes_missing_key(self) -> None:
         """Test that accessing a missing Python type raises PyTypeNotFoundError."""
@@ -94,7 +75,6 @@ class TestPandasDtypeMapping:
 
     def test_custom_mapping(self) -> None:
         """Test that custom mapping can be provided."""
-        from collections.abc import Mapping
 
         custom_mapping: Mapping[np.dtype, type] = {
             np.dtype('int64'): int,
@@ -159,8 +139,6 @@ class TestPolarsDtypeMapping:
 
     def test_get_pydantic_type_missing_key(self) -> None:
         """Test that accessing a missing dtype raises DtypeNotFoundError."""
-        from collections.abc import Mapping
-
 
         # Test with a limited custom mapping
         custom_mapping: Mapping[type[pl.DataType], type] = {pl.Int64: int}
@@ -197,8 +175,6 @@ class TestPolarsDtypeMapping:
 
     def test_custom_mapping(self) -> None:
         """Test that custom mapping can be provided."""
-        from collections.abc import Mapping
-
 
         custom_mapping: Mapping[type[pl.DataType], type] = {
             pl.Int64: int,

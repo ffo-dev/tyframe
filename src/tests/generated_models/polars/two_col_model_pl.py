@@ -7,9 +7,11 @@ class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
     a: str = 'a'
     b: str = 'b'
+
     @property
     def a_col(self) -> pl.Series:
         return self._df[self.a]
+
     @property
     def b_col(self) -> pl.Series:
         return self._df[self.b]

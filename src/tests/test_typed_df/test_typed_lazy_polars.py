@@ -56,7 +56,6 @@ def test_typed_pl_df() -> None:
         TwoColModel(a=4, b='a'),
         TwoColModel(a=2, b='y'),
         TwoColModel(a=3, b='z'),
-
     ]
 
     with_dups = TwoColModelLpl(
@@ -72,5 +71,3 @@ def test_typed_pl_df() -> None:
     )
     distinct = with_dups.distinct()
     assert distinct.count() == 3
-
-

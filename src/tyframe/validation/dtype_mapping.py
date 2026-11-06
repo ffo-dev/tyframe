@@ -3,50 +3,47 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 import polars as pl
 
 from tyframe.exceptions.base_exception import TyframeError
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
 
 class DtypeNotFoundError(TyframeError):
     """Error raised when a dataframe dtype is not found in the mapping."""
-    
-    def __init__(self, dtype: Any, available_dtypes: set[Any]) -> None:
+
+    def __init__(self, dtype: object, available_dtypes: set[Any]) -> None:
         """Initialize the error with details about the missing dtype and available options.
-        
+
         Args:
             dtype: The missing dtype that was looked up.
             available_dtypes: Set of available dtypes in the mapping.
         """
         available_str = ', '.join(str(d) for d in sorted(available_dtypes, key=str))
-        message = (
-            f"Dtype '{dtype}' not found in mapping. "
-            f"Available dtypes: {available_str}"
-        )
+        message = f"Dtype '{dtype}' not found in mapping. Available dtypes: {available_str}"
         super().__init__(message)
 
 
 class PyTypeNotFoundError(TyframeError):
     """Error raised when a Python type is not found in the mapping."""
-    
+
     def __init__(self, py_type: type, available_py_types: set[type]) -> None:
         """Initialize the error with details about the missing Python type and available options.
-        
+
         Args:
             py_type: The missing Python type that was looked up.
             available_py_types: Set of available Python types in the mapping.
         """
         available_str = ', '.join(str(t) for t in sorted(available_py_types, key=str))
-        message = (
-            f"Python type '{py_type}' not found in mapping. "
-            f"Available Python types: {available_str}"
-        )
+        message = f"Python type '{py_type}' not found in mapping. Available Python types: {available_str}"
         super().__init__(message)
+
 
 # Type variable for the dataframe dtype
 DataFrameDtype = TypeVar('DataFrameDtype')
@@ -54,7 +51,7 @@ DataFrameDtype = TypeVar('DataFrameDtype')
 
 class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
     """Abstract base class for dtype mappings.
-    
+
     This is a generic class that should be parameterized with the specific dtype type
     for the dataframe library (e.g., pandas dtype or polars DataType).
     """
@@ -64,7 +61,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
     _available_py_types: set[type]
     _available_df_types: set[DataFrameDtype]
 
-    def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None):
+    def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None) -> None:
         if mapping is None:
             self._df_type_to_py_type = self.default()
         else:
@@ -125,7 +122,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
 
 class PandasDtypeMapping(DtypeMapping['np.dtype']):
     """Dtype mapping for pandas DataFrames.
-    
+
     Uses actual numpy dtype objects as keys in the mapping.
     """
 
@@ -148,9 +145,10 @@ class PandasDtypeMapping(DtypeMapping['np.dtype']):
             np.dtype('timedelta64[ns]'): timedelta,
         }
 
+
 class PolarsDtypeMapping(DtypeMapping['type[pl.DataType]']):
     """Dtype mapping for polars DataFrames.
-    
+
     Uses actual polars DataType classes as keys in the mapping.
     """
 

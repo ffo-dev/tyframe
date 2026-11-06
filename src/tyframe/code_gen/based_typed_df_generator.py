@@ -9,8 +9,7 @@ from tyframe.code_gen.config import BaseCodeGeneratorConfig
 
 
 class TypedDfGeneratorConfig(BaseCodeGeneratorConfig):
-    """Configuration for the TypedDfGenerator.
-    """
+    """Configuration for the TypedDfGenerator."""
 
     col_property_suffix: str = '_col'
 
@@ -254,6 +253,21 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return f'return self._df[self.{col_name}]'
 
+    def _column_def(
+        self,
+        col_name: str,
+    ) -> str:
+        """Generate a column definition.
+
+        Args:
+            col_name: The name of the column to generate the property for.
+
+        Returns:
+            list[str]: A list of strings representing the property.
+
+        """
+        return f'{col_name}{self.config.col_property_suffix}(self) -> {self._col_return_type()}:'
+
     def _generate_column_property(
         self,
         col_name: str,
@@ -269,7 +283,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return [
             f'{self.config.indentation}@property',
-            f'{self.config.indentation}def {col_name}{self.config.col_property_suffix}(self) -> {self._col_return_type()}:',
+            f'{self.config.indentation}{self._column_def(col_name)}:',
             f'{self.config.indentation * 2}{self._get_df_column(col_name)}',
         ]
 
@@ -286,8 +300,4 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             list[str]: A list of strings representing the column properties.
 
         """
-        return [
-            line
-            for col_name in model.columns
-            for line in self._generate_column_property(col_name)
-        ]
+        return [line for col_name in model.columns for line in self._generate_column_property(col_name)]

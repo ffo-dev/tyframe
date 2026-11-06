@@ -8,8 +8,7 @@ from tyframe.typed_df.pandas import TypedPandasDataFrame
 
 
 class PandasTypedDfGenerator(BasedTypedDfGenerator):
-    """Configuration for the PandasTypedDfGenerator.
-    """
+    """Configuration for the PandasTypedDfGenerator."""
 
     def __init__(
         self,

@@ -18,4 +18,3 @@ def test_find_child_classes_includes_indirect_descendants() -> None:
         key=lambda x: x.__name__,
     )
     assert all(el.__module__.startswith('tests.') for el in res)
-
