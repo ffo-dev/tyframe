@@ -8,6 +8,7 @@ from tyframe.validation.column_validation.column_validation import (
     get_missing_columns,
 )
 from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.dtype_mapping import DtypeMapping, DtypeMismatchError
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
     MissingColumnsError,
@@ -18,14 +19,17 @@ DataFrameType = TypeVar('DataFrameType')
 
 
 class BaseValidator[DataFrameType](metaclass=ABCMeta):
-    def __init__(  # noqa: B027
+    def __init__(
         self,
+        dtype_mapping: DtypeMapping[Any],
     ) -> None:
-        # Currently the init is empty, configurations are explictly passed
-        # to the validate method.
-        # Left here in case some specialized validator needs
-        # to have some configuration in the future.
-        pass
+        """Initialize the validator with an optional dtype mapping.
+
+        Args:
+            dtype_mapping: Optional dtype mapping for type validation.
+                          If None, uses the default from the class.
+        """
+        self.dtype_mapping: DtypeMapping[Any] = dtype_mapping
 
     df_type: type[DataFrameType]
 
@@ -43,8 +47,9 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             fill_with_default=config.fill_with_default,
             drop_extra=config.drop_extra_columns,
         )
-        # Add here more validation in the future.
-        return res  # noqa: RET504
+        if config.validate_dtypes:
+            res = self.validate_dtypes(df_model, res)
+        return res
 
     def validate_column_names(
         self,
@@ -158,4 +163,39 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
                 )
             df = self.drop_df_columns(df, extra_columns)
 
+        return df
+
+    @abstractmethod
+    def get_df_dtype(self, df: DataFrameType, column: str) -> object:
+        """Get the dtype of a column from the dataframe."""
+        raise NotImplementedError  # pragma: no cover
+
+    def validate_dtypes(
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+    ) -> DataFrameType:
+        """Validate that dataframe column dtypes match expected Pydantic types.
+
+        Args:
+            df_model: The Pydantic model defining expected types.
+            df: The dataframe to validate.
+
+        Returns:
+            The validated dataframe (unchanged if validation passes).
+
+        Raises:
+            DtypeMismatchError: If a column dtype doesn't match the expected Pydantic type.
+            PyTypeNotFoundError: If the expected Python type is not found in the mapping.
+            DtypeNotFoundError: If the dataframe dtype is not found in the mapping.
+        """
+        for column in df_model.columns:
+            df_dtype = self.get_df_dtype(df, column)
+            expected_py_type = df_model.model_fields[column].annotation
+            if expected_py_type is None:
+                continue
+            # Get all dataframe dtypes that map to the expected Python type
+            valid_dtypes = self.dtype_mapping.get_dtypes(expected_py_type)
+            if df_dtype not in valid_dtypes:
+                raise DtypeMismatchError(column, df_dtype, expected_py_type, set(valid_dtypes))
         return df
