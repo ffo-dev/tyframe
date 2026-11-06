@@ -4,11 +4,11 @@ from typing import override
 
 import pandas as pd
 
-from tyframe.code_gen.dtype_mapping import PandasDtypeMapping
 from tyframe.code_gen.pydantic_model_generator import (
     PydanticModelGenerator,
     PydanticModelGeneratorConfig,
 )
+from tyframe.validation.dtype_mapping import PandasDtypeMapping
 
 
 class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMapping]):
@@ -18,7 +18,7 @@ class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMappi
         self,
         config: PydanticModelGeneratorConfig,
         dtype_mapping: PandasDtypeMapping | None = None,
-        generated_class_suffix: str = 'PdModel',
+        generated_class_suffix: str = 'Model',
     ) -> None:
         """Initialize the generator.
 

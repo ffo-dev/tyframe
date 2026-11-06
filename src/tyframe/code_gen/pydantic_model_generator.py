@@ -8,7 +8,7 @@ from pydantic.alias_generators import to_snake
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.code_gen.config import BaseCodeGeneratorConfig
-from tyframe.code_gen.dtype_mapping import DtypeMapping
+from tyframe.validation.dtype_mapping import DtypeMapping
 
 DataFrameType = TypeVar('DataFrameType')
 DtypeMappingType = TypeVar('DtypeMappingType', bound=DtypeMapping[Any])
@@ -17,7 +17,6 @@ DtypeMappingType = TypeVar('DtypeMappingType', bound=DtypeMapping[Any])
 class PydanticModelGeneratorConfig(BaseCodeGeneratorConfig):
     """Configuration for the PydanticModelGenerator."""
 
-    pass
 
 
 class PydanticModelGenerator[DataFrameType, DtypeMappingType](metaclass=ABCMeta):
@@ -104,7 +103,7 @@ class PydanticModelGenerator[DataFrameType, DtypeMappingType](metaclass=ABCMeta)
         """
         actual_class_name = class_name or self._get_df_name(df) or 'DataFrame'
         model_name = f'{actual_class_name}{self._generated_class_suffix}'
-        
+
         return [
             self._generate_imports(),
             '',

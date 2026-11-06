@@ -71,8 +71,8 @@ COMPLEX_POLARS_DF = pl.DataFrame({
 @pytest.mark.parametrize(
     ('generator_class', 'df', 'expected_file'),
     [
-        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'simple_model_pd.py'),
-        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'simple_model_pl.py'),
+        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'simple_model.py'),
+        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'simple_model.py'),
     ],
 )
 def test_generate_simple_model(
@@ -95,8 +95,8 @@ def test_generate_simple_model(
 @pytest.mark.parametrize(
     ('generator_class', 'df', 'expected_file'),
     [
-        (PandasModelGenerator, COMPLEX_PANDAS_DF, 'complex_model_pd.py'),
-        (PolarsModelGenerator, COMPLEX_POLARS_DF, 'complex_model_pl.py'),
+        (PandasModelGenerator, COMPLEX_PANDAS_DF, 'complex_model.py'),
+        (PolarsModelGenerator, COMPLEX_POLARS_DF, 'complex_model.py'),
     ],
 )
 def test_generate_complex_model(
@@ -143,8 +143,8 @@ def test_generate_with_custom_indentation(
 @pytest.mark.parametrize(
     ('generator_class', 'df', 'expected_file'),
     [
-        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'simple_model_pd.py'),
-        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'simple_model_pl.py'),
+        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'simple_model.py'),
+        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'simple_model.py'),
     ],
 )
 def test_generate_model_file(
@@ -173,8 +173,8 @@ def test_generate_model_file(
 @pytest.mark.parametrize(
     ('generator_class', 'df', 'expected_suffix'),
     [
-        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'PdModel'),
-        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'PlModel'),
+        (PandasModelGenerator, SIMPLE_PANDAS_DF, 'Model'),
+        (PolarsModelGenerator, SIMPLE_POLARS_DF, 'Model'),
     ],
 )
 def test_generate_without_class_name(
