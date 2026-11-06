@@ -82,7 +82,6 @@ COMPLEX_POLARS_DF = pl.DataFrame(
     ],
 )
 def test_generate_simple_model(
-    tmp_path: Path,
     generator_class: type[PandasModelGenerator | PolarsModelGenerator],
     df: pd.DataFrame | pl.DataFrame,
     expected_file: str,
@@ -106,7 +105,6 @@ def test_generate_simple_model(
     ],
 )
 def test_generate_complex_model(
-    tmp_path: Path,
     generator_class: type[PandasModelGenerator | PolarsModelGenerator],
     df: pd.DataFrame | pl.DataFrame,
     expected_file: str,
@@ -130,7 +128,6 @@ def test_generate_complex_model(
     ],
 )
 def test_generate_with_custom_indentation(
-    tmp_path: Path,
     generator_class: type[PandasModelGenerator | PolarsModelGenerator],
     df: pd.DataFrame | pl.DataFrame,
 ) -> None:

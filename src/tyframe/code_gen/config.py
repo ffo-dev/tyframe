@@ -34,4 +34,5 @@ class BaseCodeGeneratorConfig(BaseModel):
                 raw_dict = yaml.safe_load(path.read_text())  # pyright:ignore[reportAny]
                 return cls(**raw_dict)  # pyright:ignore[reportAny]
             case _:
-                raise ValueError(f'Unsupported file format: {path.suffix}')
+                msg = f'Unsupported file format: {path.suffix}'
+                raise ValueError(msg)

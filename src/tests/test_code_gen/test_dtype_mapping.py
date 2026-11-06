@@ -1,6 +1,7 @@
 """Tests for DtypeMapping classes."""
 
-from collections.abc import Mapping
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import polars as pl
@@ -12,6 +13,9 @@ from tyframe.validation.dtype_mapping import (
     PolarsDtypeMapping,
     PyTypeNotFoundError,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 class TestPandasDtypeMapping:

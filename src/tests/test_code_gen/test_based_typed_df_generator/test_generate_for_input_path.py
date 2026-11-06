@@ -106,17 +106,16 @@ def test_generate_for_input_path_with_empty_directory(
 
 
 @pytest.mark.parametrize(
-    ('generator_type', 'expected_suffix'),
+    'generator_type',
     [
-        (PandasTypedDfGenerator, 'pd'),
-        (PolarsTypedDfGenerator, 'pl'),
-        (LazyPolarsTypedDfGenerator, 'lpl'),
+        PandasTypedDfGenerator,
+        PolarsTypedDfGenerator,
+        LazyPolarsTypedDfGenerator,
     ],
 )
 def test_generate_for_input_path_creates_output_directory(
     tmp_path: Path,
     generator_type: type[BasedTypedDfGenerator],
-    expected_suffix: str,
 ) -> None:
     """Test that generate_for_input_path creates the output directory if it doesn't exist for all generators."""
     # Use the existing test_classes.models file

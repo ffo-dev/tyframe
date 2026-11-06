@@ -3,20 +3,22 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 import polars as pl
 
 from tyframe.exceptions.base_exception import TyframeError
 
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
 
 class DtypeNotFoundError(TyframeError):
     """Error raised when a dataframe dtype is not found in the mapping."""
 
-    def __init__(self, dtype: Any, available_dtypes: set[Any]) -> None:
+    def __init__(self, dtype: object, available_dtypes: set[Any]) -> None:
         """Initialize the error with details about the missing dtype and available options.
 
         Args:
@@ -59,7 +61,7 @@ class DtypeMapping[DataFrameDtype](metaclass=ABCMeta):
     _available_py_types: set[type]
     _available_df_types: set[DataFrameDtype]
 
-    def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None):
+    def __init__(self, mapping: Mapping[DataFrameDtype, type] | None = None) -> None:
         if mapping is None:
             self._df_type_to_py_type = self.default()
         else:
