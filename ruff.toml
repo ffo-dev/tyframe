@@ -5,15 +5,21 @@ inline-quotes = "single"
 
 [format]
 quote-style = "single"
+indent-style = "space"
 
 [lint]
 select = ["ALL"]  # See the Default Rules page for the full listing.
 ignore = [
     "CPY",
-    "D"
+    "D",
+    "COM812"
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
+
+exclude = [
+    "src/tests/test_code_gen/test_pydantic_model_generator/expected/*"
+]
 
 [lint.flake8-annotations]
 allow-star-arg-any = true

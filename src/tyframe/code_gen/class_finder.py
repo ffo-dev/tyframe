@@ -43,9 +43,7 @@ def _load_module(file_path: Path) -> ModuleType:
         try:
             module = importlib.import_module(module_name)
         except ModuleNotFoundError as error:
-            if error.name is not None and (
-                error.name == module_name or module_name.startswith(f'{error.name}.')
-            ):
+            if error.name is not None and (error.name == module_name or module_name.startswith(f'{error.name}.')):
                 continue
             raise
         module_path = getattr(module, '__file__', None)

@@ -1,5 +1,3 @@
-
-
 from collections.abc import Mapping
 
 from tyframe.code_gen.based_typed_df_generator import BasedTypedDfGenerator

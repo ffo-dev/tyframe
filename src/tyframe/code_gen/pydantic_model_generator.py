@@ -18,7 +18,6 @@ class PydanticModelGeneratorConfig(BaseCodeGeneratorConfig):
     """Configuration for the PydanticModelGenerator."""
 
 
-
 class PydanticModelGenerator[DataFrameType, DtypeMappingType](metaclass=ABCMeta):
     """Abstract base class for generating BaseDfModel from dataframes."""
 
@@ -143,10 +142,7 @@ class PydanticModelGenerator[DataFrameType, DtypeMappingType](metaclass=ABCMeta)
 
         """
         columns_and_types = self._extract_columns_and_types(df)
-        return [
-            f'{self.config.indentation}{col_name}: {py_type}'
-            for col_name, py_type in columns_and_types.items()
-        ]
+        return [f'{self.config.indentation}{col_name}: {py_type}' for col_name, py_type in columns_and_types.items()]
 
     @abstractmethod
     def _extract_columns_and_types(self, df: DataFrameType) -> dict[str, str]:

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.test_classes import models
 from tyframe.code_gen.based_typed_df_generator import BasedTypedDfGenerator, TypedDfGeneratorConfig
 from tyframe.code_gen.pandas import PandasTypedDfGenerator
 from tyframe.code_gen.polars import LazyPolarsTypedDfGenerator, PolarsTypedDfGenerator
@@ -23,7 +24,7 @@ def test_generate_for_input_path_with_single_file(
 ) -> None:
     """Test generate_for_input_path with a single input file for all generators."""
     # Use the existing test_classes.models file
-    from tests.test_classes import models
+
     input_file = Path(models.__file__)
 
     output_path = tmp_path / 'output'
@@ -60,7 +61,7 @@ def test_generate_for_input_path_with_directory(
 ) -> None:
     """Test generate_for_input_path with a directory containing multiple files for all generators."""
     # Use the test_classes directory which has multiple model files
-    from tests.test_classes import models
+
     input_dir = Path(models.__file__).parent
 
     output_path = tmp_path / 'output'
@@ -119,7 +120,7 @@ def test_generate_for_input_path_creates_output_directory(
 ) -> None:
     """Test that generate_for_input_path creates the output directory if it doesn't exist for all generators."""
     # Use the existing test_classes.models file
-    from tests.test_classes import models
+
     input_file = Path(models.__file__)
 
     # Use a non-existent output directory
@@ -160,7 +161,7 @@ indentation_size: 2
     generator = generator_type(config=config)
 
     # Use the existing test_classes.models file
-    from tests.test_classes import models
+
     input_file = Path(models.__file__)
 
     output_path = tmp_path / 'output'

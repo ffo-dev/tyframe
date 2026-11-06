@@ -9,8 +9,7 @@ from tyframe.code_gen.config import BaseCodeGeneratorConfig
 
 
 class TypedDfGeneratorConfig(BaseCodeGeneratorConfig):
-    """Configuration for the TypedDfGenerator.
-    """
+    """Configuration for the TypedDfGenerator."""
 
     col_property_suffix: str = '_col'
 
@@ -286,8 +285,4 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             list[str]: A list of strings representing the column properties.
 
         """
-        return [
-            line
-            for col_name in model.columns
-            for line in self._generate_column_property(col_name)
-        ]
+        return [line for col_name in model.columns for line in self._generate_column_property(col_name)]

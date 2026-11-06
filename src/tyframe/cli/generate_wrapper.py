@@ -24,4 +24,3 @@ def generate_typed_wrapper(
         input_path,
         output_path,
     )
-

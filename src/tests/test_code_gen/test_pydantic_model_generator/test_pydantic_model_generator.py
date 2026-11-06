@@ -16,11 +16,11 @@ def _compare_with_expected(
     expected_path: Path,
 ) -> None:
     """Compare generated code with expected file, ignoring empty lines.
-    
+
     Args:
         generated: The generated code string.
         expected_path: Path to the expected output file.
-    
+
     Raises:
         AssertionError: If the generated and expected content don't match.
     """
@@ -32,40 +32,46 @@ def _compare_with_expected(
 
     # Compare line by line
     assert generated_lines == expected_lines, (
-        f'Generated code does not match expected.\n'
-        f'Generated:\n{generated}\n'
-        f'Expected:\n{expected}'
+        f'Generated code does not match expected.\nGenerated:\n{generated}\nExpected:\n{expected}'
     )
 
 
 # Test DataFrames
-SIMPLE_PANDAS_DF = pd.DataFrame({
-    'id': [1, 2, 3],
-    'name': ['Alice', 'Bob', 'Charlie'],
-    'age': [25, 30, 35],
-})
+SIMPLE_PANDAS_DF = pd.DataFrame(
+    {
+        'id': [1, 2, 3],
+        'name': ['Alice', 'Bob', 'Charlie'],
+        'age': [25, 30, 35],
+    }
+)
 
-SIMPLE_POLARS_DF = pl.DataFrame({
-    'id': [1, 2, 3],
-    'name': ['Alice', 'Bob', 'Charlie'],
-    'age': [25, 30, 35],
-})
+SIMPLE_POLARS_DF = pl.DataFrame(
+    {
+        'id': [1, 2, 3],
+        'name': ['Alice', 'Bob', 'Charlie'],
+        'age': [25, 30, 35],
+    }
+)
 
-COMPLEX_PANDAS_DF = pd.DataFrame({
-    'id': [1, 2, 3],
-    'name': ['Alice', 'Bob', 'Charlie'],
-    'age': [25, 30, 35],
-    'salary': [50000.0, 60000.0, 70000.0],
-    'is_active': [True, False, True],
-})
+COMPLEX_PANDAS_DF = pd.DataFrame(
+    {
+        'id': [1, 2, 3],
+        'name': ['Alice', 'Bob', 'Charlie'],
+        'age': [25, 30, 35],
+        'salary': [50000.0, 60000.0, 70000.0],
+        'is_active': [True, False, True],
+    }
+)
 
-COMPLEX_POLARS_DF = pl.DataFrame({
-    'id': [1, 2, 3],
-    'name': ['Alice', 'Bob', 'Charlie'],
-    'age': [25, 30, 35],
-    'salary': [50000.0, 60000.0, 70000.0],
-    'is_active': [True, False, True],
-})
+COMPLEX_POLARS_DF = pl.DataFrame(
+    {
+        'id': [1, 2, 3],
+        'name': ['Alice', 'Bob', 'Charlie'],
+        'age': [25, 30, 35],
+        'salary': [50000.0, 60000.0, 70000.0],
+        'is_active': [True, False, True],
+    }
+)
 
 
 @pytest.mark.parametrize(
@@ -85,7 +91,7 @@ def test_generate_simple_model(
     # Create generator and generate model
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, 'SimpleModel') # pyright: ignore[reportArgumentType]
+    generated = generator.generate_model_class(df, 'SimpleModel')  # pyright: ignore[reportArgumentType]
 
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
@@ -109,7 +115,7 @@ def test_generate_complex_model(
     # Create generator and generate model
     config = PydanticModelGeneratorConfig()
     generator = generator_class(config)
-    generated = generator.generate_model_class(df, 'ComplexModel') # pyright: ignore[reportArgumentType]
+    generated = generator.generate_model_class(df, 'ComplexModel')  # pyright: ignore[reportArgumentType]
 
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
@@ -178,7 +184,6 @@ def test_generate_model_file(
     ],
 )
 def test_generate_without_class_name(
-    tmp_path: Path,
     generator_class: type[PandasModelGenerator | PolarsModelGenerator],
     df: pd.DataFrame | pl.DataFrame,
     expected_suffix: str,

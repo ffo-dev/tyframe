@@ -71,7 +71,6 @@ class BaseTypedDf[
                 [
                     self.model.__name__,
                     f'[{self.validator.df_type.__name__}]',
-
                 ],
             )
         self.validated = True
@@ -80,8 +79,7 @@ class BaseTypedDf[
         self,
         input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
     ) -> TypeGuard[Iterable[ModelType]]:
-        return isinstance(input_data, Iterable) and all(isinstance(el, self.model) for el in input_data)  #pyright:ignore[reportUnknownVariableType]
-
+        return isinstance(input_data, Iterable) and all(isinstance(el, self.model) for el in input_data)  # pyright:ignore[reportUnknownVariableType]
 
     def _is_dataframe_type(
         self,
