@@ -4,7 +4,6 @@ from typing import Any, Protocol, Self, TypeGuard, TypeVar
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
-from tyframe.validation.config import TyframeValidationConfig
 from tyframe.validation.exceptions.argument_exception import (
     InvalidInputTypesError,
     InvalidSkipValidationError,
@@ -19,7 +18,6 @@ class TypedDfProtocol(Protocol):
         self,
         input_data: Any,  # pyright:ignore[reportAny, reportExplicitAny]  # noqa: ANN401
         validator: BaseValidator[Any],  # pyright:ignore[reportExplicitAny]
-        validation_config: TyframeValidationConfig | None = None,
         *,
         skip_validation: bool = False,
     ) -> None: ...
