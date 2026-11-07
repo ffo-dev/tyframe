@@ -19,11 +19,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.13
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.13"
-    - name: Install dependencies
+    - name: Install uv
+      uses: astral-sh/setup-uv@v10.3.3
+
+    - name: Set up Python
+      run: uv python install
+
+    - name: Set up Python
       run: uv sync --all-groups
-    - name: Check poe exists
+
+    - name: check poe
       run: poe --version
