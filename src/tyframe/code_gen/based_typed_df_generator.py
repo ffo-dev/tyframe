@@ -39,14 +39,14 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             str: A string representing the python code for the generated typed DataFrame class.
 
         """
-        return '\n'.join(self._raw_generate_typed_df_class(model))
+        return '\n'.join(self.raw_generate_typed_df_class(model))
 
     def generate_typed_df_file(
         self,
         model: type[BaseDfModel],
         output_path: Path,
     ) -> Path:
-        file = output_path / f'{to_snake(self._class_name(model))}.py'
+        file = output_path / f'{to_snake(self.class_name(model))}.py'
         file.parent.mkdir(exist_ok=True, parents=True)
         with file.open('w') as f:
             _ = f.write(self.generate_typed_df_class(model))
@@ -74,7 +74,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             res.extend(self.generate_for_input_file(file, output_path))
         return res
 
-    def _raw_generate_typed_df_class(
+    def raw_generate_typed_df_class(
         self,
         model: type[BaseDfModel],
     ) -> list[str]:
@@ -88,11 +88,11 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         """
         return [
-            *self._generate_imports(model),
-            *self._generate_class(model),
+            *self.generate_imports(model),
+            *self.generate_class(model),
         ]
 
-    def _generate_imports(
+    def generate_imports(
         self,
         model: type[BaseDfModel],
     ) -> list[str]:
@@ -103,13 +103,13 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         """
         return [
-            self._df_library_import(),
-            *self._additional_imports(),
-            self._model_import(model),
-            self._typed_df_base_class_import(),
+            self.df_library_import(),
+            *self.additional_imports(),
+            self.model_import(model),
+            self.typed_df_base_class_import(),
         ]
 
-    def _additional_imports(self) -> list[str]:
+    def additional_imports(self) -> list[str]:
         """Generate any additional import statements required for the typed DataFrame class.
 
         Returns:
@@ -119,7 +119,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         return []
 
     @abstractmethod
-    def _df_library_import(self) -> str:
+    def df_library_import(self) -> str:
         """Generate the import statement for the DataFrame library (e.g., pandas, polars).
 
         Returns:
@@ -128,7 +128,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         raise NotImplementedError  # pragma: no cover
 
-    def _model_import(self, model: type[BaseDfModel]) -> str:
+    def model_import(self, model: type[BaseDfModel]) -> str:
         """Generate the import statement for the Pydantic model.
 
         Args:
@@ -138,7 +138,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         return f'from {model.__module__} import {model.__name__}'
 
     @abstractmethod
-    def _typed_df_base_class_import(self) -> str:
+    def typed_df_base_class_import(self) -> str:
         """Generate the import statement for the base typed DataFrame class.
 
         Returns:
@@ -147,7 +147,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         raise NotImplementedError  # pragma: no cover
 
-    def _generate_class(
+    def generate_class(
         self,
         model: type[BaseDfModel],
     ) -> list[str]:
@@ -161,14 +161,14 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         """
         return [
-            self._generate_class_definition(model),
-            self._generate_model_type_variable(model),
-            *self._generate_class_variables(model),
-            *self._generate_columns_properties(model),
+            self.generate_class_definition(model),
+            self.generate_model_type_variable(model),
+            *self.generate_class_variables(model),
+            *self.generate_columns_properties(model),
         ]
 
     @abstractmethod
-    def _typed_df_name(self) -> str:
+    def typed_df_name(self) -> str:
         """Get the name of the base typed DataFrame class.
 
         Returns:
@@ -177,16 +177,16 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         raise NotImplementedError  # pragma: no cover
 
-    def _generate_class_definition(
+    def generate_class_definition(
         self,
         model: type[BaseDfModel],
     ) -> str:
-        return f'class {self._class_name(model)}({self._typed_df_name()}[{model.__name__}]):'
+        return f'class {self.class_name(model)}({self.typed_df_name()}[{model.__name__}]):'
 
-    def _class_name(self, model: type[BaseDfModel]) -> str:
+    def class_name(self, model: type[BaseDfModel]) -> str:
         return f'{model.__name__}{self._generated_class_suffix}'
 
-    def _generate_model_type_variable(self, model: type[BaseDfModel]) -> str:
+    def generate_model_type_variable(self, model: type[BaseDfModel]) -> str:
         """Generate the model type variable for the typed DataFrame class.
 
         Args:
@@ -198,7 +198,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return f'{self.config.indentation}model: type[{model.__name__}] = {model.__name__}'
 
-    def _generate_class_variable(
+    def generate_class_variable(
         self,
         col_name: str,
     ) -> str:
@@ -213,7 +213,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return f'{self.config.indentation}{col_name}: str = "{col_name}"'
 
-    def _generate_class_variables(
+    def generate_class_variables(
         self,
         model: type[BaseDfModel],
     ) -> list[str]:
@@ -226,10 +226,10 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             list[str]: A list of strings representing the class variables.
 
         """
-        return [self._generate_class_variable(col_name) for col_name in model.columns]
+        return [self.generate_class_variable(col_name) for col_name in model.columns]
 
     @abstractmethod
-    def _col_return_type(self) -> str:
+    def col_return_type(self) -> str:
         """Get the DataFrame library type (e.g., pandas.DataFrame, polars.DataFrame).
 
         Returns:
@@ -238,7 +238,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         raise NotImplementedError  # pragma: no cover
 
-    def _get_df_column(
+    def get_df_column(
         self,
         col_name: str,
     ) -> str:
@@ -253,7 +253,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return f'return self._df[self.{col_name}]'
 
-    def _generate_column_property(
+    def generate_column_property(
         self,
         col_name: str,
     ) -> list[str]:
@@ -269,11 +269,11 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         suffix = self.config.col_property_suffix
         return [
             f'{self.config.indentation}@property',
-            f'{self.config.indentation}def {col_name}{suffix}(self) -> {self._col_return_type()}:',
-            f'{self.config.indentation * 2}{self._get_df_column(col_name)}',
+            f'{self.config.indentation}def {col_name}{suffix}(self) -> {self.col_return_type()}:',
+            f'{self.config.indentation * 2}{self.get_df_column(col_name)}',
         ]
 
-    def _generate_columns_properties(
+    def generate_columns_properties(
         self,
         model: type[BaseDfModel],
     ) -> list[str]:
@@ -286,4 +286,4 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             list[str]: A list of strings representing the column properties.
 
         """
-        return [line for col_name in model.columns for line in self._generate_column_property(col_name)]
+        return [line for col_name in model.columns for line in self.generate_column_property(col_name)]

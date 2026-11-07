@@ -18,19 +18,19 @@ class PolarsTypedDfGenerator(BasedTypedDfGenerator):
         super().__init__(config, generated_class_suffix)
 
     @override
-    def _df_library_import(self) -> str:
+    def df_library_import(self) -> str:
         return 'import polars as pl'
 
     @override
-    def _typed_df_base_class_import(self) -> str:
+    def typed_df_base_class_import(self) -> str:
         return f'from {TypedPolarsDataFrame.__module__} import {TypedPolarsDataFrame.__name__}'
 
     @override
-    def _typed_df_name(self) -> str:
+    def typed_df_name(self) -> str:
         return TypedPolarsDataFrame.__name__
 
     @override
-    def _col_return_type(self) -> str:
+    def col_return_type(self) -> str:
         return 'pl.Series'
 
 
@@ -45,21 +45,21 @@ class LazyPolarsTypedDfGenerator(BasedTypedDfGenerator):
         super().__init__(config, generated_class_suffix)
 
     @override
-    def _df_library_import(self) -> str:
+    def df_library_import(self) -> str:
         return 'import polars as pl'
 
     @override
-    def _typed_df_base_class_import(self) -> str:
+    def typed_df_base_class_import(self) -> str:
         return f'from {TypedLazyPolarsDataFrame.__module__} import {TypedLazyPolarsDataFrame.__name__}'
 
     @override
-    def _typed_df_name(self) -> str:
+    def typed_df_name(self) -> str:
         return TypedLazyPolarsDataFrame.__name__
 
     @override
-    def _col_return_type(self) -> str:
+    def col_return_type(self) -> str:
         return 'pl.Series'
 
     @override
-    def _get_df_column(self, col_name: str) -> str:
+    def get_df_column(self, col_name: str) -> str:
         return f'return self._df.select(self.{col_name}).collect().to_series()'
