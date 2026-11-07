@@ -62,10 +62,9 @@ def test_polars_successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        PolarsValidator(),
+        PolarsValidator(config=validation_config),
         read_polars,
         strict_polars_comparator_relaxed_columns,
-        validation_config,
     )
 
 
@@ -82,10 +81,9 @@ def test_polars_unsucessfull_validation(
     validation_with_raise(
         input_data_path,
         model_type,
-        PolarsValidator(),
+        PolarsValidator(config=validation_config),
         read_polars,
         expected_error,
-        validation_config,
     )
 
 
@@ -108,10 +106,9 @@ def test_lazy_polars_successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        LazyPolarsValidator(),
+        LazyPolarsValidator(config=validation_config),
         read_lazy_polars,
         strict_polars_comparator_relaxed_columns,
-        validation_config,
     )
 
 
@@ -128,8 +125,7 @@ def test_lazy_polars_unsucessfull_validation(
     validation_with_raise(
         input_data_path,
         model_type,
-        LazyPolarsValidator(),
+        LazyPolarsValidator(config=validation_config),
         read_lazy_polars,
         expected_error,
-        validation_config,
     )

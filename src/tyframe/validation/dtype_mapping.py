@@ -45,6 +45,26 @@ class PyTypeNotFoundError(TyframeError):
         super().__init__(message)
 
 
+class DtypeMismatchError(TyframeError):
+    """Error raised when a dataframe column dtype doesn't match the expected Pydantic type."""
+
+    def __init__(self, column: str, df_dtype: object, expected_py_type: type, valid_dtypes: set[Any]) -> None:
+        """Initialize the error with details about the dtype mismatch.
+
+        Args:
+            column: The column name where the mismatch occurred.
+            df_dtype: The actual dtype of the column.
+            expected_py_type: The expected Python type from the Pydantic model.
+            valid_dtypes: Set of valid dtypes that map to the expected Python type.
+        """
+        valid_str = ', '.join(str(d) for d in sorted(valid_dtypes, key=str))
+        message = (
+            f"Column '{column}' has dtype '{df_dtype}' which doesn't match expected type '{expected_py_type}'. "
+            f"Valid dtypes for this type: {valid_str}"
+        )
+        super().__init__(message)
+
+
 # Type variable for the dataframe dtype
 DataFrameDtype = TypeVar('DataFrameDtype')
 

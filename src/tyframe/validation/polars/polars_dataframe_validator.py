@@ -6,10 +6,22 @@ from polars import DataFrame, LazyFrame
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
+from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.dtype_mapping import PolarsDtypeMapping
 
 
 class PolarsValidator(BaseValidator[DataFrame]):
     df_type: type[DataFrame] = DataFrame
+
+    def __init__(
+        self,
+        dtype_mapping: PolarsDtypeMapping | None = None,
+        config: TyframeValidationConfig | None = None,
+    ) -> None:
+        super().__init__(
+            dtype_mapping=dtype_mapping or PolarsDtypeMapping(),
+            config=config,
+        )
 
     @override
     def drop_df_columns(
@@ -37,6 +49,10 @@ class PolarsValidator(BaseValidator[DataFrame]):
         return df.with_columns(cols)
 
     @override
+    def get_df_dtype(self, df: DataFrame, column: str) -> pl.DataType:
+        return df.schema[column]
+
+    @override
     def _create_dataframe_from_records(
         self,
         records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
@@ -47,6 +63,16 @@ class PolarsValidator(BaseValidator[DataFrame]):
 
 class LazyPolarsValidator(BaseValidator[LazyFrame]):
     df_type: type[LazyFrame] = LazyFrame
+
+    def __init__(
+        self,
+        dtype_mapping: PolarsDtypeMapping | None = None,
+        config: TyframeValidationConfig | None = None,
+    ) -> None:
+        super().__init__(
+            dtype_mapping=dtype_mapping or PolarsDtypeMapping(),
+            config=config,
+        )
 
     @override
     def drop_df_columns(
@@ -72,6 +98,10 @@ class LazyPolarsValidator(BaseValidator[LazyFrame]):
     ) -> LazyFrame:
         cols = [pl.lit(defaults[key]).alias(key) for key in missing_columns]
         return df.with_columns(cols)
+
+    @override
+    def get_df_dtype(self, df: LazyFrame, column: str) -> pl.DataType:
+        return df.collect_schema()[column]
 
     @override
     def _create_dataframe_from_records(
