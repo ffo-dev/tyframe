@@ -28,5 +28,8 @@ jobs:
     - name: Set up Python
       run: uv sync --all-groups
 
+    - name: install poe
+      run: uv tool install poethepoet
+
     - name: check poe
       run: poe --version
