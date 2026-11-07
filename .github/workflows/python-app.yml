@@ -1,0 +1,44 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install uv
+      uses: astral-sh/setup-uv@v10.3.3
+
+    - name: Set up Python
+      run: uv python install
+
+    - name: Set up Python
+      run: uv sync --all-groups
+
+    - name: install poe
+      run: uv tool install poethepoet
+
+    - name: check poe
+      run: poe --version
+
+    - name: check format
+      run: poe check-format
+
+    - name: check pyright
+      run: poe check-pyright
+
+    - name: check test
+      run: poe test
