@@ -3,6 +3,7 @@ from tests.test_classes.models import TwoColModel
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 
 
+#### CODE-GEN START
 class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
     a: str = 'a'
@@ -13,3 +14,4 @@ class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     @property
     def b_col(self) -> pl.Series:
         return self._df[self.b]
+#### CODE-GEN END

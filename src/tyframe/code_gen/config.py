@@ -10,11 +10,23 @@ class BaseCodeGeneratorConfig(BaseModel):
 
     indentation_size: int = 4
 
+    code_gen_hook: str = 'CODE-GEN'
+
     @computed_field
     @property
     def indentation(self) -> str:
         """Get the indentation string based on indentation_size."""
         return ' ' * self.indentation_size
+
+    @computed_field
+    @property
+    def code_gen_start(self) -> str:
+        return f'#### {self.code_gen_hook} START'
+
+    @computed_field
+    @property
+    def code_gen_end(self) -> str:
+        return f'#### {self.code_gen_hook} END'
 
     @classmethod
     def from_file(cls, path: Path) -> Self:

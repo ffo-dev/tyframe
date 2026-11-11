@@ -89,7 +89,10 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return [
             *self.generate_imports(model),
+            *self.additional_imports(),
+            self.config.code_gen_start,
             *self.generate_class(model),
+            self.config.code_gen_end,
         ]
 
     def generate_imports(

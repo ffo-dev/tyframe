@@ -26,3 +26,4 @@ sequence = [
     { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/lazy_polars tyframe_config.yml lazy_polars Lpl" },
     { cmd = "poe format"},
 ]
+
