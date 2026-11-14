@@ -13,7 +13,7 @@
         "commands": [
             {
                 "match": ".py",
-                "cmd": "uv run ruff format ${file} && uv run ruff check ${file} --fix --config ruff.toml"
+                "cmd": "poe format $file"
             }
         ]
     }

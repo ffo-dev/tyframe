@@ -60,7 +60,7 @@ class DtypeMismatchError(TyframeError):
         valid_str = ', '.join(str(d) for d in sorted(valid_dtypes, key=str))
         message = (
             f"Column '{column}' has dtype '{df_dtype}' which doesn't match expected type '{expected_py_type}'. "
-            f"Valid dtypes for this type: {valid_str}"
+            f'Valid dtypes for this type: {valid_str}'
         )
         super().__init__(message)
 

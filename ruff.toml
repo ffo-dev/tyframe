@@ -1,5 +1,12 @@
 line-length = 120
 
+exclude = [
+    "src/tests/test_code_gen/test_pydantic_model_generator/expected/*",
+    "src/tests/test_code_gen/test_based_typed_df_generator/expected_output/*"
+]
+# Also skip excluded files when passed explicitly on the command line.
+force-exclude = true
+
 [lint.flake8-quotes]
 inline-quotes = "single"
 
@@ -16,11 +23,6 @@ ignore = [
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
-
-exclude = [
-    "src/tests/test_code_gen/test_pydantic_model_generator/expected/*",
-    "src/tests/test_code_gen/test_based_typed_df_generator/expected_output/*"
-]
 
 [lint.flake8-annotations]
 allow-star-arg-any = true
