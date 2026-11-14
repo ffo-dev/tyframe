@@ -13,7 +13,7 @@
         "commands": [
             {
                 "match": ".py",
-                "cmd": "poe format"
+                "cmd": "poe format $file"
             }
         ]
     }
