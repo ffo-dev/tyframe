@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.test_code_gen.test_based_typed_df_generator.input_class.example_models import OneColModel
 from tyframe.code_gen.based_typed_df_generator import BasedTypedDfGenerator, TypedDfGeneratorConfig
 from tyframe.code_gen.pandas import PandasTypedDfGenerator
 from tyframe.code_gen.polars import LazyPolarsTypedDfGenerator, PolarsTypedDfGenerator
@@ -233,3 +234,84 @@ indentation_size: 2
     for file in result_files:
         generated_content = file.read_text()
         assert '_col' in generated_content
+
+
+@pytest.mark.parametrize(
+    'generator_type',
+    [
+        PandasTypedDfGenerator,
+        PolarsTypedDfGenerator,
+        LazyPolarsTypedDfGenerator,
+    ],
+)
+def test_generate_typed_df_file_idempotent(
+    tmp_path: Path,
+    generator_type: type[BasedTypedDfGenerator],
+) -> None:
+    """Test that generate_typed_df_file is idempotent - running it twice produces the same result."""
+    # Use the local input_class.example_models file
+    input_file = Path(__file__).parent / 'input_class' / 'example_models.py'
+    output_path = tmp_path / 'output'
+    generator = generator_type(config=TypedDfGeneratorConfig())
+
+    # Generate the typed df files the first time
+    result_files = generator.generate_for_input_path(input_file, output_path)
+    assert len(result_files) == 3
+
+    # Read the content of all generated files
+    first_contents = {file.name: file.read_text() for file in result_files}
+
+    # Generate again - should update in place
+    result_files = generator.generate_for_input_path(input_file, output_path)
+
+    # Read the content again
+    second_contents = {file.name: file.read_text() for file in result_files}
+
+    # Content should be identical
+    assert first_contents == second_contents
+
+
+def test_generate_typed_df_file_preserves_existing_content_polars(
+    tmp_path: Path,
+) -> None:
+    """Test that generate_typed_df_file preserves content outside code-gen markers for Polars."""
+
+    generator = PolarsTypedDfGenerator(config=TypedDfGeneratorConfig())
+    output_path = tmp_path / 'output'
+    output_path.mkdir(parents=True)
+
+    # Create a file with existing content before and after markers
+    existing_file = output_path / 'one_col_model_pl.py'
+    existing_content = '''import polars as pl
+from tests.test_code_gen.test_based_typed_df_generator.input_class.example_models import OneColModel
+from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
+
+# This is a comment that should be preserved
+
+#### CODE-GEN START
+class OneColModelPl(TypedPolarsDataFrame[OneColModel]):
+    model: type[OneColModel] = OneColModel
+    a: str = "a"
+    @property
+    def a_col(self) -> pl.Series:
+        return self._df[self.a]
+#### CODE-GEN END
+
+    def custom_method(self) -> str:
+        """This is a custom method that should be preserved."""
+        return "custom"
+'''
+    existing_file.write_text(existing_content)
+
+    # Generate the file
+    result = generator.generate_typed_df_file(OneColModel, output_path)
+
+    # Read the generated content
+    generated_content = result.read_text()
+
+    # Check that the comment before the markers is preserved
+    assert '# This is a comment that should be preserved' in generated_content
+
+    # Check that the custom method after the markers is preserved
+    assert 'def custom_method(self) -> str:' in generated_content
+    assert 'This is a custom method that should be preserved' in generated_content

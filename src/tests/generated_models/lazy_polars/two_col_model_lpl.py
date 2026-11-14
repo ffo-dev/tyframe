@@ -4,6 +4,7 @@ from tests.test_classes.models import TwoColModel
 from tyframe.typed_df.polars.typed_lazy_polars import TypedLazyPolarsDataFrame
 
 
+#### CODE-GEN START
 class TwoColModelLpl(TypedLazyPolarsDataFrame[TwoColModel]):
     model: type[TwoColModel] = TwoColModel
     a: str = 'a'
@@ -14,3 +15,4 @@ class TwoColModelLpl(TypedLazyPolarsDataFrame[TwoColModel]):
     @property
     def b_col(self) -> pl.Series:
         return self._df.select(self.b).collect().to_series()
+#### CODE-GEN END

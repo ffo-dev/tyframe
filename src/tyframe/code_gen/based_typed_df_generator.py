@@ -41,6 +41,48 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return '\n'.join(self.raw_generate_typed_df_class(model))
 
+    def _find_code_gen_section(
+        self,
+        content: str,
+    ) -> tuple[str, str, str] | None:
+        """Find and extract the code-gen section from existing file content.
+
+        Returns:
+            A tuple of (before_start, code_gen_section, after_end) if both markers are found,
+            otherwise None.
+        """
+        start_marker = self.config.code_gen_start
+        end_marker = self.config.code_gen_end
+
+        start_idx = content.find(start_marker)
+        if start_idx == -1:
+            return None
+
+        content_after_start = content[start_idx:]
+        end_idx = content_after_start.find(end_marker)
+        if end_idx == -1:
+            return None
+
+        end_idx_in_full = start_idx + end_idx
+        before_start = content[:start_idx]
+        after_end = content[end_idx_in_full + len(end_marker) :]
+        code_gen_section = content[start_idx : end_idx_in_full + len(end_marker)]
+
+        return (before_start, code_gen_section, after_end)
+
+    def generate_code_gen_section(
+        self,
+        model: type[BaseDfModel],
+    ) -> str:
+        """Generate only the content between code-gen markers (including markers)."""
+        return '\n'.join(
+            [
+                self.config.code_gen_start,
+                *self.generate_class(model),
+                self.config.code_gen_end,
+            ]
+        )
+
     def generate_typed_df_file(
         self,
         model: type[BaseDfModel],
@@ -48,8 +90,25 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
     ) -> Path:
         file = output_path / f'{to_snake(self.class_name(model))}.py'
         file.parent.mkdir(exist_ok=True, parents=True)
+
+        if file.exists():
+            existing_content = file.read_text()
+            section_parts = self._find_code_gen_section(existing_content)
+
+            if section_parts is not None:
+                before_start, _, after_end = section_parts
+                new_code_gen_section = self.generate_code_gen_section(model)
+
+                with file.open('w') as f:
+                    f.write(before_start)
+                    f.write(new_code_gen_section)
+                    f.write(after_end)
+                return file
+
+        # File doesn't exist or markers not found, write full content
         with file.open('w') as f:
             _ = f.write(self.generate_typed_df_class(model))
+
         return file
 
     def generate_for_input_file(
@@ -89,7 +148,10 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return [
             *self.generate_imports(model),
+            *self.additional_imports(),
+            self.config.code_gen_start,
             *self.generate_class(model),
+            self.config.code_gen_end,
         ]
 
     def generate_imports(
