@@ -8,7 +8,10 @@ from tyframe.typed_df.polars.typed_lazy_polars import TypedLazyPolarsDataFrame
 class OtherExampleLpl(TypedLazyPolarsDataFrame[OtherExample]):
     model: type[OtherExample] = OtherExample
     yaba: str = 'yaba'
+
     @property
     def yaba_col(self) -> pl.Series:
         return self._df.select(self.yaba).collect().to_series()
+
+
 #### CODE-GEN END
