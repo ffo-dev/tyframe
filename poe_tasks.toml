@@ -27,3 +27,10 @@ sequence = [
     { cmd = "poe format"},
 ]
 
+
+[tool.poe.tasks.generate-example-wrappers]
+sequence = [
+    { cmd = "tyframe generate-typed-wrapper src/examples/source src/examples/generated/polars tyframe_config.yml polars Pl" },
+    { cmd = "poe format"},
+]
+
