@@ -6,35 +6,10 @@ import pandas as pd
 import polars as pl
 import pytest
 
+from tests.test_code_gen.verifiers import compare_with_expected
 from tyframe.code_gen.pandas.pandas_model_generator import PandasModelGenerator
 from tyframe.code_gen.polars.polars_model_generator import PolarsModelGenerator
 from tyframe.code_gen.pydantic_model_generator import PydanticModelGeneratorConfig
-
-
-def _compare_with_expected(
-    generated: str,
-    expected_path: Path,
-) -> None:
-    """Compare generated code with expected file, ignoring empty lines.
-
-    Args:
-        generated: The generated code string.
-        expected_path: Path to the expected output file.
-
-    Raises:
-        AssertionError: If the generated and expected content don't match.
-    """
-    expected = expected_path.read_text()
-
-    # Strip and split by lines, filtering out empty lines
-    generated_lines = [line for line in generated.strip().split('\n') if line.strip()]
-    expected_lines = [line for line in expected.strip().split('\n') if line.strip()]
-
-    # Compare line by line
-    assert generated_lines == expected_lines, (
-        f'Generated code does not match expected.\nGenerated:\n{generated}\nExpected:\n{expected}'
-    )
-
 
 # Test DataFrames
 SIMPLE_PANDAS_DF = pd.DataFrame(
@@ -94,7 +69,7 @@ def test_generate_simple_model(
 
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
-    _compare_with_expected(generated, expected_path)
+    compare_with_expected(generated, expected_path)
 
 
 @pytest.mark.parametrize(
@@ -117,7 +92,7 @@ def test_generate_complex_model(
 
     # Compare with expected
     expected_path = Path(__file__).parent / 'expected' / expected_file
-    _compare_with_expected(generated, expected_path)
+    compare_with_expected(generated, expected_path)
 
 
 @pytest.mark.parametrize(
@@ -170,7 +145,7 @@ def test_generate_model_file(
 
     # Check file content
     expected_path = Path(__file__).parent / 'expected' / expected_file
-    _compare_with_expected(file_path.read_text(), expected_path)
+    compare_with_expected(file_path.read_text(), expected_path)
 
 
 @pytest.mark.parametrize(

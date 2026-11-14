@@ -5,34 +5,10 @@ from pathlib import Path
 import pytest
 
 from tests.test_code_gen.test_based_typed_df_generator.input_class.example_models import OneColModel
+from tests.test_code_gen.verifiers import compare_with_expected
 from tyframe.code_gen.based_typed_df_generator import BasedTypedDfGenerator, TypedDfGeneratorConfig
 from tyframe.code_gen.pandas import PandasTypedDfGenerator
 from tyframe.code_gen.polars import LazyPolarsTypedDfGenerator, PolarsTypedDfGenerator
-
-
-def _compare_with_expected(
-    generated: str,
-    expected_path: Path,
-) -> None:
-    """Compare generated code with expected file, ignoring empty lines.
-
-    Args:
-        generated: The generated code string.
-        expected_path: Path to the expected output file.
-
-    Raises:
-        AssertionError: If the generated and expected content don't match.
-    """
-    expected = expected_path.read_text()
-
-    # Strip and split by lines, filtering out empty lines
-    generated_lines = [line for line in generated.strip().split('\n') if line.strip()]
-    expected_lines = [line for line in expected.strip().split('\n') if line.strip()]
-
-    # Compare line by line
-    assert generated_lines == expected_lines, (
-        f'Generated code does not match expected.\nGenerated:\n{generated}\nExpected:\n{expected}'
-    )
 
 
 # Parametrize the generators to test all implementations
@@ -79,7 +55,7 @@ def test_generate_for_input_path_with_single_file(
         expected_file = Path(__file__).parent / 'expected_output' / expected_suffix / result_file.name
         assert expected_file.exists(), f'Expected file {expected_file} does not exist'
         generated_content = result_file.read_text()
-        _compare_with_expected(generated_content, expected_file)
+        compare_with_expected(generated_content, expected_file)
 
 
 @pytest.mark.parametrize(
@@ -125,7 +101,7 @@ def test_generate_for_input_path_with_directory(
         expected_file = Path(__file__).parent / 'expected_output' / expected_suffix / result_file.name
         assert expected_file.exists(), f'Expected file {expected_file} does not exist'
         generated_content = result_file.read_text()
-        _compare_with_expected(generated_content, expected_file)
+        compare_with_expected(generated_content, expected_file)
 
 
 @pytest.mark.parametrize(
@@ -188,7 +164,7 @@ def test_generate_for_input_path_creates_output_directory(
         expected_file = Path(__file__).parent / 'expected_output' / expected_suffix / result_file.name
         assert expected_file.exists(), f'Expected file {expected_file} does not exist'
         generated_content = result_file.read_text()
-        _compare_with_expected(generated_content, expected_file)
+        compare_with_expected(generated_content, expected_file)
 
 
 @pytest.mark.parametrize(
