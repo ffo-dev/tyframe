@@ -3,7 +3,9 @@
 Add a ``BaseDfModel`` class to ``examples/source``, run
 ``poe generate-example-wrappers`` and a type-hinted wrapper (e.g. ``TransactionPl``)
 is generated in ``examples/generated``. The wrappers are then used in function
-signatures, so the data flowing through each method is explicit.
+signatures, so the data flowing through each method is explicit. Custom methods can
+be added to a wrapper below its ``CODE-GEN END`` marker (see ``transaction_pl.py``);
+they are preserved when the wrappers are regenerated.
 
 Run from the repo root:
 
@@ -12,7 +14,7 @@ Run from the repo root:
 
 import polars as pl
 
-from examples.generated import CustomerPl, CustomerSpendSummaryPl, RefundPl, RevenueByRegionPl, TransactionPl
+from examples.generated import CustomerPl, CustomerSpendSummaryPl, RefundPl, TransactionPl
 from examples.source.models import Customer, Refund, Transaction
 from tyframe.validation.polars import PolarsValidator
 
@@ -55,22 +57,6 @@ def load_refunds() -> RefundPl:
 def transactions_from_raw_df(raw: pl.DataFrame) -> TransactionPl:
     """Validate an existing polars dataframe against the model schema."""
     return TransactionPl(raw, VALIDATOR)
-
-
-def big_transactions(transactions: TransactionPl, min_amount: float) -> TransactionPl:
-    """Filter and sort; wrapper operations return the same typed wrapper, so calls chain."""
-    filtered = transactions.filter(pl.col(transactions.amount) > min_amount)
-    return filtered.sort(transactions.amount, ascending=False)
-
-
-def revenue_by_region(transactions: TransactionPl) -> RevenueByRegionPl:
-    """Aggregate into a typed report; column names come from the generated attributes."""
-    report = (
-        transactions.df.group_by(transactions.region)
-        .agg(pl.col(transactions.amount).sum().alias(RevenueByRegionPl.revenue))
-        .sort(RevenueByRegionPl.revenue, descending=True)
-    )
-    return RevenueByRegionPl(report, VALIDATOR)
 
 
 def net_spend_per_customer(
@@ -123,9 +109,9 @@ def main() -> None:
     refunds = load_refunds()
 
     print('Transactions over 50, biggest first:')  # noqa: T201
-    print(big_transactions(transactions, min_amount=50.0).df)  # noqa: T201
+    print(transactions.big_transactions(min_amount=50.0).df)  # noqa: T201
 
-    revenue = revenue_by_region(transactions)
+    revenue = transactions.revenue_by_region()
     print('Revenue by region:')  # noqa: T201
     print(revenue.df)  # noqa: T201
     top_region = revenue.first()
@@ -138,7 +124,7 @@ def main() -> None:
     print(f'VIP customers: {vips.count()}')  # noqa: T201
     for customer in vips.collect():
         print(f'  {customer.name} {customer.last_name}')  # noqa: T201
-    print(f'Largest transaction: {big_transactions(transactions, min_amount=50.0).first()}')  # noqa: T201
+    print(f'Largest transaction: {transactions.big_transactions(min_amount=50.0).first()}')  # noqa: T201
 
 
 if __name__ == '__main__':

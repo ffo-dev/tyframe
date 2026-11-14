@@ -11,16 +11,22 @@ class RefundPl(TypedPolarsDataFrame[Refund]):
     customer_id: str = 'customer_id'
     amount: str = 'amount'
     reason: str = 'reason'
+
     @property
     def id_col(self) -> pl.Series:
         return self._df[self.id]
+
     @property
     def customer_id_col(self) -> pl.Series:
         return self._df[self.customer_id]
+
     @property
     def amount_col(self) -> pl.Series:
         return self._df[self.amount]
+
     @property
     def reason_col(self) -> pl.Series:
         return self._df[self.reason]
+
+
 #### CODE-GEN END
