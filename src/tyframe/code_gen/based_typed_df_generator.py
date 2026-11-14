@@ -111,13 +111,148 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         return file
 
+    def _generate_init_file(
+        self,
+        output_path: Path,
+        generated_data: list[tuple[Path, str]],
+    ) -> Path:
+        """Generate or update the __init__.py file to import all generated typed df classes.
+
+        Args:
+            output_path: The output directory path.
+            generated_data: List of tuples containing (file_path, class_name).
+
+        Returns:
+            Path to the generated/updated __init__.py file.
+        """
+        init_file = output_path / '__init__.py'
+
+        # Collect all generated files from the output directory
+        # Include both newly generated files and existing ones
+        all_files_data: list[tuple[Path, str]] = []
+
+        # First, add all existing generated files (excluding __init__.py)
+        if output_path.exists():
+            for existing_file in output_path.glob('*.py'):
+                if existing_file.name == '__init__.py':
+                    continue
+                # Extract class name from file content
+                class_name = self._extract_class_name_from_file(existing_file)
+                if class_name:
+                    all_files_data.append((existing_file, class_name))
+
+        # Then, add/update with the newly generated files
+        # Use a dict to avoid duplicates, keyed by file path
+        file_dict = {f[0].name: (f[0], f[1]) for f in all_files_data}
+        for file_path, class_name in generated_data:
+            file_dict[file_path.name] = (file_path, class_name)
+
+        # Convert back to list and sort by class name
+        sorted_data = sorted(file_dict.values(), key=lambda x: x[1])
+
+        # Generate import statements
+        import_lines: list[str] = []
+        class_names: list[str] = []
+        for file_path, class_name in sorted_data:
+            module_name = file_path.stem
+            import_lines.append(f'from .{module_name} import {class_name}')
+            class_names.append(class_name)
+
+        # Handle __all__ export
+        all_export = f'__all__ = [{", ".join(f'"{name}"' for name in class_names)}]'
+
+        # Combine all lines
+        init_content = '\n'.join([*import_lines, '', all_export, ''])
+
+        # Write the file
+        init_file.parent.mkdir(exist_ok=True, parents=True)
+        with init_file.open('w') as f:
+            f.write(init_content)
+
+        return init_file
+
+    def _extract_class_name_from_file(self, file_path: Path) -> str | None:
+        """Extract the class name from a generated file.
+
+        Args:
+            file_path: Path to the generated file.
+
+        Returns:
+            The class name if found, otherwise None.
+        """
+        if not file_path.exists():
+            return None
+
+        content = file_path.read_text()
+        start_marker = self.config.code_gen_start
+        end_marker = self.config.code_gen_end
+
+        # Find the code-gen section
+        start_idx = content.find(start_marker)
+        if start_idx == -1:
+            return None
+
+        content_after_start = content[start_idx:]
+        end_idx = content_after_start.find(end_marker)
+        if end_idx == -1:
+            return None
+
+        # Extract the section between markers
+        code_gen_section = content[start_idx : start_idx + end_idx]
+
+        # Find the class definition line (first line after start marker that starts with 'class')
+        for line in code_gen_section.split('\n'):
+            stripped_line = line.strip()
+            if stripped_line.startswith('class '):
+                # Extract class name
+                return stripped_line.split(' ')[1].split('(')[0].split(':')[0]
+
+        return None
+
     def generate_for_input_file(
         self,
         input_file: Path,
         output_path: Path,
-    ) -> list[Path]:
+    ) -> list[tuple[Path, str]]:
+        """Generate typed df files for models in a single input file.
+
+        Args:
+            input_file: Path to the input Python file.
+            output_path: Path to the output directory.
+
+        Returns:
+            List of tuples containing (generated_file_path, class_name).
+        """
         models = find_child_classes(input_file, BaseDfModel)
-        return [self.generate_typed_df_file(model, output_path) for model in models]
+        return [(self.generate_typed_df_file(model, output_path), self.class_name(model)) for model in models]
+
+    def _generate_for_file(
+        self,
+        input_path: Path,
+        output_path: Path,
+    ) -> list[Path]:
+        files_and_classes = self.generate_for_input_file(input_path, output_path)
+        # Generate __init__.py for single file case
+        if files_and_classes:
+            _ = self._generate_init_file(output_path, files_and_classes)
+        return [f[0] for f in files_and_classes]
+
+    def _generate_for_files(
+        self,
+        input_path: Path,
+        output_path: Path,
+    ) -> list[Path]:
+        all_generated: list[tuple[Path, str]] = []
+        for file in input_path.glob('*.py'):
+            if file.name == '__init__.py':
+                continue
+            all_generated.extend(self.generate_for_input_file(file, output_path))
+
+        # Generate/update __init__.py with all the generated files
+        if all_generated:
+            _ = self._generate_init_file(output_path, all_generated)
+
+        return [f[0] for f in all_generated]
 
     def generate_for_input_path(
         self,
@@ -125,13 +260,14 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> list[Path]:
         if input_path.is_file():
-            return self.generate_for_input_file(input_path, output_path)
-        res: list[Path] = []
-        for file in input_path.glob('*.py'):
-            if file.name == '__init__.py':
-                continue
-            res.extend(self.generate_for_input_file(file, output_path))
-        return res
+            self._generate_for_file(
+                input_path=input_path,
+                output_path=output_path,
+            )
+        return self._generate_for_files(
+            input_path=input_path,
+            output_path=output_path,
+        )
 
     def raw_generate_typed_df_class(
         self,

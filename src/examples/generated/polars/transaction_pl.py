@@ -11,20 +11,16 @@ class TransactionPl(TypedPolarsDataFrame[Transaction]):
     customer_id: str = 'customer_id'
     amount: str = 'amount'
     region: str = 'region'
-
     @property
     def customer_id_col(self) -> pl.Series:
         return self._df[self.customer_id]
-
     @property
     def amount_col(self) -> pl.Series:
         return self._df[self.amount]
-
     @property
     def region_col(self) -> pl.Series:
         return self._df[self.region]
-
-    #### CODE-GEN END
+#### CODE-GEN END
 
     def total(self) -> float:
         return sum(self.amount_col)
