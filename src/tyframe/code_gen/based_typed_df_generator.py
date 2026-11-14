@@ -41,6 +41,17 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         return '\n'.join(self.raw_generate_typed_df_class(model))
 
+    def generate_code_gen_section(
+        self,
+        model: type[BaseDfModel],
+    ) -> str:
+        """Generate only the content between code-gen markers (including markers)."""
+        return '\n'.join([
+            self.config.code_gen_start,
+            *self.generate_class(model),
+            self.config.code_gen_end,
+        ])
+
     def generate_typed_df_file(
         self,
         model: type[BaseDfModel],
@@ -48,8 +59,50 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
     ) -> Path:
         file = output_path / f'{to_snake(self.class_name(model))}.py'
         file.parent.mkdir(exist_ok=True, parents=True)
-        with file.open('w') as f:
-            _ = f.write(self.generate_typed_df_class(model))
+
+        # If file exists, update only the code-gen section; otherwise create new file
+        if file.exists():
+            existing_content = file.read_text()
+
+            # Split the existing file into parts
+            start_marker = self.config.code_gen_start
+            end_marker = self.config.code_gen_end
+
+            # Find the start marker
+            start_idx = existing_content.find(start_marker)
+
+            if start_idx != -1:
+                # Start marker found, look for end marker
+                content_after_start = existing_content[start_idx:]
+                end_idx = content_after_start.find(end_marker)
+
+                if end_idx != -1:
+                    # Both markers found, construct the new file content
+                    end_idx_in_full = start_idx + end_idx
+                    before_start = existing_content[:start_idx]
+                    after_end = existing_content[end_idx_in_full + len(end_marker):]
+
+                    # Generate only the code-gen section (with markers)
+                    new_code_gen_section = self.generate_code_gen_section(model)
+
+                    # Write the updated file
+                    with file.open('w') as f:
+                        f.write(before_start)
+                        f.write(new_code_gen_section)
+                        f.write(after_end)
+                else:
+                    # Only start marker found, write the entire new content
+                    with file.open('w') as f:
+                        _ = f.write(self.generate_typed_df_class(model))
+            else:
+                # No start marker found, write the entire new content
+                with file.open('w') as f:
+                    _ = f.write(self.generate_typed_df_class(model))
+        else:
+            # File doesn't exist, create it with the full content
+            with file.open('w') as f:
+                _ = f.write(self.generate_typed_df_class(model))
+
         return file
 
     def generate_for_input_file(
