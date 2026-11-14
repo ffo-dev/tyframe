@@ -232,11 +232,11 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> list[Path]:
         """Generate typed df files from a single input file and update __init__.py.
-        
+
         Args:
             input_file: Path to a single input Python file.
             output_path: Path to the output directory.
-            
+
         Returns:
             List of Path objects for the generated files.
         """
@@ -251,11 +251,11 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> list[Path]:
         """Generate typed df files from all files in a directory and update __init__.py.
-        
+
         Args:
             input_dir: Path to the input directory.
             output_path: Path to the output directory.
-            
+
         Returns:
             List of Path objects for the generated files.
         """
