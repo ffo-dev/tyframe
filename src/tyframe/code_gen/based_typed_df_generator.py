@@ -226,29 +226,45 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         models = find_child_classes(input_file, BaseDfModel)
         return [(self.generate_typed_df_file(model, output_path), self.class_name(model)) for model in models]
 
-    def _generate_for_file(
+    def _generate_from_single_file(
         self,
-        input_path: Path,
+        input_file: Path,
         output_path: Path,
     ) -> list[Path]:
-        files_and_classes = self.generate_for_input_file(input_path, output_path)
-        # Generate __init__.py for single file case
+        """Generate typed df files from a single input file and update __init__.py.
+        
+        Args:
+            input_file: Path to a single input Python file.
+            output_path: Path to the output directory.
+            
+        Returns:
+            List of Path objects for the generated files.
+        """
+        files_and_classes = self.generate_for_input_file(input_file, output_path)
         if files_and_classes:
             _ = self._generate_init_file(output_path, files_and_classes)
         return [f[0] for f in files_and_classes]
 
-    def _generate_for_files(
+    def _generate_from_directory(
         self,
-        input_path: Path,
+        input_dir: Path,
         output_path: Path,
     ) -> list[Path]:
+        """Generate typed df files from all files in a directory and update __init__.py.
+        
+        Args:
+            input_dir: Path to the input directory.
+            output_path: Path to the output directory.
+            
+        Returns:
+            List of Path objects for the generated files.
+        """
         all_generated: list[tuple[Path, str]] = []
-        for file in input_path.glob('*.py'):
+        for file in input_dir.glob('*.py'):
             if file.name == '__init__.py':
                 continue
             all_generated.extend(self.generate_for_input_file(file, output_path))
 
-        # Generate/update __init__.py with all the generated files
         if all_generated:
             _ = self._generate_init_file(output_path, all_generated)
 
@@ -260,14 +276,8 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         output_path: Path,
     ) -> list[Path]:
         if input_path.is_file():
-            self._generate_for_file(
-                input_path=input_path,
-                output_path=output_path,
-            )
-        return self._generate_for_files(
-            input_path=input_path,
-            output_path=output_path,
-        )
+            return self._generate_from_single_file(input_path, output_path)
+        return self._generate_from_directory(input_path, output_path)
 
     def raw_generate_typed_df_class(
         self,
