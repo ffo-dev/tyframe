@@ -2,7 +2,10 @@
 cmd = "pytest --cov=src/tyframe src/tests/ --cov-report=term-missing"
 
 [tool.poe.tasks.format]
-cmd = "uv run ruff check --fix --config ruff.toml"
+sequence = [
+    { cmd = "uv run ruff format --config ruff.toml"},
+    { cmd = "uv run ruff check --fix --config ruff.toml"}
+]
 
 [tool.poe.tasks.format-unsafe]
 cmd = "uv run ruff check --unsafe-fixes --fix --config ruff.toml"
