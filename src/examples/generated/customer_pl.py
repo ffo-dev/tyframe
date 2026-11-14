@@ -1,4 +1,5 @@
 import polars as pl
+
 from examples.source.models import Customer
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 
