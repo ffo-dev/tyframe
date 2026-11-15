@@ -13,6 +13,7 @@ Run from the repo root:
 import statistics
 import time
 from collections.abc import Callable
+from dataclasses import dataclass
 from functools import partial
 from typing import Annotated
 
@@ -33,6 +34,11 @@ PANDAS_WRAPPERS = {1: C1Pd, 10: C10Pd, 100: C100Pd}
 POLARS_WRAPPERS = {1: C1Pl, 10: C10Pl, 100: C100Pl}
 DEFAULT_ROWS = [100, 10_000, 1_000_000]
 
+type PandasDataFrameBuilder = Callable[[type[BaseDfModel]], pd.DataFrame]
+type PolarsDataFrameBuilder = Callable[[type[BaseDfModel]], pl.DataFrame]
+type PandasWrapperClass = type[C1Pd | C10Pd | C100Pd]
+type PolarsWrapperClass = type[C1Pl | C10Pl | C100Pl]
+
 
 def build_raw_polars_df(
     model: type[BaseDfModel],
@@ -50,30 +56,7 @@ def build_raw_pandas_df(
     return pd.DataFrame({col: range(n_rows) for col in model.columns})
 
 
-def measure_validation(
-    validate: Callable[[], object],
-    repeat: int,
-) -> list[float]:
-    """Return the validation times in seconds for ``repeat`` runs."""
-    times: list[float] = []
-    for _ in range(repeat):
-        start = time.perf_counter()
-        validate()
-        times.append(time.perf_counter() - start)
-    return times
-
-
-def report_validation(
-    library: str,
-    n_cols: int,
-    n_rows: int,
-    times: list[float],
-) -> None:
-    mean_ms = statistics.fmean(times) * 1000
-    std_ms = statistics.pstdev(times) * 1000
-    typer.echo(f'{library:>7} | {n_cols:>6} | {n_rows:>9} | {mean_ms:>10.3f} | {std_ms:>10.3f}')
-
-
+@dataclass(frozen=True, slots=True)
 class BenchmarkResult:
     library: str
     n_col: int
@@ -83,6 +66,62 @@ class BenchmarkResult:
     validation_config: TyframeValidationConfig
 
 
+def benchmark_pandas(
+    config: TyframeValidationConfig,
+    build_dataframe_method: PandasDataFrameBuilder,
+    wrapper_cls: PandasWrapperClass,
+    repeat: int,
+) -> BenchmarkResult:
+    """Benchmark validation of a pandas dataframe."""
+    if repeat < 1:
+        raise ValueError(repeat)
+
+    df = build_dataframe_method(wrapper_cls.model)
+    validator = PandasValidator(config=config)
+    times: list[float] = []
+    for _ in range(repeat):
+        start = time.perf_counter()
+        wrapper_cls(df, validator)
+        times.append(time.perf_counter() - start)
+
+    return BenchmarkResult(
+        library='pandas',
+        n_col=len(df.columns),
+        n_row=len(df),
+        mean_ms=statistics.fmean(times) * 1000,
+        std_ms=statistics.pstdev(times) * 1000,
+        validation_config=config,
+    )
+
+
+def benchmark_polars(
+    config: TyframeValidationConfig,
+    build_dataframe_method: PolarsDataFrameBuilder,
+    wrapper_cls: PolarsWrapperClass,
+    repeat: int,
+) -> BenchmarkResult:
+    """Benchmark validation of a polars dataframe."""
+    if repeat < 1:
+        raise ValueError(repeat)
+
+    df = build_dataframe_method(wrapper_cls.model)
+    validator = PolarsValidator(config=config)
+    times: list[float] = []
+    for _ in range(repeat):
+        start = time.perf_counter()
+        wrapper_cls(df, validator)
+        times.append(time.perf_counter() - start)
+
+    return BenchmarkResult(
+        library='polars',
+        n_col=len(df.columns),
+        n_row=len(df),
+        mean_ms=statistics.fmean(times) * 1000,
+        std_ms=statistics.pstdev(times) * 1000,
+        validation_config=config,
+    )
+
+
 @app.command()
 def main(
     repeat: Annotated[
@@ -90,21 +129,35 @@ def main(
         typer.Option(help='Runs per case; mean and stddev in ms are reported.'),
     ] = 1000,
 ) -> None:
-    pandas_validator = PandasValidator(config=TyframeValidationConfig(validate_dtypes=True))
-    polars_validator = PolarsValidator(config=TyframeValidationConfig(validate_dtypes=True))
+    configs = [TyframeValidationConfig(validate_dtypes=True), TyframeValidationConfig(validate_dtypes=False)]
 
-    typer.echo(f'{"library":>7} | {"cols":>6} | {"rows":>9} | {"mean (ms)":>10} | {"std (ms)":>10}')
-    for n_cols, wrapper_cls in PANDAS_WRAPPERS.items():
-        for n_rows in DEFAULT_ROWS:
-            df = build_raw_pandas_df(wrapper_cls.model, n_rows)
-            times = measure_validation(partial(wrapper_cls, df, pandas_validator), repeat)
-            report_validation('pandas', n_cols, n_rows, times)
+    typer.echo(f'{"library":>7} | {"cols":>6} | {"rows":>9} | {"mean (ms)":>10} | {"std (ms)":>10} | config')
+    for config in configs:
+        for wrapper_cls in PANDAS_WRAPPERS.values():
+            for n_rows in DEFAULT_ROWS:
+                result = benchmark_pandas(
+                    config,
+                    partial(build_raw_pandas_df, n_rows=n_rows),
+                    wrapper_cls,
+                    repeat,
+                )
+                typer.echo(
+                    f'{result.library:>7} | {result.n_col:>6} | {result.n_row:>9} | '
+                    f'{result.mean_ms:>10.3f} | {result.std_ms:>10.3f} | {result.validation_config}'
+                )
 
-    for n_cols, wrapper_cls in POLARS_WRAPPERS.items():
-        for n_rows in DEFAULT_ROWS:
-            df = build_raw_polars_df(wrapper_cls.model, n_rows)
-            times = measure_validation(partial(wrapper_cls, df, polars_validator), repeat)
-            report_validation('polars', n_cols, n_rows, times)
+        for wrapper_cls in POLARS_WRAPPERS.values():
+            for n_rows in DEFAULT_ROWS:
+                result = benchmark_polars(
+                    config,
+                    partial(build_raw_polars_df, n_rows=n_rows),
+                    wrapper_cls,
+                    repeat,
+                )
+                typer.echo(
+                    f'{result.library:>7} | {result.n_col:>6} | {result.n_row:>9} | '
+                    f'{result.mean_ms:>10.3f} | {result.std_ms:>10.3f} | {result.validation_config}'
+                )
 
 
 if __name__ == '__main__':
