@@ -48,5 +48,7 @@ sequence = [
 ]
 
 [tool.poe.tasks.benchmark]
-cmd = "uv run python -m benchmark --repeat 1000"
-
+cmd = "uv run python -m benchmark --repeat $repeat"
+args = [
+    { name = "repeat", default = 1000, help = "Num repeats" }
+]

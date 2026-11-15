@@ -2,120 +2,120 @@ from tyframe.base_df_model import BaseDfModel
 
 
 class C1(BaseDfModel):
-    c_1: int
+    c_1: int = 0
 
 
 class C10(BaseDfModel):
-    c_1: int
-    c_2: int
-    c_3: int
-    c_4: int
-    c_5: int
-    c_6: int
-    c_7: int
-    c_8: int
-    c_9: int
-    c_10: int
+    c_1: int = 0
+    c_2: int = 0
+    c_3: int = 0
+    c_4: int = 0
+    c_5: int = 0
+    c_6: int = 0
+    c_7: int = 0
+    c_8: int = 0
+    c_9: int = 0
+    c_10: int = 0
 
 
 class C100(BaseDfModel):
-    c_1: int
-    c_2: int
-    c_3: int
-    c_4: int
-    c_5: int
-    c_6: int
-    c_7: int
-    c_8: int
-    c_9: int
-    c_10: int
-    c_11: int
-    c_12: int
-    c_13: int
-    c_14: int
-    c_15: int
-    c_16: int
-    c_17: int
-    c_18: int
-    c_19: int
-    c_20: int
-    c_21: int
-    c_22: int
-    c_23: int
-    c_24: int
-    c_25: int
-    c_26: int
-    c_27: int
-    c_28: int
-    c_29: int
-    c_30: int
-    c_31: int
-    c_32: int
-    c_33: int
-    c_34: int
-    c_35: int
-    c_36: int
-    c_37: int
-    c_38: int
-    c_39: int
-    c_40: int
-    c_41: int
-    c_42: int
-    c_43: int
-    c_44: int
-    c_45: int
-    c_46: int
-    c_47: int
-    c_48: int
-    c_49: int
-    c_50: int
-    c_51: int
-    c_52: int
-    c_53: int
-    c_54: int
-    c_55: int
-    c_56: int
-    c_57: int
-    c_58: int
-    c_59: int
-    c_60: int
-    c_61: int
-    c_62: int
-    c_63: int
-    c_64: int
-    c_65: int
-    c_66: int
-    c_67: int
-    c_68: int
-    c_69: int
-    c_70: int
-    c_71: int
-    c_72: int
-    c_73: int
-    c_74: int
-    c_75: int
-    c_76: int
-    c_77: int
-    c_78: int
-    c_79: int
-    c_80: int
-    c_81: int
-    c_82: int
-    c_83: int
-    c_84: int
-    c_85: int
-    c_86: int
-    c_87: int
-    c_88: int
-    c_89: int
-    c_90: int
-    c_91: int
-    c_92: int
-    c_93: int
-    c_94: int
-    c_95: int
-    c_96: int
-    c_97: int
-    c_98: int
-    c_99: int
-    c_100: int
+    c_1: int = 0
+    c_2: int = 0
+    c_3: int = 0
+    c_4: int = 0
+    c_5: int = 0
+    c_6: int = 0
+    c_7: int = 0
+    c_8: int = 0
+    c_9: int = 0
+    c_10: int = 0
+    c_11: int = 0
+    c_12: int = 0
+    c_13: int = 0
+    c_14: int = 0
+    c_15: int = 0
+    c_16: int = 0
+    c_17: int = 0
+    c_18: int = 0
+    c_19: int = 0
+    c_20: int = 0
+    c_21: int = 0
+    c_22: int = 0
+    c_23: int = 0
+    c_24: int = 0
+    c_25: int = 0
+    c_26: int = 0
+    c_27: int = 0
+    c_28: int = 0
+    c_29: int = 0
+    c_30: int = 0
+    c_31: int = 0
+    c_32: int = 0
+    c_33: int = 0
+    c_34: int = 0
+    c_35: int = 0
+    c_36: int = 0
+    c_37: int = 0
+    c_38: int = 0
+    c_39: int = 0
+    c_40: int = 0
+    c_41: int = 0
+    c_42: int = 0
+    c_43: int = 0
+    c_44: int = 0
+    c_45: int = 0
+    c_46: int = 0
+    c_47: int = 0
+    c_48: int = 0
+    c_49: int = 0
+    c_50: int = 0
+    c_51: int = 0
+    c_52: int = 0
+    c_53: int = 0
+    c_54: int = 0
+    c_55: int = 0
+    c_56: int = 0
+    c_57: int = 0
+    c_58: int = 0
+    c_59: int = 0
+    c_60: int = 0
+    c_61: int = 0
+    c_62: int = 0
+    c_63: int = 0
+    c_64: int = 0
+    c_65: int = 0
+    c_66: int = 0
+    c_67: int = 0
+    c_68: int = 0
+    c_69: int = 0
+    c_70: int = 0
+    c_71: int = 0
+    c_72: int = 0
+    c_73: int = 0
+    c_74: int = 0
+    c_75: int = 0
+    c_76: int = 0
+    c_77: int = 0
+    c_78: int = 0
+    c_79: int = 0
+    c_80: int = 0
+    c_81: int = 0
+    c_82: int = 0
+    c_83: int = 0
+    c_84: int = 0
+    c_85: int = 0
+    c_86: int = 0
+    c_87: int = 0
+    c_88: int = 0
+    c_89: int = 0
+    c_90: int = 0
+    c_91: int = 0
+    c_92: int = 0
+    c_93: int = 0
+    c_94: int = 0
+    c_95: int = 0
+    c_96: int = 0
+    c_97: int = 0
+    c_98: int = 0
+    c_99: int = 0
+    c_100: int = 0
