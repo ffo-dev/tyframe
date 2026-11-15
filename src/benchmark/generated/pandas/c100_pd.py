@@ -1,11 +1,10 @@
-import polars as pl
-
+import pandas as pd
 from benchmark.source_classes.models import C100
-from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
+from tyframe.typed_df.pandas.typed_pandas import TypedPandasDataFrame
 
 
 #### CODE-GEN START
-class C100Pl(TypedPolarsDataFrame[C100]):
+class C100Pd(TypedPandasDataFrame[C100]):
     model: type[C100] = C100
     c_1: str = 'c_1'
     c_2: str = 'c_2'
@@ -109,403 +108,403 @@ class C100Pl(TypedPolarsDataFrame[C100]):
     c_100: str = 'c_100'
 
     @property
-    def c_1_col(self) -> pl.Series:
+    def c_1_col(self) -> pd.Series:
         return self._df[self.c_1]
 
     @property
-    def c_2_col(self) -> pl.Series:
+    def c_2_col(self) -> pd.Series:
         return self._df[self.c_2]
 
     @property
-    def c_3_col(self) -> pl.Series:
+    def c_3_col(self) -> pd.Series:
         return self._df[self.c_3]
 
     @property
-    def c_4_col(self) -> pl.Series:
+    def c_4_col(self) -> pd.Series:
         return self._df[self.c_4]
 
     @property
-    def c_5_col(self) -> pl.Series:
+    def c_5_col(self) -> pd.Series:
         return self._df[self.c_5]
 
     @property
-    def c_6_col(self) -> pl.Series:
+    def c_6_col(self) -> pd.Series:
         return self._df[self.c_6]
 
     @property
-    def c_7_col(self) -> pl.Series:
+    def c_7_col(self) -> pd.Series:
         return self._df[self.c_7]
 
     @property
-    def c_8_col(self) -> pl.Series:
+    def c_8_col(self) -> pd.Series:
         return self._df[self.c_8]
 
     @property
-    def c_9_col(self) -> pl.Series:
+    def c_9_col(self) -> pd.Series:
         return self._df[self.c_9]
 
     @property
-    def c_10_col(self) -> pl.Series:
+    def c_10_col(self) -> pd.Series:
         return self._df[self.c_10]
 
     @property
-    def c_11_col(self) -> pl.Series:
+    def c_11_col(self) -> pd.Series:
         return self._df[self.c_11]
 
     @property
-    def c_12_col(self) -> pl.Series:
+    def c_12_col(self) -> pd.Series:
         return self._df[self.c_12]
 
     @property
-    def c_13_col(self) -> pl.Series:
+    def c_13_col(self) -> pd.Series:
         return self._df[self.c_13]
 
     @property
-    def c_14_col(self) -> pl.Series:
+    def c_14_col(self) -> pd.Series:
         return self._df[self.c_14]
 
     @property
-    def c_15_col(self) -> pl.Series:
+    def c_15_col(self) -> pd.Series:
         return self._df[self.c_15]
 
     @property
-    def c_16_col(self) -> pl.Series:
+    def c_16_col(self) -> pd.Series:
         return self._df[self.c_16]
 
     @property
-    def c_17_col(self) -> pl.Series:
+    def c_17_col(self) -> pd.Series:
         return self._df[self.c_17]
 
     @property
-    def c_18_col(self) -> pl.Series:
+    def c_18_col(self) -> pd.Series:
         return self._df[self.c_18]
 
     @property
-    def c_19_col(self) -> pl.Series:
+    def c_19_col(self) -> pd.Series:
         return self._df[self.c_19]
 
     @property
-    def c_20_col(self) -> pl.Series:
+    def c_20_col(self) -> pd.Series:
         return self._df[self.c_20]
 
     @property
-    def c_21_col(self) -> pl.Series:
+    def c_21_col(self) -> pd.Series:
         return self._df[self.c_21]
 
     @property
-    def c_22_col(self) -> pl.Series:
+    def c_22_col(self) -> pd.Series:
         return self._df[self.c_22]
 
     @property
-    def c_23_col(self) -> pl.Series:
+    def c_23_col(self) -> pd.Series:
         return self._df[self.c_23]
 
     @property
-    def c_24_col(self) -> pl.Series:
+    def c_24_col(self) -> pd.Series:
         return self._df[self.c_24]
 
     @property
-    def c_25_col(self) -> pl.Series:
+    def c_25_col(self) -> pd.Series:
         return self._df[self.c_25]
 
     @property
-    def c_26_col(self) -> pl.Series:
+    def c_26_col(self) -> pd.Series:
         return self._df[self.c_26]
 
     @property
-    def c_27_col(self) -> pl.Series:
+    def c_27_col(self) -> pd.Series:
         return self._df[self.c_27]
 
     @property
-    def c_28_col(self) -> pl.Series:
+    def c_28_col(self) -> pd.Series:
         return self._df[self.c_28]
 
     @property
-    def c_29_col(self) -> pl.Series:
+    def c_29_col(self) -> pd.Series:
         return self._df[self.c_29]
 
     @property
-    def c_30_col(self) -> pl.Series:
+    def c_30_col(self) -> pd.Series:
         return self._df[self.c_30]
 
     @property
-    def c_31_col(self) -> pl.Series:
+    def c_31_col(self) -> pd.Series:
         return self._df[self.c_31]
 
     @property
-    def c_32_col(self) -> pl.Series:
+    def c_32_col(self) -> pd.Series:
         return self._df[self.c_32]
 
     @property
-    def c_33_col(self) -> pl.Series:
+    def c_33_col(self) -> pd.Series:
         return self._df[self.c_33]
 
     @property
-    def c_34_col(self) -> pl.Series:
+    def c_34_col(self) -> pd.Series:
         return self._df[self.c_34]
 
     @property
-    def c_35_col(self) -> pl.Series:
+    def c_35_col(self) -> pd.Series:
         return self._df[self.c_35]
 
     @property
-    def c_36_col(self) -> pl.Series:
+    def c_36_col(self) -> pd.Series:
         return self._df[self.c_36]
 
     @property
-    def c_37_col(self) -> pl.Series:
+    def c_37_col(self) -> pd.Series:
         return self._df[self.c_37]
 
     @property
-    def c_38_col(self) -> pl.Series:
+    def c_38_col(self) -> pd.Series:
         return self._df[self.c_38]
 
     @property
-    def c_39_col(self) -> pl.Series:
+    def c_39_col(self) -> pd.Series:
         return self._df[self.c_39]
 
     @property
-    def c_40_col(self) -> pl.Series:
+    def c_40_col(self) -> pd.Series:
         return self._df[self.c_40]
 
     @property
-    def c_41_col(self) -> pl.Series:
+    def c_41_col(self) -> pd.Series:
         return self._df[self.c_41]
 
     @property
-    def c_42_col(self) -> pl.Series:
+    def c_42_col(self) -> pd.Series:
         return self._df[self.c_42]
 
     @property
-    def c_43_col(self) -> pl.Series:
+    def c_43_col(self) -> pd.Series:
         return self._df[self.c_43]
 
     @property
-    def c_44_col(self) -> pl.Series:
+    def c_44_col(self) -> pd.Series:
         return self._df[self.c_44]
 
     @property
-    def c_45_col(self) -> pl.Series:
+    def c_45_col(self) -> pd.Series:
         return self._df[self.c_45]
 
     @property
-    def c_46_col(self) -> pl.Series:
+    def c_46_col(self) -> pd.Series:
         return self._df[self.c_46]
 
     @property
-    def c_47_col(self) -> pl.Series:
+    def c_47_col(self) -> pd.Series:
         return self._df[self.c_47]
 
     @property
-    def c_48_col(self) -> pl.Series:
+    def c_48_col(self) -> pd.Series:
         return self._df[self.c_48]
 
     @property
-    def c_49_col(self) -> pl.Series:
+    def c_49_col(self) -> pd.Series:
         return self._df[self.c_49]
 
     @property
-    def c_50_col(self) -> pl.Series:
+    def c_50_col(self) -> pd.Series:
         return self._df[self.c_50]
 
     @property
-    def c_51_col(self) -> pl.Series:
+    def c_51_col(self) -> pd.Series:
         return self._df[self.c_51]
 
     @property
-    def c_52_col(self) -> pl.Series:
+    def c_52_col(self) -> pd.Series:
         return self._df[self.c_52]
 
     @property
-    def c_53_col(self) -> pl.Series:
+    def c_53_col(self) -> pd.Series:
         return self._df[self.c_53]
 
     @property
-    def c_54_col(self) -> pl.Series:
+    def c_54_col(self) -> pd.Series:
         return self._df[self.c_54]
 
     @property
-    def c_55_col(self) -> pl.Series:
+    def c_55_col(self) -> pd.Series:
         return self._df[self.c_55]
 
     @property
-    def c_56_col(self) -> pl.Series:
+    def c_56_col(self) -> pd.Series:
         return self._df[self.c_56]
 
     @property
-    def c_57_col(self) -> pl.Series:
+    def c_57_col(self) -> pd.Series:
         return self._df[self.c_57]
 
     @property
-    def c_58_col(self) -> pl.Series:
+    def c_58_col(self) -> pd.Series:
         return self._df[self.c_58]
 
     @property
-    def c_59_col(self) -> pl.Series:
+    def c_59_col(self) -> pd.Series:
         return self._df[self.c_59]
 
     @property
-    def c_60_col(self) -> pl.Series:
+    def c_60_col(self) -> pd.Series:
         return self._df[self.c_60]
 
     @property
-    def c_61_col(self) -> pl.Series:
+    def c_61_col(self) -> pd.Series:
         return self._df[self.c_61]
 
     @property
-    def c_62_col(self) -> pl.Series:
+    def c_62_col(self) -> pd.Series:
         return self._df[self.c_62]
 
     @property
-    def c_63_col(self) -> pl.Series:
+    def c_63_col(self) -> pd.Series:
         return self._df[self.c_63]
 
     @property
-    def c_64_col(self) -> pl.Series:
+    def c_64_col(self) -> pd.Series:
         return self._df[self.c_64]
 
     @property
-    def c_65_col(self) -> pl.Series:
+    def c_65_col(self) -> pd.Series:
         return self._df[self.c_65]
 
     @property
-    def c_66_col(self) -> pl.Series:
+    def c_66_col(self) -> pd.Series:
         return self._df[self.c_66]
 
     @property
-    def c_67_col(self) -> pl.Series:
+    def c_67_col(self) -> pd.Series:
         return self._df[self.c_67]
 
     @property
-    def c_68_col(self) -> pl.Series:
+    def c_68_col(self) -> pd.Series:
         return self._df[self.c_68]
 
     @property
-    def c_69_col(self) -> pl.Series:
+    def c_69_col(self) -> pd.Series:
         return self._df[self.c_69]
 
     @property
-    def c_70_col(self) -> pl.Series:
+    def c_70_col(self) -> pd.Series:
         return self._df[self.c_70]
 
     @property
-    def c_71_col(self) -> pl.Series:
+    def c_71_col(self) -> pd.Series:
         return self._df[self.c_71]
 
     @property
-    def c_72_col(self) -> pl.Series:
+    def c_72_col(self) -> pd.Series:
         return self._df[self.c_72]
 
     @property
-    def c_73_col(self) -> pl.Series:
+    def c_73_col(self) -> pd.Series:
         return self._df[self.c_73]
 
     @property
-    def c_74_col(self) -> pl.Series:
+    def c_74_col(self) -> pd.Series:
         return self._df[self.c_74]
 
     @property
-    def c_75_col(self) -> pl.Series:
+    def c_75_col(self) -> pd.Series:
         return self._df[self.c_75]
 
     @property
-    def c_76_col(self) -> pl.Series:
+    def c_76_col(self) -> pd.Series:
         return self._df[self.c_76]
 
     @property
-    def c_77_col(self) -> pl.Series:
+    def c_77_col(self) -> pd.Series:
         return self._df[self.c_77]
 
     @property
-    def c_78_col(self) -> pl.Series:
+    def c_78_col(self) -> pd.Series:
         return self._df[self.c_78]
 
     @property
-    def c_79_col(self) -> pl.Series:
+    def c_79_col(self) -> pd.Series:
         return self._df[self.c_79]
 
     @property
-    def c_80_col(self) -> pl.Series:
+    def c_80_col(self) -> pd.Series:
         return self._df[self.c_80]
 
     @property
-    def c_81_col(self) -> pl.Series:
+    def c_81_col(self) -> pd.Series:
         return self._df[self.c_81]
 
     @property
-    def c_82_col(self) -> pl.Series:
+    def c_82_col(self) -> pd.Series:
         return self._df[self.c_82]
 
     @property
-    def c_83_col(self) -> pl.Series:
+    def c_83_col(self) -> pd.Series:
         return self._df[self.c_83]
 
     @property
-    def c_84_col(self) -> pl.Series:
+    def c_84_col(self) -> pd.Series:
         return self._df[self.c_84]
 
     @property
-    def c_85_col(self) -> pl.Series:
+    def c_85_col(self) -> pd.Series:
         return self._df[self.c_85]
 
     @property
-    def c_86_col(self) -> pl.Series:
+    def c_86_col(self) -> pd.Series:
         return self._df[self.c_86]
 
     @property
-    def c_87_col(self) -> pl.Series:
+    def c_87_col(self) -> pd.Series:
         return self._df[self.c_87]
 
     @property
-    def c_88_col(self) -> pl.Series:
+    def c_88_col(self) -> pd.Series:
         return self._df[self.c_88]
 
     @property
-    def c_89_col(self) -> pl.Series:
+    def c_89_col(self) -> pd.Series:
         return self._df[self.c_89]
 
     @property
-    def c_90_col(self) -> pl.Series:
+    def c_90_col(self) -> pd.Series:
         return self._df[self.c_90]
 
     @property
-    def c_91_col(self) -> pl.Series:
+    def c_91_col(self) -> pd.Series:
         return self._df[self.c_91]
 
     @property
-    def c_92_col(self) -> pl.Series:
+    def c_92_col(self) -> pd.Series:
         return self._df[self.c_92]
 
     @property
-    def c_93_col(self) -> pl.Series:
+    def c_93_col(self) -> pd.Series:
         return self._df[self.c_93]
 
     @property
-    def c_94_col(self) -> pl.Series:
+    def c_94_col(self) -> pd.Series:
         return self._df[self.c_94]
 
     @property
-    def c_95_col(self) -> pl.Series:
+    def c_95_col(self) -> pd.Series:
         return self._df[self.c_95]
 
     @property
-    def c_96_col(self) -> pl.Series:
+    def c_96_col(self) -> pd.Series:
         return self._df[self.c_96]
 
     @property
-    def c_97_col(self) -> pl.Series:
+    def c_97_col(self) -> pd.Series:
         return self._df[self.c_97]
 
     @property
-    def c_98_col(self) -> pl.Series:
+    def c_98_col(self) -> pd.Series:
         return self._df[self.c_98]
 
     @property
-    def c_99_col(self) -> pl.Series:
+    def c_99_col(self) -> pd.Series:
         return self._df[self.c_99]
 
     @property
-    def c_100_col(self) -> pl.Series:
+    def c_100_col(self) -> pd.Series:
         return self._df[self.c_100]
 
 

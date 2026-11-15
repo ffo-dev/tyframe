@@ -42,10 +42,11 @@ sequence = [
 
 [tool.poe.tasks.generate-benchmark-wrappers]
 sequence = [
-    { cmd = "tyframe generate-typed-wrapper src/benchmark/source_classes src/benchmark/generated tyframe_config.yml polars Pl" },
+    { cmd = "tyframe generate-typed-wrapper src/benchmark/source_classes src/benchmark/generated/polars tyframe_config.yml polars Pl" },
+    { cmd = "tyframe generate-typed-wrapper src/benchmark/source_classes src/benchmark/generated/pandas tyframe_config.yml pandas Pd" },
     { cmd = "poe format" },
 ]
 
 [tool.poe.tasks.benchmark]
-cmd = "uv run python -m benchmark"
+cmd = "uv run python -m benchmark --repeat 100"
 
