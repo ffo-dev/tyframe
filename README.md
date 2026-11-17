@@ -142,3 +142,4 @@ validator.validate(Transaction, big)    # ~0.001 ms — same: cost is per column
 ```
 
 The project maintains a benchmark script to verify that future changes will not degrade the performance.
+YOu can run it with `poe benchmark` to get the expected performance on your machine.
