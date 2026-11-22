@@ -83,6 +83,58 @@ class TransactionPl(TypedPolarsDataFrame[Transaction]):
         return filtered.sort(self.amount, ascending=False)
 ```
 
+## Migrating existing DataFrames
+
+Already have raw pandas/polars dataframes (loaded from CSV, a database, ...) and want typed wrappers for them? Kickstart the migration by generating a `BaseDfModel` straight from the dataframe — no need to write the model by hand. `PolarsModelGenerator` / `PandasModelGenerator` map each column's dtype to a Python type via the dtype mapping:
+
+```python
+from pathlib import Path
+
+import polars as pl
+
+from tyframe.code_gen.polars.polars_model_generator import PolarsModelGenerator
+from tyframe.code_gen.pydantic_model_generator import PydanticModelGeneratorConfig
+
+df = pl.read_csv('transactions.csv')  # any existing polars DataFrame
+
+generator = PolarsModelGenerator(PydanticModelGeneratorConfig(), generated_class_suffix='')
+generator.generate_model_file(df, Path('src/models'), 'Transaction')
+```
+
+This writes `src/models/transaction.py`:
+
+```python
+from tyframe.base_df_model.base_df_model import BaseDfModel
+
+class Transaction(BaseDfModel):
+    customer_id: int
+    amount: float
+    region: str
+```
+
+(`generate_model_class(df, 'Transaction')` returns the same code as a string if you prefer to inspect or post-process it. Use `PandasModelGenerator` for pandas dataframes.)
+
+Then generate the wrapper with the CLI as usual — run it from your project root with the models importable, e.g. `PYTHONPATH=src`:
+
+```bash
+PYTHONPATH=src tyframe generate-typed-wrapper --input-path src/models --output-path src/generated --df-type polars --class-suffix Pl
+```
+
+Now onboard the existing dataframe: wrap it once and you get validation plus typed column access everywhere:
+
+```python
+import polars as pl
+
+from generated import TransactionPl
+from tyframe.validation.polars import PolarsValidator
+
+df = pl.read_csv('transactions.csv')
+typed = TransactionPl(df, PolarsValidator())  # validates columns/dtypes against Transaction
+
+typed.amount_col        # pl.Series — typed access to the amount column
+typed.filter(pl.col(typed.amount) > 100)   # still a TransactionPl, calls chain
+```
+
 ## Validation
 
 Wrappers validate a raw dataframe against the model when constructed. Tune the behavior with `TyframeValidationConfig` — all flags default to `False`:
