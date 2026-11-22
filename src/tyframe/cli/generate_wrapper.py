@@ -19,6 +19,7 @@ def generate_typed_wrapper(
         typer.Option(
             '--input-path',
             help='Python file or directory containing the BaseDfModel subclasses to generate wrappers for.',
+            prompt='Input path (file or directory with BaseDfModel subclasses)',
             exists=True,
             file_okay=True,
             dir_okay=True,
@@ -30,6 +31,7 @@ def generate_typed_wrapper(
         typer.Option(
             '--output-path',
             help='Directory where the generated typed DataFrame wrapper files are written.',
+            prompt='Output directory for the generated wrappers',
             file_okay=False,
             dir_okay=True,
         ),
@@ -47,21 +49,28 @@ def generate_typed_wrapper(
     ] = DEFAULT_CONFIG_PATH,
     df_type: Annotated[
         IMPLEMENTED_DF_TYPES,
-        typer.Option('--df-type', help='DataFrame library to generate the wrapper for.'),
+        typer.Option(
+            '--df-type',
+            help='DataFrame library to generate the wrapper for.',
+            prompt='DataFrame library',
+        ),
     ],
     class_suffix: Annotated[
         str,
         typer.Option(
             '--class-suffix',
             help='Suffix appended to each model name to build the generated class name, e.g. "Pl" -> TransactionPl.',
+            prompt='Class suffix (e.g. Pl -> TransactionPl)',
         ),
     ],
 ) -> None:
     """Generate typed DataFrame wrappers for every BaseDfModel subclass found under --input-path.
 
-    Example:
+        Missing required options are prompted for interactively.
+    33
+        Example:
 
-        tyframe generate-typed-wrapper --input-path src/in --output-path src/out --df-type polars --class-suffix Pl
+            tyframe generate-typed-wrapper --input-path src/in --output-path src/out --df-type polars --class-suffix Pl
     """
     generator_ctor = IMPLEMENTED_GENERATORS[df_type]
     generator = generator_ctor(

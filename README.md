@@ -14,7 +14,7 @@ pip install tyframe
 tyframe generate-typed-wrapper --input-path <source_dir> --output-path <output_dir> --df-type <df_type> --class-suffix <suffix> [--config-path <config.yml>]
 ```
 
-Run `tyframe generate-typed-wrapper --help` for the full option list.
+Run `tyframe generate-typed-wrapper --help` for the full option list. If you omit a required option, the CLI prompts for it interactively (invalid answers, e.g. an unknown `--df-type` or a nonexistent `--input-path`, are re-prompted).
 
 | Option | Required | Default | Description |
 | --- | --- | --- | --- |
