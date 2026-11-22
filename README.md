@@ -106,6 +106,7 @@ This writes `src/models/transaction.py`:
 ```python
 from tyframe.base_df_model.base_df_model import BaseDfModel
 
+
 class Transaction(BaseDfModel):
     customer_id: int
     amount: float
@@ -131,8 +132,8 @@ from tyframe.validation.polars import PolarsValidator
 df = pl.read_csv('transactions.csv')
 typed = TransactionPl(df, PolarsValidator())  # validates columns/dtypes against Transaction
 
-typed.amount_col        # pl.Series — typed access to the amount column
-typed.filter(pl.col(typed.amount) > 100)   # still a TransactionPl, calls chain
+typed.amount_col  # pl.Series — typed access to the amount column
+typed.filter(pl.col(typed.amount) > 100)  # still a TransactionPl, calls chain
 ```
 
 ## Validation
