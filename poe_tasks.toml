@@ -27,23 +27,23 @@ sequence = [
 
 [tool.poe.tasks.generate-test-wrappers]
 sequence = [
-    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/pandas tyframe_config.yml pandas Pd"},
-    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/polars tyframe_config.yml polars Pl" },
-    { cmd = "tyframe generate-typed-wrapper src/tests/test_classes src/tests/generated_models/lazy_polars tyframe_config.yml lazy_polars Lpl" },
+    { cmd = "tyframe generate-typed-wrapper --input-path src/tests/test_classes --output-path src/tests/generated_models/pandas --df-type pandas --class-suffix Pd"},
+    { cmd = "tyframe generate-typed-wrapper --input-path src/tests/test_classes --output-path src/tests/generated_models/polars --df-type polars --class-suffix Pl" },
+    { cmd = "tyframe generate-typed-wrapper --input-path src/tests/test_classes --output-path src/tests/generated_models/lazy_polars --df-type lazy_polars --class-suffix Lpl" },
     { cmd = "poe format"},
 ]
 
 
 [tool.poe.tasks.generate-example-wrappers]
 sequence = [
-    { cmd = "tyframe generate-typed-wrapper src/examples/source src/examples/generated tyframe_config.yml polars Pl" },
+    { cmd = "tyframe generate-typed-wrapper --input-path src/examples/source --output-path src/examples/generated --df-type polars --class-suffix Pl" },
     { cmd = "poe format"},
 ]
 
 [tool.poe.tasks.generate-benchmark-wrappers]
 sequence = [
-    { cmd = "tyframe generate-typed-wrapper src/benchmark/source_classes src/benchmark/generated/polars tyframe_config.yml polars Pl" },
-    { cmd = "tyframe generate-typed-wrapper src/benchmark/source_classes src/benchmark/generated/pandas tyframe_config.yml pandas Pd" },
+    { cmd = "tyframe generate-typed-wrapper --input-path src/benchmark/source_classes --output-path src/benchmark/generated/polars --df-type polars --class-suffix Pl" },
+    { cmd = "tyframe generate-typed-wrapper --input-path src/benchmark/source_classes --output-path src/benchmark/generated/pandas --df-type pandas --class-suffix Pd" },
     { cmd = "poe format" },
 ]
 

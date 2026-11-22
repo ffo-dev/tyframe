@@ -16,20 +16,20 @@ class PandasModelGenerator(PydanticModelGenerator[pd.DataFrame, PandasDtypeMappi
 
     def __init__(
         self,
-        config: PydanticModelGeneratorConfig,
+        config: PydanticModelGeneratorConfig | None = None,
         dtype_mapping: PandasDtypeMapping | None = None,
         generated_class_suffix: str = 'Model',
     ) -> None:
         """Initialize the generator.
 
         Args:
-            config: The generator configuration.
+            config: The generator configuration. If None, uses default PydanticModelGeneratorConfig.
             dtype_mapping: Optional dtype mapping. If None, uses PandasDtypeMapping.
             generated_class_suffix: Suffix to append to generated class names.
 
         """
         super().__init__(
-            config,
+            config or PydanticModelGeneratorConfig(),
             dtype_mapping=dtype_mapping or PandasDtypeMapping(),
             generated_class_suffix=generated_class_suffix,
         )

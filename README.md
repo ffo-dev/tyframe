@@ -11,16 +11,24 @@ pip install tyframe
 ## Usage
 
 ```bash
-tyframe generate-typed-wrapper <source_dir> <output_dir> <config.yml> <df_type> <suffix>
+tyframe generate-typed-wrapper --input-path <source_dir> --output-path <output_dir> --df-type <df_type> --class-suffix <suffix> [--config-path <config.yml>]
 ```
+
+Run `tyframe generate-typed-wrapper --help` for the full option list. If you omit a required option, the CLI prompts for it interactively (invalid answers, e.g. an unknown `--df-type` or a nonexistent `--input-path`, are re-prompted).
+
+| Option | Required | Default | Description |
+| --- | --- | --- | --- |
+| `--input-path` | yes | — | Python file or directory with the `BaseDfModel` subclasses to wrap. |
+| `--output-path` | yes | — | Directory the generated wrapper files are written to. |
+| `--config-path` | no | `tyframe_config.yaml` | Generator config file (YAML or JSON): indentation size, column property suffix. |
+| `--df-type` | yes | — | DataFrame library: `pandas`, `polars`, or `lazy_polars`. |
+| `--class-suffix` | yes | — | Suffix appended to each model name, e.g. `Pl` -> `TransactionPl`. |
 
 Example:
 
 ```bash
-tyframe generate-typed-wrapper src/classes src/generated tyframe_config.yml pandas Pd
+tyframe generate-typed-wrapper --input-path src/classes --output-path src/generated --config-path tyframe_config.yml --df-type pandas --class-suffix Pd
 ```
-
-`<df_type>` is `pandas`, `polars`, or `lazy_polars`.
 
 ## Generation example
 
@@ -28,6 +36,7 @@ Input — a plain model:
 
 ```python
 from tyframe.base_df_model import BaseDfModel
+
 
 class Transaction(BaseDfModel):
     customer_id: int
@@ -38,13 +47,14 @@ class Transaction(BaseDfModel):
 Generate the wrapper:
 
 ```bash
-tyframe generate-typed-wrapper src/models src/generated tyframe_config.yml polars Pl
+tyframe generate-typed-wrapper --input-path src/models --output-path src/generated --config-path tyframe_config.yml --df-type polars --class-suffix Pl
 ```
 
 Output — a typed wrapper with the model bound as its signature:
 
 ```python
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
+
 
 #### CODE-GEN START
 class TransactionPl(TypedPolarsDataFrame[Transaction]):
@@ -73,6 +83,59 @@ class TransactionPl(TypedPolarsDataFrame[Transaction]):
         return filtered.sort(self.amount, ascending=False)
 ```
 
+## Migrating existing DataFrames
+
+Already have raw pandas/polars dataframes (loaded from CSV, a database, ...) and want typed wrappers for them? Kickstart the migration by generating a `BaseDfModel` straight from the dataframe — no need to write the model by hand. `PolarsModelGenerator` / `PandasModelGenerator` map each column's dtype to a Python type via the dtype mapping:
+
+```python
+from pathlib import Path
+
+import polars as pl
+
+from tyframe.code_gen.polars.polars_model_generator import PolarsModelGenerator
+from tyframe.code_gen.pydantic_model_generator import PydanticModelGeneratorConfig
+
+df = pl.read_csv('transactions.csv')  # any existing polars DataFrame
+
+generator = PolarsModelGenerator(PydanticModelGeneratorConfig(), generated_class_suffix='')
+generator.generate_model_file(df, Path('src/models'), 'Transaction')
+```
+
+This writes `src/models/transaction.py`:
+
+```python
+from tyframe.base_df_model.base_df_model import BaseDfModel
+
+
+class Transaction(BaseDfModel):
+    customer_id: int
+    amount: float
+    region: str
+```
+
+(`generate_model_class(df, 'Transaction')` returns the same code as a string if you prefer to inspect or post-process it. Use `PandasModelGenerator` for pandas dataframes.)
+
+Then generate the wrapper with the CLI as usual — run it from your project root with the models importable, e.g. `PYTHONPATH=src`:
+
+```bash
+PYTHONPATH=src tyframe generate-typed-wrapper --input-path src/models --output-path src/generated --df-type polars --class-suffix Pl
+```
+
+Now onboard the existing dataframe: wrap it once and you get validation plus typed column access everywhere:
+
+```python
+import polars as pl
+
+from generated import TransactionPl
+from tyframe.validation.polars import PolarsValidator
+
+df = pl.read_csv('transactions.csv')
+typed = TransactionPl(df, PolarsValidator())  # validates columns/dtypes against Transaction
+
+typed.amount_col  # pl.Series — typed access to the amount column
+typed.filter(pl.col(typed.amount) > 100)  # still a TransactionPl, calls chain
+```
+
 ## Validation
 
 Wrappers validate a raw dataframe against the model when constructed. Tune the behavior with `TyframeValidationConfig` — all flags default to `False`:
@@ -98,7 +161,7 @@ check_dtypes = PolarsValidator(config=TyframeValidationConfig(validate_dtypes=Tr
 
 df = pl.DataFrame({'customer_id': [1], 'amount': [120.0], 'region': ['EU'], 'note': ['x']})
 TransactionPl(df, drop_extra)  # 'note' column is dropped
-TransactionPl(df, strict)      # raises ExtraColumnsError
+TransactionPl(df, strict)  # raises ExtraColumnsError
 ```
 
 Flags can be combined, e.g. `TyframeValidationConfig(drop_extra_columns=True, validate_dtypes=True)`. `PandasValidator` and `LazyPolarsValidator` accept the same config.
@@ -138,7 +201,7 @@ small = pl.DataFrame({'customer_id': range(100), 'amount': [1.0] * 100, 'region'
 big = pl.DataFrame({'customer_id': range(1_000_000), 'amount': [1.0] * 1_000_000, 'region': ['EU'] * 1_000_000})
 
 validator.validate(Transaction, small)  # ~0.001 ms
-validator.validate(Transaction, big)    # ~0.001 ms — same: cost is per column, not per row
+validator.validate(Transaction, big)  # ~0.001 ms — same: cost is per column, not per row
 ```
 
 The project maintains a benchmark script to verify that future changes will not degrade the performance.
