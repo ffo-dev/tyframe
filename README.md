@@ -11,16 +11,24 @@ pip install tyframe
 ## Usage
 
 ```bash
-tyframe generate-typed-wrapper <source_dir> <output_dir> <config.yml> <df_type> <suffix>
+tyframe generate-typed-wrapper --input-path <source_dir> --output-path <output_dir> --df-type <df_type> --class-suffix <suffix> [--config-path <config.yml>]
 ```
+
+Run `tyframe generate-typed-wrapper --help` for the full option list.
+
+| Option | Required | Default | Description |
+| --- | --- | --- | --- |
+| `--input-path` | yes | — | Python file or directory with the `BaseDfModel` subclasses to wrap. |
+| `--output-path` | yes | — | Directory the generated wrapper files are written to. |
+| `--config-path` | no | `tyframe_config.yaml` | Generator config file (YAML or JSON): indentation size, column property suffix. |
+| `--df-type` | yes | — | DataFrame library: `pandas`, `polars`, or `lazy_polars`. |
+| `--class-suffix` | yes | — | Suffix appended to each model name, e.g. `Pl` -> `TransactionPl`. |
 
 Example:
 
 ```bash
-tyframe generate-typed-wrapper src/classes src/generated tyframe_config.yml pandas Pd
+tyframe generate-typed-wrapper --input-path src/classes --output-path src/generated --config-path tyframe_config.yml --df-type pandas --class-suffix Pd
 ```
-
-`<df_type>` is `pandas`, `polars`, or `lazy_polars`.
 
 ## Generation example
 
@@ -28,6 +36,7 @@ Input — a plain model:
 
 ```python
 from tyframe.base_df_model import BaseDfModel
+
 
 class Transaction(BaseDfModel):
     customer_id: int
@@ -38,13 +47,14 @@ class Transaction(BaseDfModel):
 Generate the wrapper:
 
 ```bash
-tyframe generate-typed-wrapper src/models src/generated tyframe_config.yml polars Pl
+tyframe generate-typed-wrapper --input-path src/models --output-path src/generated --config-path tyframe_config.yml --df-type polars --class-suffix Pl
 ```
 
 Output — a typed wrapper with the model bound as its signature:
 
 ```python
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
+
 
 #### CODE-GEN START
 class TransactionPl(TypedPolarsDataFrame[Transaction]):
@@ -98,7 +108,7 @@ check_dtypes = PolarsValidator(config=TyframeValidationConfig(validate_dtypes=Tr
 
 df = pl.DataFrame({'customer_id': [1], 'amount': [120.0], 'region': ['EU'], 'note': ['x']})
 TransactionPl(df, drop_extra)  # 'note' column is dropped
-TransactionPl(df, strict)      # raises ExtraColumnsError
+TransactionPl(df, strict)  # raises ExtraColumnsError
 ```
 
 Flags can be combined, e.g. `TyframeValidationConfig(drop_extra_columns=True, validate_dtypes=True)`. `PandasValidator` and `LazyPolarsValidator` accept the same config.
@@ -138,7 +148,7 @@ small = pl.DataFrame({'customer_id': range(100), 'amount': [1.0] * 100, 'region'
 big = pl.DataFrame({'customer_id': range(1_000_000), 'amount': [1.0] * 1_000_000, 'region': ['EU'] * 1_000_000})
 
 validator.validate(Transaction, small)  # ~0.001 ms
-validator.validate(Transaction, big)    # ~0.001 ms — same: cost is per column, not per row
+validator.validate(Transaction, big)  # ~0.001 ms — same: cost is per column, not per row
 ```
 
 The project maintains a benchmark script to verify that future changes will not degrade the performance.
