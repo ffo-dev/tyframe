@@ -43,7 +43,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.12', '3.13', '3.14', '3.15']
+        python-version: [
+          '3.12', 
+          '3.13', 
+          '3.14',
+        ]
         polars: ['>=1,<2', '>=2,<3']
         pandas: ['>=2,<3']
     steps:
