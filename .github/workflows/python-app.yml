@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# CI: lint/type-check on the pinned Python version, tests across a compatibility matrix.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python application
@@ -13,32 +13,61 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Install uv
-      uses: astral-sh/setup-uv@v10.3.3
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
 
-    - name: Set up Python
-      run: uv python install
+      - name: Set up Python
+        run: uv python install
 
-    - name: Set up Python
-      run: uv sync --all-groups
+      - name: Sync environment
+        run: uv sync --all-groups
 
-    - name: install poe
-      run: uv tool install poethepoet
+      - name: install poe
+        run: uv tool install poethepoet
 
-    - name: check poe
-      run: poe --version
+      - name: check poe
+        run: poe --version
 
-    - name: check format
-      run: poe check-format
+      - name: check format
+        run: poe check-format
 
-    - name: check pyright
-      run: poe check-pyright
+      - name: check pyright
+        run: poe check-pyright
 
-    - name: check test
-      run: poe test
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
+        polars: ['>=1,<2', '>=2,<3']
+        pandas: ['>=2,<3']
+        include:
+          # pandas 3.x is not supported yet: string columns get the new `str` dtype,
+          # which PandasDtypeMapping does not map yet (DtypeNotFoundError).
+          # Runs as a known-failure leg until the mapping is extended.
+          - python-version: '3.13'
+            polars: '>=2,<3'
+            pandas: '>=3,<4'
+            experimental: true
+    continue-on-error: ${{ matrix.experimental || false }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Sync base environment
+        run: uv sync --all-groups --python ${{ matrix.python-version }}
+
+      - name: Pin polars/pandas to the matrix versions
+        run: uv pip install --python .venv/bin/python "polars${{ matrix.polars }}" "pandas${{ matrix.pandas }}"
+
+      - name: check test
+        run: uv run --no-sync poe test
