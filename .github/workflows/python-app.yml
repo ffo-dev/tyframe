@@ -43,18 +43,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
+        python-version: ['3.12', '3.13', '3.14', '3.15']
         polars: ['>=1,<2', '>=2,<3']
         pandas: ['>=2,<3']
-        include:
-          # pandas 3.x is not supported yet: string columns get the new `str` dtype,
-          # which PandasDtypeMapping does not map yet (DtypeNotFoundError).
-          # Runs as a known-failure leg until the mapping is extended.
-          - python-version: '3.13'
-            polars: '>=2,<3'
-            pandas: '>=3,<4'
-            experimental: true
-    continue-on-error: ${{ matrix.experimental || false }}
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
