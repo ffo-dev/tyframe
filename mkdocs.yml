@@ -1,0 +1,64 @@
+site_name: Tyframe
+site_description: Generate typed pandas/polars DataFrame wrappers from pydantic models.
+site_url: https://ffo-dev.github.io/tyframe/
+repo_url: https://github.com/ffo-dev/tyframe
+repo_name: ffo-dev/tyframe
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - BaseDfModel: api/base_df_model.md
+      - Typed DataFrames: api/typed_df.md
+      - Validation: api/validation.md
+      - Code generation: api/code_gen.md
+      - CLI: api/cli.md
+
+plugins:
+  - search
+  - include-markdown
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            members_order: source
+            show_root_heading: true
+            show_if_no_docstring: true
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ffo-dev/tyframe
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/tyframe/

@@ -22,6 +22,7 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/ffo-dev/tyframe"
+Documentation = "https://ffo-dev.github.io/tyframe/"
 
 [project.scripts]
 tyframe = "tyframe:main"
@@ -39,4 +40,9 @@ dev = [
     "pandas-stubs>=2.0.6,<3",
     "pytest>=7.0.0",
     "pytest-cov"
+]
+docs = [
+    "mkdocs-include-markdown-plugin>=7.3.2",
+    "mkdocs-material>=9.8.2",
+    "mkdocstrings-python>=2.0.11",
 ]
