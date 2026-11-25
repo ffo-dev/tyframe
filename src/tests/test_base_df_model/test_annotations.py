@@ -74,13 +74,14 @@ def test_columns_by_tag_multiple_columns_with_same_tag() -> None:
 def test_subclass_with_extended_tag_type() -> None:
 
     class CustomModel(BaseDfModel[MyTag]):
-        a: Annotated[int, CustomColumnTags('custom')]
+        a: Annotated[int, CustomColumnTags('custom'), TyframeColumnConfig(pk=True)]
         b: Annotated[str, CustomColumnTags('map_key')]
         c: str
 
     assert CustomModel.columns_by_tag == {'custom': ['a'], 'map_key': ['b']}
     assert CustomModel.columns_with_tag('custom') == ['a']
     assert CustomModel.columns_with_tag('map_key') == ['b']
+    assert CustomModel.primary_keys == ['a']
 
 
 def test_primary_keys() -> None:
