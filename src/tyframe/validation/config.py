@@ -36,7 +36,7 @@ class BaseTyframeValidationConfig(BaseModel, metaclass=ABCMeta):
         return type(self)(**combined)
 
 
-class TyframeValidationConfig(BaseTyframeValidationConfig):
+class TyframeColumnValidation(BaseTyframeValidationConfig):
     drop_extra_columns: bool = Field(default=False)
     fill_with_default: bool = Field(default=False)
     validate_dtypes: bool = Field(default=False)

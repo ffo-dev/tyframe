@@ -2,16 +2,16 @@ from typing import cast
 
 import pytest
 
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation
 
 
-def _and(a: TyframeValidationConfig, b: object) -> object:
+def _and(a: TyframeColumnValidation, b: object) -> object:
     return cast('object', a & b)  # pyright:ignore[reportOperatorIssue]
 
 
 def test_subclass_with_only_bool_fields_is_allowed() -> None:
 
-    class CustomConfig(TyframeValidationConfig):
+    class CustomConfig(TyframeColumnValidation):
         extra_check: bool = False
 
     config = CustomConfig(extra_check=True)
@@ -22,23 +22,23 @@ def test_subclass_with_only_bool_fields_is_allowed() -> None:
 
 def test_subclass_with_non_bool_field_raises() -> None:
     with pytest.raises(TypeError, match='may only add boolean fields') as exc_info:
-        type('BadConfig', (TyframeValidationConfig,), {'__annotations__': {'count': int}, 'count': 0})
+        type('BadConfig', (TyframeColumnValidation,), {'__annotations__': {'count': int}, 'count': 0})
 
     assert 'count' in str(exc_info.value)
 
 
 def test_subclass_with_non_bool_field_no_default_raises() -> None:
     with pytest.raises(TypeError, match='may only add boolean fields'):
-        type('BadConfig', (TyframeValidationConfig,), {'__annotations__': {'name': str}})
+        type('BadConfig', (TyframeColumnValidation,), {'__annotations__': {'name': str}})
 
 
 def test_and_combines_field_by_field() -> None:
-    a = TyframeValidationConfig(
+    a = TyframeColumnValidation(
         drop_extra_columns=True,
         fill_with_default=False,
         validate_dtypes=True,
     )
-    b = TyframeValidationConfig(
+    b = TyframeColumnValidation(
         drop_extra_columns=True,
         fill_with_default=True,
         validate_dtypes=False,
@@ -52,12 +52,12 @@ def test_and_combines_field_by_field() -> None:
 
 
 def test_or_combines_field_by_field() -> None:
-    a = TyframeValidationConfig(
+    a = TyframeColumnValidation(
         drop_extra_columns=True,
         fill_with_default=False,
         validate_dtypes=True,
     )
-    b = TyframeValidationConfig(
+    b = TyframeColumnValidation(
         drop_extra_columns=False,
         fill_with_default=True,
         validate_dtypes=False,
@@ -72,7 +72,7 @@ def test_or_combines_field_by_field() -> None:
 
 def test_and_or_preserve_subclass_and_do_not_mutate_operands() -> None:
 
-    class CustomConfig(TyframeValidationConfig):
+    class CustomConfig(TyframeColumnValidation):
         extra_check: bool = False
 
     a = CustomConfig(
@@ -107,4 +107,4 @@ def test_and_or_preserve_subclass_and_do_not_mutate_operands() -> None:
 
 def test_and_with_non_config_raises_type_error() -> None:
     with pytest.raises(TypeError, match='unsupported operand'):
-        _and(TyframeValidationConfig(), 5)
+        _and(TyframeColumnValidation(), 5)

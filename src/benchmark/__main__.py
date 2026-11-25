@@ -25,7 +25,7 @@ import typer
 from benchmark.generated.pandas import C1Pd, C10Pd, C100Pd
 from benchmark.generated.polars import C1Pl, C10Pl, C100Pl
 from tyframe.base_df_model.base_df_model import BaseDfModel
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation
 from tyframe.validation.pandas import PandasValidator
 from tyframe.validation.polars import PolarsValidator
 
@@ -77,7 +77,7 @@ class BenchmarkResult:
     n_row: int
     mean_ms: float
     std_ms: float
-    validation_config: TyframeValidationConfig
+    validation_config: TyframeColumnValidation
 
 
 def show(results: list[BenchmarkResult], save: Path | None = None) -> None:
@@ -97,7 +97,7 @@ def show(results: list[BenchmarkResult], save: Path | None = None) -> None:
 
 
 def benchmark_pandas(
-    config: TyframeValidationConfig,
+    config: TyframeColumnValidation,
     build_dataframe_method: PandasDataFrameBuilder,
     wrapper_cls: PandasWrapperClass,
     repeat: int,
@@ -125,7 +125,7 @@ def benchmark_pandas(
 
 
 def benchmark_polars(
-    config: TyframeValidationConfig,
+    config: TyframeColumnValidation,
     build_dataframe_method: PolarsDataFrameBuilder,
     wrapper_cls: PolarsWrapperClass,
     repeat: int,
@@ -165,12 +165,12 @@ def main(
 ) -> None:
     results: list[BenchmarkResult] = []
     scenarios = (
-        (TyframeValidationConfig(validate_dtypes=True), 0, 0),
-        (TyframeValidationConfig(validate_dtypes=False), 0, 0),
-        (TyframeValidationConfig(validate_dtypes=False, drop_extra_columns=True), EXTRA_COLUMNS, 0),
-        (TyframeValidationConfig(validate_dtypes=False, fill_with_default=True), 0, DROP_COLUMNS),
+        (TyframeColumnValidation(validate_dtypes=True), 0, 0),
+        (TyframeColumnValidation(validate_dtypes=False), 0, 0),
+        (TyframeColumnValidation(validate_dtypes=False, drop_extra_columns=True), EXTRA_COLUMNS, 0),
+        (TyframeColumnValidation(validate_dtypes=False, fill_with_default=True), 0, DROP_COLUMNS),
         (
-            TyframeValidationConfig(
+            TyframeColumnValidation(
                 validate_dtypes=False,
                 fill_with_default=True,
                 drop_extra_columns=True,

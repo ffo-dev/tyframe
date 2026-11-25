@@ -7,7 +7,7 @@ from tyframe.validation.column_validation.column_validation import (
     get_extra_columns,
     get_missing_columns,
 )
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation
 from tyframe.validation.dtype_mapping import DtypeMapping, DtypeMismatchError
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
@@ -22,7 +22,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     def __init__(
         self,
         dtype_mapping: DtypeMapping[Any],
-        config: TyframeValidationConfig | None = None,
+        config: TyframeColumnValidation | None = None,
     ) -> None:
         """Initialize the validator with an optional dtype mapping.
 
@@ -31,10 +31,10 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
                           If None, uses the default from the class.
         """
         self.dtype_mapping: DtypeMapping[Any] = dtype_mapping
-        self.config = config or TyframeValidationConfig()
+        self.config = config or TyframeColumnValidation()
 
     df_type: type[DataFrameType]
-    config: TyframeValidationConfig
+    config: TyframeColumnValidation
 
     def validate(
         self,
