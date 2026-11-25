@@ -2,13 +2,18 @@ from collections import UserList
 from collections.abc import Iterable
 from typing import Literal
 
+from typing_extensions import TypeVar
+
 MappingTag = Literal['map_key', 'map_value']
 JoinTag = Literal['join_key', 'join_value']
-TyframeTag = MappingTag | JoinTag
+PrimaryKeyTag = Literal['primary_key']
+TyframeTag = MappingTag | JoinTag | PrimaryKeyTag
+
+TagT = TypeVar('TagT', bound=str, default=TyframeTag)
 
 
-class TyframeColumnTags(UserList[TyframeTag]):
-    def __init__(self, tags: Iterable[TyframeTag] | TyframeTag | None = None) -> None:
+class BaseColumnTags(UserList[TagT]):
+    def __init__(self, tags: Iterable[TagT] | TagT | None = None) -> None:
         match tags:
             case None:
                 super().__init__([])
@@ -17,10 +22,14 @@ class TyframeColumnTags(UserList[TyframeTag]):
             case _:
                 super().__init__(tags)
 
-    def add_tag(self, tag: TyframeTag) -> None:
+    def add_tag(self, tag: TagT) -> None:
         if tag not in self:
             self.append(tag)
 
-    def remove_tag(self, tag: TyframeTag) -> None:
+    def remove_tag(self, tag: TagT) -> None:
         if tag in self:
             self.remove(tag)
+
+
+class TyframeColumnTags(BaseColumnTags[TyframeTag]):
+    pass
