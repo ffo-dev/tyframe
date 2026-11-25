@@ -7,7 +7,7 @@ from tyframe.validation.column_validation.column_validation import (
     get_extra_columns,
     get_missing_columns,
 )
-from tyframe.validation.config import TyframeColumnValidation
+from tyframe.validation.config import TyframeColumnValidation, TyframeRowValidation
 from tyframe.validation.dtype_mapping import DtypeMapping, DtypeMismatchError
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
@@ -22,19 +22,28 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     def __init__(
         self,
         dtype_mapping: DtypeMapping[Any],
-        config: TyframeColumnValidation | None = None,
+        column_config: TyframeColumnValidation | None = None,
+        row_config: TyframeRowValidation | None = None,
     ) -> None:
-        """Initialize the validator with an optional dtype mapping.
+        """Initialize the validator with a dtype mapping and optional configs.
 
         Args:
             dtype_mapping: Optional dtype mapping for type validation.
                           If None, uses the default from the class.
+            column_config: Column-level validation config. If None, uses `TyframeColumnValidation()`.
+            row_config: Row-level validation config. If None, uses `TyframeRowValidation()`.
         """
         self.dtype_mapping: DtypeMapping[Any] = dtype_mapping
-        self.config = config or TyframeColumnValidation()
+        if column_config is None:
+            column_config = TyframeColumnValidation()
+        self.column_config = column_config
+        if row_config is None:
+            row_config = TyframeRowValidation()
+        self.row_config = row_config
 
     df_type: type[DataFrameType]
-    config: TyframeColumnValidation
+    column_config: TyframeColumnValidation
+    row_config: TyframeRowValidation
 
     def validate(
         self,
@@ -45,7 +54,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df_model,
             df,
         )
-        if self.config.validate_dtypes:
+        if self.column_config.validate_dtypes:
             res = self.validate_dtypes(df_model, res)
         return res
 
@@ -114,7 +123,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df_columns=df_columns,
         )
         if missing_columns:
-            if not self.config.fill_with_default:
+            if not self.column_config.fill_with_default:
                 raise MissingColumnsError(
                     expected_columns=expected_columns,
                     missing_columns=missing_columns,
@@ -145,7 +154,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         )
 
         if extra_columns:
-            if not self.config.drop_extra_columns:
+            if not self.column_config.drop_extra_columns:
                 raise ExtraColumnsError(
                     expected_columns=expected_columns,
                     extra=extra_columns,

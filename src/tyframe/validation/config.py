@@ -40,3 +40,7 @@ class TyframeColumnValidation(BaseTyframeValidationConfig):
     drop_extra_columns: bool = Field(default=False)
     fill_with_default: bool = Field(default=False)
     validate_dtypes: bool = Field(default=False)
+
+
+class TyframeRowValidation(BaseTyframeValidationConfig):
+    validate_pk_uniqueness: bool = Field(default=True)

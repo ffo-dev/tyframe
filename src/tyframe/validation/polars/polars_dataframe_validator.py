@@ -6,7 +6,7 @@ from polars import DataFrame, LazyFrame
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
-from tyframe.validation.config import TyframeColumnValidation
+from tyframe.validation.config import TyframeColumnValidation, TyframeRowValidation
 from tyframe.validation.dtype_mapping import PolarsDtypeMapping
 
 
@@ -16,11 +16,13 @@ class PolarsValidator(BaseValidator[DataFrame]):
     def __init__(
         self,
         dtype_mapping: PolarsDtypeMapping | None = None,
-        config: TyframeColumnValidation | None = None,
+        column_config: TyframeColumnValidation | None = None,
+        row_config: TyframeRowValidation | None = None,
     ) -> None:
         super().__init__(
             dtype_mapping=dtype_mapping or PolarsDtypeMapping(),
-            config=config,
+            column_config=column_config,
+            row_config=row_config,
         )
 
     @override
@@ -67,11 +69,13 @@ class LazyPolarsValidator(BaseValidator[LazyFrame]):
     def __init__(
         self,
         dtype_mapping: PolarsDtypeMapping | None = None,
-        config: TyframeColumnValidation | None = None,
+        column_config: TyframeColumnValidation | None = None,
+        row_config: TyframeRowValidation | None = None,
     ) -> None:
         super().__init__(
             dtype_mapping=dtype_mapping or PolarsDtypeMapping(),
-            config=config,
+            column_config=column_config,
+            row_config=row_config,
         )
 
     @override

@@ -56,7 +56,7 @@ def test_pandas_successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        PandasValidator(config=validation_config),
+        PandasValidator(column_config=validation_config),
         read_pandas,
         pandas_comparator,
     )
@@ -75,7 +75,7 @@ def test_pandas_unsucessfull_validation(
     validation_with_raise(
         input_data_path,
         model_type,
-        PandasValidator(config=validation_config),
+        PandasValidator(column_config=validation_config),
         read_pandas,
         expected_error,
     )

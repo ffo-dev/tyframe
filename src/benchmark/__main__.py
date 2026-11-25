@@ -107,7 +107,7 @@ def benchmark_pandas(
         raise ValueError(repeat)
 
     df = build_dataframe_method(wrapper_cls.model)
-    validator = PandasValidator(config=config)
+    validator = PandasValidator(column_config=config)
     times: list[float] = []
     for _ in range(repeat):
         start = time.perf_counter()
@@ -135,7 +135,7 @@ def benchmark_polars(
         raise ValueError(repeat)
 
     df = build_dataframe_method(wrapper_cls.model)
-    validator = PolarsValidator(config=config)
+    validator = PolarsValidator(column_config=config)
     times: list[float] = []
     for _ in range(repeat):
         start = time.perf_counter()

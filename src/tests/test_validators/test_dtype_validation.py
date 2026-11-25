@@ -55,7 +55,7 @@ class TestDtypeValidation:
         """Test that dtype validation passes for matching types in pandas."""
 
         config = TyframeColumnValidation(validate_dtypes=True)
-        validator = PandasValidator(config=config)
+        validator = PandasValidator(column_config=config)
         df = pd.DataFrame(
             {
                 'int_col': [1, 2, 3],
@@ -71,7 +71,7 @@ class TestDtypeValidation:
         """Test that DtypeMismatchError is raised for mismatched types in pandas."""
 
         config = TyframeColumnValidation(validate_dtypes=True)
-        validator = PandasValidator(config=config)
+        validator = PandasValidator(column_config=config)
         # Create DataFrame with wrong dtype (str instead of int)
         df = pd.DataFrame(
             {
@@ -105,7 +105,7 @@ class TestDtypeValidation:
         """Test that dtype validation passes for matching types in polars."""
 
         config = TyframeColumnValidation(validate_dtypes=True)
-        validator = PolarsValidator(config=config)
+        validator = PolarsValidator(column_config=config)
         df = pl.DataFrame(
             {
                 'int_col': [1, 2, 3],
@@ -121,7 +121,7 @@ class TestDtypeValidation:
         """Test that DtypeMismatchError is raised for mismatched types in polars."""
 
         config = TyframeColumnValidation(validate_dtypes=True)
-        validator = PolarsValidator(config=config)
+        validator = PolarsValidator(column_config=config)
         # Create DataFrame with wrong dtype (str instead of int)
         df = pl.DataFrame(
             {
@@ -141,7 +141,7 @@ class TestDtypeValidation:
         """Test that dtype validation works with LazyFrame."""
 
         config = TyframeColumnValidation(validate_dtypes=True)
-        validator = LazyPolarsValidator(config=config)
+        validator = LazyPolarsValidator(column_config=config)
         df = pl.LazyFrame(
             {
                 'int_col': [1, 2, 3],
