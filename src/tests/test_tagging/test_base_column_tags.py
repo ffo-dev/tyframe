@@ -11,13 +11,13 @@ class CustomColumnTags(BaseColumnTags[MyTag]):
 
 def test_invert_column_tags() -> None:
     column_tags = {
-        'id': TyframeColumnTags('primary_key'),
+        'id': TyframeColumnTags('join_key'),
         'price': TyframeColumnTags(['unit_price', 'total_price']),
         'name': TyframeColumnTags(),
     }
 
     assert invert_column_tags(column_tags) == {
-        'primary_key': ['id'],
+        'join_key': ['id'],
         'unit_price': ['price'],
         'total_price': ['price'],
     }

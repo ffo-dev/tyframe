@@ -4,7 +4,7 @@ from typing import Any, ClassVar, Generic, cast, override
 from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType
 
-from tyframe.tagging import BaseColumnTags, TagT, invert_column_tags
+from tyframe.tagging import BaseColumnTags, TagT, TyframeColumnConfig, invert_column_tags
 
 
 class BaseDfModel(BaseModel, Generic[TagT], metaclass=ABCMeta):
@@ -18,6 +18,7 @@ class BaseDfModel(BaseModel, Generic[TagT], metaclass=ABCMeta):
     columns: ClassVar[list[str]]
     defaults: ClassVar[dict[str, Any]]  # pyright:ignore[reportExplicitAny]
     columns_by_tag: ClassVar[dict[str, list[str]]]
+    primary_keys: ClassVar[list[str]]
 
     @override
     @classmethod
@@ -39,6 +40,11 @@ class BaseDfModel(BaseModel, Generic[TagT], metaclass=ABCMeta):
                 }
             ),
         )
+        cls.primary_keys = [
+            col_name
+            for col_name, field_info in cls.model_fields.items()
+            if any(isinstance(meta, TyframeColumnConfig) and meta.pk for meta in field_info.metadata)
+        ]
         super().__pydantic_init_subclass__(**kwargs)
 
     @classmethod
