@@ -55,6 +55,10 @@ class PandasValidator(BaseValidator[DataFrame]):
         return df[column].dtype
 
     @override
+    def has_duplicate_rows(self, df: DataFrame, columns: list[str]) -> bool:
+        return bool(df.duplicated(subset=columns).any())
+
+    @override
     def _create_dataframe_from_records(
         self,
         records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]

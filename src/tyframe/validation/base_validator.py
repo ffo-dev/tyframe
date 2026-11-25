@@ -14,6 +14,7 @@ from tyframe.validation.exceptions.column_exceptions import (
     MissingColumnsError,
     MissingColumnsWithoutDefaultError,
 )
+from tyframe.validation.exceptions.row_exceptions import DuplicatePrimaryKeyError
 
 DataFrameType = TypeVar('DataFrameType')
 
@@ -56,7 +57,32 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         )
         if self.column_config.validate_dtypes:
             res = self.validate_dtypes(df_model, res)
-        return res
+        return self.validate_rows(df_model, res)
+
+    def validate_rows(
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+    ) -> DataFrameType:
+        """Validate row-level constraints.
+
+        If `row_config.validate_pk_uniqueness` is enabled, verify that the columns
+        annotated with `TyframeColumnConfig(pk=True)` have unique values.
+        Does nothing when no column is tagged as primary key.
+        """
+        if not self.row_config.validate_pk_uniqueness:
+            return df
+        pk_columns = df_model.primary_keys
+        if not pk_columns:
+            return df
+        if self.has_duplicate_rows(df, pk_columns):
+            raise DuplicatePrimaryKeyError(pk_columns=pk_columns)
+        return df
+
+    @abstractmethod
+    def has_duplicate_rows(self, df: DataFrameType, columns: list[str]) -> bool:
+        """Return True if the given columns contain duplicate value combinations."""
+        raise NotImplementedError  # pragma: no cover
 
     def validate_column_names(
         self,

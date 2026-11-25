@@ -55,6 +55,10 @@ class PolarsValidator(BaseValidator[DataFrame]):
         return df.schema[column]
 
     @override
+    def has_duplicate_rows(self, df: DataFrame, columns: list[str]) -> bool:
+        return bool(df.select(columns).is_duplicated().any())
+
+    @override
     def _create_dataframe_from_records(
         self,
         records: Iterable[Mapping[str, Any]],  # pyright:ignore[reportExplicitAny]
@@ -106,6 +110,10 @@ class LazyPolarsValidator(BaseValidator[LazyFrame]):
     @override
     def get_df_dtype(self, df: LazyFrame, column: str) -> pl.DataType:
         return df.collect_schema()[column]
+
+    @override
+    def has_duplicate_rows(self, df: LazyFrame, columns: list[str]) -> bool:
+        return bool(df.select(columns).collect().is_duplicated().any())
 
     @override
     def _create_dataframe_from_records(

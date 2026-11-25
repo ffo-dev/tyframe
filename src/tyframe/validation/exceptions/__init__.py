@@ -11,9 +11,11 @@ from tyframe.validation.exceptions.column_exceptions import (
     MissingColumnsError,
     MissingColumnsWithoutDefaultError,
 )
+from tyframe.validation.exceptions.row_exceptions import DuplicatePrimaryKeyError
 
 __all__ = [
     'BaseTyframeValidationError',
+    'DuplicatePrimaryKeyError',
     'ExtraColumnsError',
     'InvalidInputTypesError',
     'InvalidSkipValidationError',
