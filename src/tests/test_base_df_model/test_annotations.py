@@ -1,7 +1,7 @@
 from typing import Annotated, Literal
 
 from tyframe.base_df_model import BaseDfModel
-from tyframe.tagging import BaseColumnTags, TyframeColumnTags, TyframeTag
+from tyframe.tagging import BaseColumnTags, TyframeColumnConfig, TyframeColumnTags, TyframeTag
 
 MyTag = TyframeTag | Literal['custom']
 
@@ -33,18 +33,18 @@ def test_collect_defaults() -> None:
 def test_columns_with_tag() -> None:
 
     class ExampleWithTags(BaseDfModel):
-        id: Annotated[int, TyframeColumnTags('primary_key')]
+        id: Annotated[int, TyframeColumnTags('map_key')]
         name: str
         price: Annotated[float, TyframeColumnTags(['unit_price', 'total_price'])]
         country: Annotated[str, TyframeColumnTags('country')]
 
-    assert ExampleWithTags.columns_with_tag('primary_key') == ['id']
+    assert ExampleWithTags.columns_with_tag('map_key') == ['id']
     assert ExampleWithTags.columns_with_tag('unit_price') == ['price']
     assert ExampleWithTags.columns_with_tag('total_price') == ['price']
     assert ExampleWithTags.columns_with_tag('country') == ['country']
-    assert ExampleWithTags.columns_with_tag('map_key') == []
+    assert ExampleWithTags.columns_with_tag('join_key') == []
     assert ExampleWithTags.columns_by_tag == {
-        'primary_key': ['id'],
+        'map_key': ['id'],
         'unit_price': ['price'],
         'total_price': ['price'],
         'country': ['country'],
@@ -81,3 +81,33 @@ def test_subclass_with_extended_tag_type() -> None:
     assert CustomModel.columns_by_tag == {'custom': ['a'], 'map_key': ['b']}
     assert CustomModel.columns_with_tag('custom') == ['a']
     assert CustomModel.columns_with_tag('map_key') == ['b']
+
+
+def test_primary_keys() -> None:
+
+    class Example(BaseDfModel):
+        id: Annotated[int, TyframeColumnConfig(pk=True)]
+        tenant_id: Annotated[int, TyframeColumnConfig(pk=True)]
+        name: Annotated[str, TyframeColumnConfig()]
+        other: str
+
+    assert Example.primary_keys == ['id', 'tenant_id']
+
+
+def test_primary_keys_empty_by_default() -> None:
+
+    class Example(BaseDfModel):
+        col1: str
+
+    assert Example.primary_keys == []
+
+
+def test_primary_keys_combined_with_tags() -> None:
+
+    class Example(BaseDfModel):
+        id: Annotated[int, TyframeColumnConfig(pk=True), TyframeColumnTags('map_key')]
+        name: str
+
+    assert Example.primary_keys == ['id']
+    assert Example.columns_by_tag == {'map_key': ['id']}
+    assert Example.columns_with_tag('map_key') == ['id']
