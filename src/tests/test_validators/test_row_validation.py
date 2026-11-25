@@ -89,3 +89,35 @@ def test_lazy_polars_unique_pk_passes() -> None:
     result = LazyPolarsValidator().validate(UserModel, lf)
 
     assert isinstance(result, pl.LazyFrame)
+
+
+def test_create_dataframe_with_unique_pk_passes() -> None:
+    models = [UserModel(id=1, name='a'), UserModel(id=2, name='b')]
+
+    result = PandasValidator().create_dataframe(models, UserModel)
+
+    assert result.equals(pd.DataFrame({'id': [1, 2], 'name': ['a', 'b']}))
+
+
+def test_create_dataframe_with_duplicate_pk_raises() -> None:
+    models = [UserModel(id=1, name='a'), UserModel(id=1, name='b')]
+
+    with pytest.raises(DuplicatePrimaryKeyError, match='id'):
+        PandasValidator().create_dataframe(models, UserModel)
+
+
+def test_create_dataframe_without_pk_does_nothing() -> None:
+    models = [NoPkModel(id=1, name='a'), NoPkModel(id=1, name='b')]
+
+    result = PandasValidator().create_dataframe(models, NoPkModel)
+
+    assert len(result) == 2
+
+
+def test_create_dataframe_duplicate_pk_allowed_when_disabled() -> None:
+    models = [UserModel(id=1, name='a'), UserModel(id=1, name='b')]
+    validator = PandasValidator(row_config=TyframeRowValidation(validate_pk_uniqueness=False))
+
+    result = validator.create_dataframe(models, UserModel)
+
+    assert len(result) == 2

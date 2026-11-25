@@ -103,10 +103,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         models: Iterable[BaseDfModel],
         model_type: type[BaseDfModel],
     ) -> DataFrameType:
-        return self._create_dataframe_from_records(
+        df = self._create_dataframe_from_records(
             (el.to_record() for el in models),
             model_type,
         )
+        return self.validate_rows(model_type, df)
 
     @abstractmethod
     def _create_dataframe_from_records(
