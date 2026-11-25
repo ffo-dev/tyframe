@@ -1,7 +1,13 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 from tyframe.base_df_model import BaseDfModel
-from tyframe.tagging import TyframeColumnTags
+from tyframe.tagging import BaseColumnTags, TyframeColumnTags, TyframeTag
+
+MyTag = TyframeTag | Literal['custom']
+
+
+class CustomColumnTags(BaseColumnTags[MyTag]):
+    pass
 
 
 def test_collect_col_names() -> None:
@@ -63,3 +69,15 @@ def test_columns_by_tag_multiple_columns_with_same_tag() -> None:
 
     assert Example.columns_by_tag == {'map_key': ['key_a', 'key_b']}
     assert Example.columns_with_tag('map_key') == ['key_a', 'key_b']
+
+
+def test_subclass_with_extended_tag_type() -> None:
+
+    class CustomModel(BaseDfModel[MyTag]):
+        a: Annotated[int, CustomColumnTags('custom')]
+        b: Annotated[str, CustomColumnTags('map_key')]
+        c: str
+
+    assert CustomModel.columns_by_tag == {'custom': ['a'], 'map_key': ['b']}
+    assert CustomModel.columns_with_tag('custom') == ['a']
+    assert CustomModel.columns_with_tag('map_key') == ['b']
