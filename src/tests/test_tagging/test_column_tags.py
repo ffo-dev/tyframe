@@ -1,6 +1,6 @@
 from typing import Literal
 
-from tyframe.tagging.column_tags import BaseColumnTags, TyframeColumnTags, TyframeTag
+from tyframe.tagging import BaseColumnTags, TyframeColumnTags, TyframeTag
 
 
 def test_tyframe_column_tags_init() -> None:
