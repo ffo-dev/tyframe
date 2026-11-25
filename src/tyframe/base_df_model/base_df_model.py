@@ -7,7 +7,7 @@ from pydantic_core import PydanticUndefinedType
 from tyframe.tagging import BaseColumnTags, TagT, invert_column_tags
 
 
-class BaseDfModel(BaseModel, Generic[TagT], metaclass=ABCMeta):  # noqa: UP046
+class BaseDfModel(BaseModel, Generic[TagT], metaclass=ABCMeta):
     """Base class to create a model to validate and build dataframes.
 
     Generic over the tag type: subclass as `BaseDfModel[MyTag]` to allow
