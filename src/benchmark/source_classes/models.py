@@ -1,4 +1,11 @@
+from typing import Annotated
+
 from tyframe.base_df_model import BaseDfModel
+from tyframe.tagging.column_config import TyframeColumnConfig
+
+
+class PkCheck(BaseDfModel):
+    id: Annotated[int, TyframeColumnConfig(pk=True)]
 
 
 class C1(BaseDfModel):

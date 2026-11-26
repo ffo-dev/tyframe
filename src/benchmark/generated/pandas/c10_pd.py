@@ -1,5 +1,6 @@
 import pandas as pd
 from benchmark.source_classes.models import C10
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.pandas.typed_pandas import TypedPandasDataFrame
 
 
@@ -56,6 +57,10 @@ class C10Pd(TypedPandasDataFrame[C10]):
     @property
     def c_10_col(self) -> pd.Series:
         return self._df[self.c_10]
+
+    @classmethod
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
+        return cls.model.columns_with_tag(tag)
 
 
 #### CODE-GEN END
