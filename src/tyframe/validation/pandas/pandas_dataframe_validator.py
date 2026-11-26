@@ -5,7 +5,7 @@ from pandas import DataFrame
 
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.validation.base_validator import BaseValidator
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation, TyframeRowValidation
 from tyframe.validation.dtype_mapping import PandasDtypeMapping
 
 
@@ -13,11 +13,13 @@ class PandasValidator(BaseValidator[DataFrame]):
     def __init__(
         self,
         dtype_mapping: PandasDtypeMapping | None = None,
-        config: TyframeValidationConfig | None = None,
+        column_config: TyframeColumnValidation | None = None,
+        row_config: TyframeRowValidation | None = None,
     ) -> None:
         super().__init__(
             dtype_mapping=dtype_mapping or PandasDtypeMapping(),
-            config=config,
+            column_config=column_config,
+            row_config=row_config,
         )
 
     df_type: type[DataFrame] = DataFrame
@@ -51,6 +53,10 @@ class PandasValidator(BaseValidator[DataFrame]):
     @override
     def get_df_dtype(self, df: DataFrame, column: str) -> Any:
         return df[column].dtype
+
+    @override
+    def has_duplicate_rows(self, df: DataFrame, columns: list[str]) -> bool:
+        return bool(df.duplicated(subset=columns).any())
 
     @override
     def _create_dataframe_from_records(

@@ -15,7 +15,7 @@ from tests.test_validators.utils import (
 )
 from tests.utils.readers import read_pandas
 from tyframe.base_df_model import BaseDfModel
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation
 from tyframe.validation.exceptions import (
     BaseTyframeValidationError,
 )
@@ -50,13 +50,13 @@ def test_pandas_successful_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     expected_data_path: Path,
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
 ) -> None:
     successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        PandasValidator(config=validation_config),
+        PandasValidator(column_config=validation_config),
         read_pandas,
         pandas_comparator,
     )
@@ -69,13 +69,13 @@ def test_pandas_successful_validation(
 def test_pandas_unsucessfull_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
     expected_error: type[BaseTyframeValidationError],
 ) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
-        PandasValidator(config=validation_config),
+        PandasValidator(column_config=validation_config),
         read_pandas,
         expected_error,
     )

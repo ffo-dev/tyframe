@@ -15,7 +15,7 @@ from tests.test_validators.utils import (
 )
 from tests.utils.readers import read_lazy_polars, read_polars
 from tyframe.base_df_model import BaseDfModel
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation
 from tyframe.validation.exceptions import (
     BaseTyframeValidationError,
 )
@@ -56,13 +56,13 @@ def test_polars_successful_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     expected_data_path: Path,
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
 ) -> None:
     successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        PolarsValidator(config=validation_config),
+        PolarsValidator(column_config=validation_config),
         read_polars,
         strict_polars_comparator_relaxed_columns,
     )
@@ -75,13 +75,13 @@ def test_polars_successful_validation(
 def test_polars_unsucessfull_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
     expected_error: type[BaseTyframeValidationError],
 ) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
-        PolarsValidator(config=validation_config),
+        PolarsValidator(column_config=validation_config),
         read_polars,
         expected_error,
     )
@@ -100,13 +100,13 @@ def test_lazy_polars_successful_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
     expected_data_path: Path,
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
 ) -> None:
     successful_validation(
         input_data_path,
         model_type,
         expected_data_path,
-        LazyPolarsValidator(config=validation_config),
+        LazyPolarsValidator(column_config=validation_config),
         read_lazy_polars,
         strict_polars_comparator_relaxed_columns,
     )
@@ -119,13 +119,13 @@ def test_lazy_polars_successful_validation(
 def test_lazy_polars_unsucessfull_validation(
     input_data_path: Path,
     model_type: type[BaseDfModel],
-    validation_config: TyframeValidationConfig,
+    validation_config: TyframeColumnValidation,
     expected_error: type[BaseTyframeValidationError],
 ) -> None:
     validation_with_raise(
         input_data_path,
         model_type,
-        LazyPolarsValidator(config=validation_config),
+        LazyPolarsValidator(column_config=validation_config),
         read_lazy_polars,
         expected_error,
     )
