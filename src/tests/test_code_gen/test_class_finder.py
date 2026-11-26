@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from tests.test_classes.models import OneColModel, OtherExample, TwoColModel
+from tests.test_classes.models import CustomTagModel, OneColModel, OtherExample, TaggedModel, TwoColModel
 from tyframe.base_df_model.base_df_model import BaseDfModel
 from tyframe.code_gen.class_finder import find_child_classes
 
@@ -14,6 +14,8 @@ def test_find_child_classes_includes_indirect_descendants() -> None:
             OneColModel,
             TwoColModel,
             OtherExample,
+            TaggedModel,
+            CustomTagModel,
         ],
         key=lambda x: x.__name__,
     )

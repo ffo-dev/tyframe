@@ -1,5 +1,6 @@
 import polars as pl
 from tests.test_code_gen.test_based_typed_df_generator.input_class.example_models import OtherExample
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.polars.typed_lazy_polars import TypedLazyPolarsDataFrame
 #### CODE-GEN START
 class OtherExampleLpl(TypedLazyPolarsDataFrame[OtherExample]):
@@ -8,4 +9,7 @@ class OtherExampleLpl(TypedLazyPolarsDataFrame[OtherExample]):
     @property
     def yaba_col(self) -> pl.Series:
         return self._df.select(self.yaba).collect().to_series()
+    @classmethod
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
+        return cls.model.columns_with_tag(tag)
 #### CODE-GEN END

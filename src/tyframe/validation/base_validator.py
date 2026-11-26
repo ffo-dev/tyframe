@@ -7,13 +7,14 @@ from tyframe.validation.column_validation.column_validation import (
     get_extra_columns,
     get_missing_columns,
 )
-from tyframe.validation.config import TyframeValidationConfig
+from tyframe.validation.config import TyframeColumnValidation, TyframeRowValidation
 from tyframe.validation.dtype_mapping import DtypeMapping, DtypeMismatchError
 from tyframe.validation.exceptions.column_exceptions import (
     ExtraColumnsError,
     MissingColumnsError,
     MissingColumnsWithoutDefaultError,
 )
+from tyframe.validation.exceptions.row_exceptions import DuplicatePrimaryKeyError
 
 DataFrameType = TypeVar('DataFrameType')
 
@@ -22,19 +23,28 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
     def __init__(
         self,
         dtype_mapping: DtypeMapping[Any],
-        config: TyframeValidationConfig | None = None,
+        column_config: TyframeColumnValidation | None = None,
+        row_config: TyframeRowValidation | None = None,
     ) -> None:
-        """Initialize the validator with an optional dtype mapping.
+        """Initialize the validator with a dtype mapping and optional configs.
 
         Args:
             dtype_mapping: Optional dtype mapping for type validation.
                           If None, uses the default from the class.
+            column_config: Column-level validation config. If None, uses `TyframeColumnValidation()`.
+            row_config: Row-level validation config. If None, uses `TyframeRowValidation()`.
         """
         self.dtype_mapping: DtypeMapping[Any] = dtype_mapping
-        self.config = config or TyframeValidationConfig()
+        if column_config is None:
+            column_config = TyframeColumnValidation()
+        self.column_config = column_config
+        if row_config is None:
+            row_config = TyframeRowValidation()
+        self.row_config = row_config
 
     df_type: type[DataFrameType]
-    config: TyframeValidationConfig
+    column_config: TyframeColumnValidation
+    row_config: TyframeRowValidation
 
     def validate(
         self,
@@ -45,9 +55,34 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df_model,
             df,
         )
-        if self.config.validate_dtypes:
+        if self.column_config.validate_dtypes:
             res = self.validate_dtypes(df_model, res)
-        return res
+        return self.validate_rows(df_model, res)
+
+    def validate_rows(
+        self,
+        df_model: type[BaseDfModel],
+        df: DataFrameType,
+    ) -> DataFrameType:
+        """Validate row-level constraints.
+
+        If `row_config.validate_pk_uniqueness` is enabled, verify that the columns
+        annotated with `TyframeColumnConfig(pk=True)` have unique values.
+        Does nothing when no column is tagged as primary key.
+        """
+        if not self.row_config.validate_pk_uniqueness:
+            return df
+        pk_columns = df_model.primary_keys
+        if not pk_columns:
+            return df
+        if self.has_duplicate_rows(df, pk_columns):
+            raise DuplicatePrimaryKeyError(pk_columns=pk_columns)
+        return df
+
+    @abstractmethod
+    def has_duplicate_rows(self, df: DataFrameType, columns: list[str]) -> bool:
+        """Return True if the given columns contain duplicate value combinations."""
+        raise NotImplementedError  # pragma: no cover
 
     def validate_column_names(
         self,
@@ -68,10 +103,11 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         models: Iterable[BaseDfModel],
         model_type: type[BaseDfModel],
     ) -> DataFrameType:
-        return self._create_dataframe_from_records(
+        df = self._create_dataframe_from_records(
             (el.to_record() for el in models),
             model_type,
         )
+        return self.validate_rows(model_type, df)
 
     @abstractmethod
     def _create_dataframe_from_records(
@@ -114,7 +150,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
             df_columns=df_columns,
         )
         if missing_columns:
-            if not self.config.fill_with_default:
+            if not self.column_config.fill_with_default:
                 raise MissingColumnsError(
                     expected_columns=expected_columns,
                     missing_columns=missing_columns,
@@ -145,7 +181,7 @@ class BaseValidator[DataFrameType](metaclass=ABCMeta):
         )
 
         if extra_columns:
-            if not self.config.drop_extra_columns:
+            if not self.column_config.drop_extra_columns:
                 raise ExtraColumnsError(
                     expected_columns=expected_columns,
                     extra=extra_columns,
