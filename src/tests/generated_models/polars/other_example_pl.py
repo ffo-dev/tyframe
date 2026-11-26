@@ -1,5 +1,6 @@
 import polars as pl
 from tests.test_classes.models import OtherExample
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 
 
@@ -11,6 +12,10 @@ class OtherExamplePl(TypedPolarsDataFrame[OtherExample]):
     @property
     def yaba_col(self) -> pl.Series:
         return self._df[self.yaba]
+
+    @classmethod
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
+        return cls.model.columns_with_tag(tag)
 
 
 #### CODE-GEN END

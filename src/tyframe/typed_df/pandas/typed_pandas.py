@@ -11,7 +11,7 @@ type TypedPandasDataframeInputData = pd.DataFrame | list[BaseDfModel]
 
 
 class TypedPandasDataFrame[
-    ModelType: BaseDfModel,
+    ModelType: BaseDfModel[Any],  # pyright:ignore[reportExplicitAny]
 ](BaseTypedDf[ModelType, pd.DataFrame], metaclass=ABCMeta):
     _df: pd.DataFrame
     model: type[ModelType]

@@ -310,12 +310,16 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             list[str]: A list of strings representing the import statements.
 
         """
-        return [
-            self.df_library_import(),
-            *self.additional_imports(),
-            self.model_import(model),
-            self.typed_df_base_class_import(),
-        ]
+        imports: list[str] = []
+        if model.columns_by_tag:
+            imports.append('from typing import Literal')
+        imports.append(self.df_library_import())
+        imports.extend(self.additional_imports())
+        imports.append(self.model_import(model))
+        if not model.columns_by_tag:
+            imports.append('from tyframe.tagging import TyframeTag')
+        imports.append(self.typed_df_base_class_import())
+        return imports
 
     def additional_imports(self) -> list[str]:
         """Generate any additional import statements required for the typed DataFrame class.
@@ -373,6 +377,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
             self.generate_model_type_variable(model),
             *self.generate_class_variables(model),
             *self.generate_columns_properties(model),
+            *self.generate_columns_with_tag_method(model),
         ]
 
     @abstractmethod
@@ -495,3 +500,33 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
         """
         return [line for col_name in model.columns for line in self.generate_column_property(col_name)]
+
+    def generate_columns_with_tag_method(
+        self,
+        model: type[BaseDfModel],
+    ) -> list[str]:
+        """Generate the `columns_with_tag` classmethod for the typed DataFrame class.
+
+        The `tag` parameter is narrowed to a literal of the model's tags, so type checkers
+        reject unknown tags. For models without tags, a plain `TyframeTag` fallback is
+        generated.
+
+        Args:
+            model: The Pydantic model class to generate the method for.
+
+        Returns:
+            list[str]: A list of strings representing the method lines.
+
+        """
+        ind = self.config.indentation
+        columns_by_tag = model.columns_by_tag
+        if columns_by_tag:
+            tag_args = ', '.join(f"'{tag}'" for tag in columns_by_tag)
+            tag_type = f'Literal[{tag_args}]'
+        else:
+            tag_type = 'TyframeTag'
+        return [
+            f'{ind}@classmethod',
+            f'{ind}def columns_with_tag(cls, tag: {tag_type}) -> list[str]:',
+            f'{ind * 2}return cls.model.columns_with_tag(tag)',
+        ]

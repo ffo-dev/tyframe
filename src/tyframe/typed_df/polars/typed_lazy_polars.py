@@ -13,7 +13,7 @@ type TypedPlDataframeInputData = pl.LazyFrame | list[BaseDfModel]
 
 
 class TypedLazyPolarsDataFrame[
-    ModelType: BaseDfModel,
+    ModelType: BaseDfModel[Any],  # pyright:ignore[reportExplicitAny]
 ](BaseTypedDf[ModelType, pl.LazyFrame], metaclass=ABCMeta):
     _df: pl.LazyFrame
     model: type[ModelType]
