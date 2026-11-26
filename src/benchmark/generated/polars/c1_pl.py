@@ -1,5 +1,6 @@
 import polars as pl
 from benchmark.source_classes.models import C1
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 
 
@@ -11,6 +12,10 @@ class C1Pl(TypedPolarsDataFrame[C1]):
     @property
     def c_1_col(self) -> pl.Series:
         return self._df[self.c_1]
+
+    @classmethod
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
+        return cls.model.columns_with_tag(tag)
 
 
 #### CODE-GEN END
