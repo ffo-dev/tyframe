@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
+from typing import Any
 
 from pydantic.alias_generators import to_snake
 
@@ -28,7 +29,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_typed_df_class(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> str:
         """Generate a typed DataFrame class based on the provided Pydantic model.
 
@@ -72,7 +73,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_code_gen_section(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> str:
         """Generate only the content between code-gen markers (including markers)."""
         return '\n'.join(
@@ -85,7 +86,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_typed_df_file(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
         output_path: Path,
     ) -> Path:
         file = output_path / f'{to_snake(self.class_name(model))}.py'
@@ -281,7 +282,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def raw_generate_typed_df_class(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the lines of code for the typed DataFrame class based on the provided Pydantic model.
 
@@ -302,7 +303,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_imports(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the import statements required for the typed DataFrame class.
 
@@ -340,7 +341,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
         """
         raise NotImplementedError  # pragma: no cover
 
-    def model_import(self, model: type[BaseDfModel]) -> str:
+    def model_import(self, model: type[BaseDfModel[Any]]) -> str:
         """Generate the import statement for the Pydantic model.
 
         Args:
@@ -361,7 +362,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_class(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the class definition for the typed DataFrame class.
 
@@ -392,14 +393,14 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_class_definition(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> str:
         return f'class {self.class_name(model)}({self.typed_df_name()}[{model.__name__}]):'
 
-    def class_name(self, model: type[BaseDfModel]) -> str:
+    def class_name(self, model: type[BaseDfModel[Any]]) -> str:
         return f'{model.__name__}{self._generated_class_suffix}'
 
-    def generate_model_type_variable(self, model: type[BaseDfModel]) -> str:
+    def generate_model_type_variable(self, model: type[BaseDfModel[Any]]) -> str:
         """Generate the model type variable for the typed DataFrame class.
 
         Args:
@@ -428,7 +429,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_class_variables(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the class variables for the typed DataFrame class.
 
@@ -488,7 +489,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_columns_properties(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the column properties for the typed DataFrame class.
 
@@ -503,7 +504,7 @@ class BasedTypedDfGenerator(metaclass=ABCMeta):
 
     def generate_columns_with_tag_method(
         self,
-        model: type[BaseDfModel],
+        model: type[BaseDfModel[Any]],
     ) -> list[str]:
         """Generate the `columns_with_tag` classmethod for the typed DataFrame class.
 
