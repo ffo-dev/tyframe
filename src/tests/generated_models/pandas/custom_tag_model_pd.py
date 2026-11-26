@@ -1,7 +1,5 @@
-from typing import Literal
-
 import pandas as pd
-from tests.test_classes.models import CustomTagModel
+from tests.test_classes.models import CustomTagModel, MyTag
 from tyframe.typed_df.pandas.typed_pandas import TypedPandasDataFrame
 
 
@@ -25,7 +23,7 @@ class CustomTagModelPd(TypedPandasDataFrame[CustomTagModel]):
         return self._df[self.c]
 
     @classmethod
-    def columns_with_tag(cls, tag: Literal['custom', 'map_key']) -> list[str]:
+    def columns_with_tag(cls, tag: MyTag) -> list[str]:
         return cls.model.columns_with_tag(tag)
 
 

@@ -1,8 +1,7 @@
-from typing import Literal
-
 import polars as pl
 
 from tests.test_classes.models import TaggedModel
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.polars.typed_lazy_polars import TypedLazyPolarsDataFrame
 
 
@@ -31,7 +30,7 @@ class TaggedModelLpl(TypedLazyPolarsDataFrame[TaggedModel]):
         return self._df.select(self.name).collect().to_series()
 
     @classmethod
-    def columns_with_tag(cls, tag: Literal['map_key', 'unit_price', 'total_price', 'country']) -> list[str]:
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
         return cls.model.columns_with_tag(tag)
 
 

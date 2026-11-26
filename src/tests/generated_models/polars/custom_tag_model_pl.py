@@ -1,7 +1,5 @@
-from typing import Literal
-
 import polars as pl
-from tests.test_classes.models import CustomTagModel
+from tests.test_classes.models import CustomTagModel, MyTag
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 
 
@@ -25,7 +23,7 @@ class CustomTagModelPl(TypedPolarsDataFrame[CustomTagModel]):
         return self._df[self.c]
 
     @classmethod
-    def columns_with_tag(cls, tag: Literal['custom', 'map_key']) -> list[str]:
+    def columns_with_tag(cls, tag: MyTag) -> list[str]:
         return cls.model.columns_with_tag(tag)
 
 

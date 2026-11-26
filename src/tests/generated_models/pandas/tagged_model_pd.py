@@ -1,7 +1,6 @@
-from typing import Literal
-
 import pandas as pd
 from tests.test_classes.models import TaggedModel
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.pandas.typed_pandas import TypedPandasDataFrame
 
 
@@ -30,7 +29,7 @@ class TaggedModelPd(TypedPandasDataFrame[TaggedModel]):
         return self._df[self.name]
 
     @classmethod
-    def columns_with_tag(cls, tag: Literal['map_key', 'unit_price', 'total_price', 'country']) -> list[str]:
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
         return cls.model.columns_with_tag(tag)
 
 
