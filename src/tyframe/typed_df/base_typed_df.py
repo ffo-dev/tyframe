@@ -28,7 +28,7 @@ _T = TypeVar('_T', bound=TypedDfProtocol)
 
 
 class BaseTypedDf[
-    ModelType: BaseDfModel,
+    ModelType: BaseDfModel[Any],  # pyright:ignore[reportExplicitAny]
     DataFrameType,
 ](metaclass=ABCMeta):
     _df: DataFrameType

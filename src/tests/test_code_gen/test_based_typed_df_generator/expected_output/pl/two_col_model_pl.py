@@ -1,5 +1,6 @@
 import polars as pl
 from tests.test_code_gen.test_based_typed_df_generator.input_class.example_models import TwoColModel
+from tyframe.tagging import TyframeTag
 from tyframe.typed_df.polars.typed_polars import TypedPolarsDataFrame
 #### CODE-GEN START
 class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
@@ -12,4 +13,7 @@ class TwoColModelPl(TypedPolarsDataFrame[TwoColModel]):
     @property
     def b_col(self) -> pl.Series:
         return self._df[self.b]
+    @classmethod
+    def columns_with_tag(cls, tag: TyframeTag) -> list[str]:
+        return cls.model.columns_with_tag(tag)
 #### CODE-GEN END

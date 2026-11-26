@@ -13,7 +13,7 @@ type TypedPlDataframeInputData = pl.DataFrame | list[BaseDfModel]
 
 
 class TypedPolarsDataFrame[
-    ModelType: BaseDfModel,
+    ModelType: BaseDfModel[Any],  # pyright:ignore[reportExplicitAny]
 ](BaseTypedDf[ModelType, pl.DataFrame], metaclass=ABCMeta):
     _df: pl.DataFrame
     model: type[ModelType]
